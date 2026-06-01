@@ -1,0 +1,128 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users: read for any authenticated user; write (create/update/delete) for own doc or admin
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth != null && (
+        request.auth.uid == userId ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+    
+    // Allow authenticated users to read/write students
+    match /students/{studentId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write courses; allow public read for funnel/landing
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write assignments
+    match /assignments/{assignmentId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write enrollments
+    match /enrollments/{enrollmentId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write notifications
+    match /notifications/{notificationId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write messages
+    match /messages/{messageId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write meetings
+    match /meetings/{meetingId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write certificates
+    match /certificates/{certificateId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write chats
+    match /chats/{chatId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // AI tutor chat memory: each user can read/write only their own doc
+    match /aiTutorChat/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to read/write student progress
+    match /studentProgress/{progressId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write knowledge module grades
+    match /knowledgeModuleGrades/{gradeId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write calendar events
+    match /calendarEvents/{eventId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write course structures
+    match /courseStructures/{structureId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read/write student data
+    match /studentData/{dataId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Jobs: authenticated read/write; unauthenticated can read active jobs (careers page)
+    match /jobs/{jobId} {
+      allow read: if request.auth != null || (resource != null && resource.data.status == 'active');
+      allow write: if request.auth != null;
+    }
+
+    // Job applications: anyone can create (careers page); authenticated can read/update/delete
+    match /jobApplications/{applicationId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // Blogs: public read for published posts; create/update/delete for authenticated (admin)
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
+    }
+    
+    // Checkout sessions for Yoco funnel
+    // - Written by Cloud Functions and payment webhooks
+    // - Readable in the client only for authenticated admins (for revenue reporting in admin UI)
+    match /checkoutSessions/{sessionId} {
+      // Allow admins to read checkout sessions for reporting/analytics
+      allow read: if request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      
+      // All writes are handled by backend Cloud Functions/webhooks
+      allow write: if false;
+    }
+
+    // Allow authenticated users to read/write any document in the database
+    // This is a catch-all rule for development purposes
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

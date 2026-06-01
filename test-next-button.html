@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Next Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Next Button Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Instructions</h2>
+        <p>1. Open the application at <a href="http://localhost:8089" target="_blank">http://localhost:8089</a></p>
+        <p>2. Log in as a learner</p>
+        <p>3. Navigate to a course</p>
+        <p>4. Open a lesson</p>
+        <p>5. Click the "Next Lesson" button</p>
+        <p>6. Check the browser console for debug messages</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Expected Behavior</h2>
+        <ul>
+            <li>The next button should be enabled (not grayed out)</li>
+            <li>Clicking the button should complete the current lesson</li>
+            <li>After completion, it should navigate to the next lesson</li>
+            <li>Console should show debug messages with 🔄, ✅, and ➡️ emojis</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>Debug Messages to Look For</h2>
+        <div class="log">🔄 Next lesson button clicked: {isCompleted: false, isLastLesson: false, ...}
+📚 Lesson not completed, completing it first...
+📊 Completing lesson (timer restrictions disabled for testing): {...}
+✅ Lesson completed, proceeding to next lesson
+➡️ Moving to next lesson...
+🔄 LearnerDashboard handleNextLesson called: {...}
+🔄 Navigating to next lesson: {currentIndex: 0, totalLessons: 5, ...}
+➡️ Moving to next lesson: "Lesson Title" Order: 2 Completed: false</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Common Issues</h2>
+        <ul>
+            <li><strong>Button is disabled:</strong> Check if isLoadingCompletionStatus is true</li>
+            <li><strong>No navigation:</strong> Check if onNextLesson is properly passed to LessonViewer</li>
+            <li><strong>Lesson not completing:</strong> Check if handleCompleteLesson is working</li>
+            <li><strong>Wrong lesson order:</strong> Check if lessons have proper order property</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>Quick Fixes Applied</h2>
+        <ul>
+            <li>✅ Removed timer restrictions from lesson completion</li>
+            <li>✅ Simplified button state logic</li>
+            <li>✅ Added extensive debug logging</li>
+            <li>✅ Fixed handleSmartNextLesson function</li>
+            <li>✅ Enhanced LearnerDashboard handleNextLesson</li>
+        </ul>
+    </div>
+    
+    <script>
+        // Simple test to check if the app is running
+        fetch('http://localhost:8089')
+            .then(response => {
+                if (response.ok) {
+                    document.body.style.borderTop = '5px solid green';
+                    console.log('✅ Application is running on port 8089');
+                } else {
+                    document.body.style.borderTop = '5px solid red';
+                    console.log('❌ Application is not responding');
+                }
+            })
+            .catch(error => {
+                document.body.style.borderTop = '5px solid red';
+                console.log('❌ Cannot connect to application:', error);
+            });
+    </script>
+</body>
+</html>

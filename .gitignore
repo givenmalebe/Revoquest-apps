@@ -1,0 +1,81 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ---------------------------------------------------------------------------
+# Secrets, API keys, and environment files (never commit)
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# Firebase Functions env (Yoco, OpenRouter, Gmail, etc.)
+firebase-functions/.env
+firebase-functions/.env.*
+!firebase-functions/.env.example
+
+# Local runtime / emulator secrets
+.runtimeconfig.json
+.secret
+.secrets/
+secrets/
+
+# Cloud provider & payment keys (local copies)
+**/yoco*.env
+**/*_secret*
+**/*secret*.json
+**/*apikey*
+**/*api-key*
+**/*api_key*
+
+# Firebase / GCP service account & credential files
+**/firebase-adminsdk*.json
+**/serviceAccount*.json
+**/service-account*.json
+**/google-services.json
+**/GoogleService-Info.plist
+*credentials*.json
+*.pem
+*.p12
+*.key
+*.pfx
+
+# Firebase CLI local state (not for version control)
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+ui-debug.log
+
+# Optional: local override configs
+config.local.json
+config.local.js
+config.local.ts

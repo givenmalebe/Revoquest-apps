@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Button Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Next Button Functionality Test</h1>
+    
+    <div class="test-container">
+        <h2>Current State</h2>
+        <div class="status">
+            <p><strong>Current Lesson:</strong> <span id="currentLesson">Lesson 1</span></p>
+            <p><strong>Lesson Index:</strong> <span id="lessonIndex">0</span></p>
+            <p><strong>Total Lessons:</strong> <span id="totalLessons">3</span></p>
+            <p><strong>Is Completed:</strong> <span id="isCompleted">No</span></p>
+            <p><strong>Is Last Lesson:</strong> <span id="isLastLesson">No</span></p>
+        </div>
+        
+        <button id="nextButton" class="button">Next Lesson</button>
+        
+        <div class="log" id="log"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>Test Instructions</h2>
+        <ol>
+            <li>Click "Next Lesson" button</li>
+            <li>Watch the console log for debug messages</li>
+            <li>Verify the lesson changes after completion</li>
+            <li>Test all 3 lessons</li>
+        </ol>
+    </div>
+
+    <script>
+        // Test data
+        const lessons = [
+            { id: 'lesson-1', title: 'Lesson 1' },
+            { id: 'lesson-2', title: 'Lesson 2' },
+            { id: 'lesson-3', title: 'Lesson 3' },
+        ];
+        
+        let currentLessonIndex = 0;
+        let isCompletingLesson = false;
+        let isCompleted = false;
+        
+        const log = document.getElementById('log');
+        const nextButton = document.getElementById('nextButton');
+        
+        function updateDisplay() {
+            const currentLesson = lessons[currentLessonIndex];
+            const isLastLesson = currentLessonIndex === lessons.length - 1;
+            
+            document.getElementById('currentLesson').textContent = currentLesson.title;
+            document.getElementById('lessonIndex').textContent = currentLessonIndex;
+            document.getElementById('totalLessons').textContent = lessons.length;
+            document.getElementById('isCompleted').textContent = isCompleted ? 'Yes' : 'No';
+            document.getElementById('isLastLesson').textContent = isLastLesson ? 'Yes' : 'No';
+            
+            nextButton.disabled = isCompletingLesson;
+            nextButton.textContent = isCompletingLesson ? 'Completing...' : 
+                                    isLastLesson ? 'Finish Course' : 'Next Lesson';
+        }
+        
+        function addLog(message) {
+            log.textContent += message + '\n';
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        async function handleSmartNextLesson() {
+            const currentLesson = lessons[currentLessonIndex];
+            const isLastLesson = currentLessonIndex === lessons.length - 1;
+            
+            addLog('🔄 Next lesson button clicked:');
+            addLog(`  isCompleted: ${isCompleted}`);
+            addLog(`  isLastLesson: ${isLastLesson}`);
+            addLog(`  currentLessonId: ${currentLesson.id}`);
+            addLog(`  currentLessonTitle: ${currentLesson.title}`);
+
+            // If lesson is not completed, complete it first
+            if (!isCompleted) {
+                addLog('📚 Lesson not completed, completing it first...');
+                isCompletingLesson = true;
+                updateDisplay();
+                
+                try {
+                    // Simulate lesson completion
+                    addLog('⏳ Simulating lesson completion...');
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    isCompleted = true;
+                    addLog('✅ Lesson completed, proceeding to next lesson');
+                } catch (error) {
+                    addLog('📊 Error completing lesson: ' + error);
+                } finally {
+                    isCompletingLesson = false;
+                    updateDisplay();
+                }
+            } else {
+                addLog('📚 Lesson already completed, proceeding directly...');
+            }
+
+            // Now navigate to next lesson or complete course
+            if (isLastLesson) {
+                addLog('🎉 Last lesson completed! Course finished!');
+                alert('Course completed!');
+            } else {
+                addLog('➡️ Moving to next lesson...');
+                currentLessonIndex++;
+                isCompleted = false; // Reset for next lesson
+                updateDisplay();
+            }
+        }
+        
+        nextButton.addEventListener('click', handleSmartNextLesson);
+        updateDisplay();
+        
+        addLog('Test initialized. Click "Next Lesson" to start testing.');
+    </script>
+</body>
+</html>

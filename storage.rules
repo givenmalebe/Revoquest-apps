@@ -1,0 +1,72 @@
+rules_version = '2';
+
+// Firebase Storage rules for PDF viewing and file access
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow authenticated users to read files (for PDF viewing)
+    match /{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    // Allow public read access for PDF files specifically
+    match /pdfs/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Allow read access for course materials
+    match /courses/{courseId}/materials/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Study resources & lesson uploads: courses/{courseId}/lessons/{lessonId}/{fileName}
+    match /courses/{courseId}/lessons/{lessonId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    // Allow read access for lesson content
+    match /lessons/{lessonId}/content/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Allow read/write access for assessment submissions
+    match /assessments/{courseId}/{assessmentId}/submissions/{studentId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    // Allow read/write access for marked documents (POE)
+    match /assessments/{courseId}/{assessmentId}/submissions/{studentId}/marked/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    // Allow unauthenticated users to upload CV files for job applications
+    match /poe/job-applications/{studentId}/{courseId}/{moduleId}/{fileName} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // Allow unauthenticated users to upload CV files for job applications (alternative path structure)
+    match /poe/job-applications/{allPaths=**} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // Allow enrollment file uploads (CV and Qualifications) - allow public read/write for registration flow
+    match /enrollments/{fileName} {
+      allow read: if true; // Allow public read to get download URL after upload
+      allow write: if true; // Allow public write for enrollment form submissions
+    }
+    
+    // Allow enrollment uploads for any path structure
+    match /enrollments/{allPaths=**} {
+      allow read: if true; // Allow public read to get download URL after upload
+      allow write: if true; // Allow public write for enrollment form submissions
+    }
+  }
+}

@@ -1,0 +1,691 @@
+{
+  "Education and teaching": [
+    {
+      "title": "Occupational Certificate: Occupational Trainer",
+      "id": 97154,
+      "nqfLevel": 4,
+      "credits": 124,
+      "authority": "QCTO",
+      "category": "Education and teaching",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Adult Literacy Teacher",
+      "id": 101709,
+      "nqfLevel": 5,
+      "credits": 198,
+      "authority": "QCTO",
+      "category": "Education and teaching",
+      "type": "accreditation"
+    }
+  ],
+  "IT and Related": [
+    {
+      "title": "Occupational Certificate: Software Tester ",
+      "id": 119438,
+      "nqfLevel": 5,
+      "credits": 70,
+      "authority": "QCTO",
+      "category": "IT and Related",
+      "type": "accreditation"
+    }
+  ],
+  "Health and Safety and Construction": [
+    {
+      "title": "National certificate: Construction health and safety ",
+      "id": 77063,
+      "nqfLevel": 3,
+      "credits": 133,
+      "authority": "CETA",
+      "category": "Health and Safety and Construction",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Skills Programme: Basic Emergency First Aid \r\nResponder ",
+      "id": "SP-230801",
+      "nqfLevel": 2,
+      "credits": 2,
+      "authority": "QCTO",
+      "category": "Health and Safety and Construction",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Skills Programme: Intermediate Emergency First Aid \r\nResponder",
+      "id": "SP-230802",
+      "nqfLevel": 3,
+      "credits": 5,
+      "authority": "QCTO",
+      "category": "Health and Safety and Construction",
+      "type": "accreditation"
+    },
+    {
+      "title": "National Certificate: Construction Contracting",
+      "id": 20813,
+      "nqfLevel": 2,
+      "credits": 190,
+      "authority": "QCTO",
+      "category": "Health and Safety and Construction",
+      "type": "accreditation"
+    }
+  ],
+  "Insurance and Finance courses": [
+    {
+      "title": "Occupational Certificate: Trustee ",
+      "id": 118694,
+      "nqfLevel": 4,
+      "credits": 31,
+      "authority": "QCTO",
+      "category": "Insurance and Finance courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Financial Advisor ",
+      "id": 105026,
+      "nqfLevel": 6,
+      "credits": 515,
+      "authority": "QCTO",
+      "category": "Insurance and Finance courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Internal Audit Manager (Internal Audit Quality Assurer)",
+      "id": 101370,
+      "nqfLevel": 8,
+      "credits": 116,
+      "authority": "QCTO",
+      "category": "Insurance and Finance courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Insurance Claims Administrator (Insurance Claims Assessor)",
+      "id": 99668,
+      "nqfLevel": 4,
+      "credits": 131,
+      "authority": "QCTO",
+      "category": "Insurance and Finance courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Employee and Pension Fund Benefit Adviser",
+      "id": 105025,
+      "nqfLevel": 5,
+      "credits": 110,
+      "authority": "QCTO",
+      "category": "Insurance and Finance courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Insurance Underwriter",
+      "id": 117329,
+      "nqfLevel": 5,
+      "credits": 163,
+      "authority": "QCTO",
+      "category": "Insurance and Finance courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Investment Adviser",
+      "id": 105021,
+      "nqfLevel": 6,
+      "credits": 213,
+      "authority": "QCTO",
+      "category": "Insurance and Finance courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Advanced Occupational Diploma: Financial Administration \r\nManager ",
+      "id": 121568,
+      "nqfLevel": 7,
+      "credits": 232,
+      "authority": "QCTO",
+      "category": "Insurance and Finance courses",
+      "type": "accreditation"
+    }
+  ],
+  "Professional Courses": [
+    {
+      "title": "Occupational Certificate: Compliance Officer",
+      "id": 91671,
+      "nqfLevel": 6,
+      "credits": 240,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Organisational Risk Practitioner",
+      "id": 94222,
+      "nqfLevel": 6,
+      "credits": 125,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Advanced Occupational Certificate: Human Resource \r\nManagement Officer ",
+      "id": 121151,
+      "nqfLevel": 6,
+      "credits": 134,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Supply Chain Manager",
+      "id": 111357,
+      "nqfLevel": 6,
+      "credits": 180,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Skills Programme: Auxilary Community Development Facilitator",
+      "id": "SP-210601",
+      "nqfLevel": 5,
+      "credits": 70,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: General Manager Public Service",
+      "id": 118791,
+      "nqfLevel": 6,
+      "credits": 150,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Quality Manager ",
+      "id": 118768,
+      "nqfLevel": 6,
+      "credits": 270,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Project Manager",
+      "id": 101869,
+      "nqfLevel": 5,
+      "credits": 240,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Labour Inspector",
+      "id": 118748,
+      "nqfLevel": 5,
+      "credits": 209,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Physical Asset Manager",
+      "id": 118113,
+      "nqfLevel": 7,
+      "credits": 225,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Quality Assurer",
+      "id": 118769,
+      "nqfLevel": 5,
+      "credits": 106,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Marketing Coordinator",
+      "id": 706118,
+      "nqfLevel": 5,
+      "credits": 175,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Social Auxiliary Worker",
+      "id": 98890,
+      "nqfLevel": 5,
+      "credits": 129,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Safety Inspector (Forestry and Related Industries Safety Health and Environment Officer)",
+      "id": 99712,
+      "nqfLevel": 4,
+      "credits": 278,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Small Business Consultant",
+      "id": 118741,
+      "nqfLevel": 5,
+      "credits": 244,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Governance Professional",
+      "id": 118115,
+      "nqfLevel": 8,
+      "credits": 156,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Tourist Information Officer",
+      "id": 101865,
+      "nqfLevel": 5,
+      "credits": 280,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Certificate: Environmental Monitor",
+      "id": 121889,
+      "nqfLevel": 5,
+      "credits": 102,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    },
+    {
+      "title": "Higher Occupational Certificate: Business Development Officer",
+      "id": 121567,
+      "nqfLevel": 5,
+      "credits": 230,
+      "authority": "QCTO",
+      "category": "Professional Courses",
+      "type": "accreditation"
+    }
+  ],
+  "Short Skills Programs": [
+    {
+      "title": "Occupational Skills Programmes :Community Counsellor ",
+      "id": "SP-211003",
+      "nqfLevel": 5,
+      "credits": 25,
+      "authority": "QCTO",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Skills Programmes :Community Development Facilitator (Drug and Alcohol Abuse Awareness)",
+      "id": "SP-211006",
+      "nqfLevel": 5,
+      "credits": 25,
+      "authority": "QCTO",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Skills Programme: Basic Emergency First Aid \r\nResponder ",
+      "id": "SP-230801",
+      "nqfLevel": 2,
+      "credits": 2,
+      "authority": "QCTO",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Occupational Skills Programme: Intermediate Emergency First Aid \r\nResponder",
+      "id": "SP-230802",
+      "nqfLevel": 3,
+      "credits": 5,
+      "authority": "QCTO",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Develop outcomes-based learning programmes",
+      "id": 123394,
+      "nqfLevel": 5,
+      "credits": 10,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Faciliate the transfer and application of learning in the workplace",
+      "id": 123398,
+      "nqfLevel": 5,
+      "credits": 5,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Design outcomes-based assessment",
+      "id": 120401,
+      "nqfLevel": 6,
+      "credits": 15,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Conduct outcomes-based assessment",
+      "id": 115753,
+      "nqfLevel": 5,
+      "credits": 15,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Faciliate learning using a variety of given methodogies",
+      "id": 117871,
+      "nqfLevel": 5,
+      "credits": 10,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Conduct moderation of outcomes-based assessment",
+      "id": 115759,
+      "nqfLevel": 6,
+      "credits": 10,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Identify and respond to learners with special needs and barriers to learning",
+      "id": 10294,
+      "nqfLevel": 5,
+      "credits": 10,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Devise intervention for learners who have special needs",
+      "id": 10305,
+      "nqfLevel": 6,
+      "credits": 16,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    },
+    {
+      "title": "Conduct skills development administration in an organisation",
+      "id": 15227,
+      "nqfLevel": 4,
+      "credits": 4,
+      "authority": "ETDP- SETA",
+      "category": "Short Skills Programs",
+      "type": "accreditation"
+    }
+  ],
+  "Assessment Centre": [
+    {
+      "title": "Occupational Certificate: Small Business Consultant",
+      "nqfLevel": "5 ",
+      "id": 118741,
+      "credits": 244,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Valuer (Municipal Property Assessor)",
+      "nqfLevel": "5 ",
+      "id": 99700,
+      "credits": 120,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Municipal Finance Manager ",
+      "nqfLevel": "8 ",
+      "id": 118775,
+      "credits": 721,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Library Assistant",
+      "nqfLevel": "5 ",
+      "id": 94598,
+      "credits": 127,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Career Development Information Officer ",
+      "nqfLevel": "5 ",
+      "id": 96372,
+      "credits": 120,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Community Development Practitioner",
+      "nqfLevel": "Level 5 ",
+      "id": 97691,
+      "credits": 212,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Training and Development Practitioner",
+      "nqfLevel": "Level 5 ",
+      "id": 101321,
+      "credits": 190,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Adult Literacy Teacher",
+      "nqfLevel": "Level 5 ",
+      "id": 101709,
+      "credits": 198,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: School Principal (School Manager) ",
+      "nqfLevel": "Level 6 ",
+      "id": 101258,
+      "credits": 285,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Trade Unionist",
+      "nqfLevel": "Level 4 ",
+      "id": 118790,
+      "credits": 190,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Learning and Development Advisor",
+      "nqfLevel": "Level 7",
+      "id": 118774,
+      "credits": 195,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Market Research Analyst",
+      "nqfLevel": "5 ",
+      "id": 1119450,
+      "credits": 240,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "\r\nAdvanced Occupational Certificate: Human Resource Management \r\nOfficer ",
+      "nqfLevel": "Level 6 ",
+      "id": 121151,
+      "credits": 134,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Energy Kinesiology Practitioner",
+      "nqfLevel": "Level 5 ",
+      "id": 118869,
+      "credits": 65,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Social Security Assessor",
+      "nqfLevel": "Level 6 ",
+      "id": 105028,
+      "credits": 192,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Social Auxiliary Worker",
+      "nqfLevel": "5 ",
+      "id": 98890,
+      "credits": 129,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Child and Youth Care Worker",
+      "nqfLevel": "5 ",
+      "id": 99510,
+      "credits": 190,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Health Information Manager",
+      "nqfLevel": "Level 7",
+      "id": 101838,
+      "credits": 454,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Health Promotion Officer",
+      "nqfLevel": "Level 3",
+      "id": 94597,
+      "credits": 163,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Higher Occupational Certificate: Occupational Health and Safety Practitioner",
+      "nqfLevel": "5 ",
+      "id": 121527,
+      "credits": 120,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Higher Occupational Certificate: Business Development Officer",
+      "nqfLevel": "5 ",
+      "id": 121567,
+      "credits": 230,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Environmental Monitor",
+      "nqfLevel": "5 ",
+      "id": 121889,
+      "credits": 102,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Water Infrastructure Manager",
+      "nqfLevel": "8 ",
+      "id": 104623,
+      "credits": 304,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Firefighter",
+      "nqfLevel": "Level 4 ",
+      "id": 98991,
+      "credits": 149,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Recruitment Manager",
+      "nqfLevel": "Level 6",
+      "id": 118251,
+      "credits": 186,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Advanced Occupational Certificate: Human Resource Management Officer",
+      "nqfLevel": "Level 5 ",
+      "id": 121151,
+      "credits": 134,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Higher Occupational Certificate: Human Resource Management Administrator",
+      "nqfLevel": "Level 5 ",
+      "id": 121150,
+      "credits": 120,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    },
+    {
+      "title": "Occupational Certificate: Office Supervisor",
+      "nqfLevel": "5 ",
+      "id": 11840,
+      "credits": 240,
+      "authority": "QCTO",
+      "category": "Assessment Centre",
+      "type": "assessment"
+    }
+  ]
+}

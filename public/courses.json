@@ -1,0 +1,3078 @@
+[
+  {
+    "title": "Occupational Certificate: Occupational Trainer",
+    "id": 97154,
+    "saqaId": 97154,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=97154",
+    "nqfLevel": 4,
+    "credits": 124,
+    "authority": "MERSETA",
+    "category": "Education and teaching",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Occupational Trainer. This qualification aims to prepare learners to establish learner profiles, identify special needs, and address barriers to learning within specified training program requirements. Learners will prepare, adapt, and align learning materials and resources for workplace training interventions, demonstrate relevant interpersonal skills and employ appropriate facilitation techniques, review and report on the quality and effectiveness of their training, and meet documentation and administrative requirements.",
+    "rationale": "This qualification is designed to equip learners with the skills necessary to plan, prepare, coordinate, implement, and evaluate learning programs, ensuring occupational trainee competence. It provides the foundation for effective workplace training and development, ensuring that trainers have the necessary competencies to design, deliver, and assess training programs that meet industry standards and learner needs.",
+    "exitLevelOutcomes": [
+      "Establish learner profiles, special needs, and barriers to learning",
+      "Prepare, adapt, and align learning materials and resources for workplace training interventions",
+      "Demonstrate relevant interpersonal skills and employ appropriate facilitation techniques",
+      "Review and report on the quality and effectiveness of training",
+      "Meet documentation and administrative requirements",
+      "Plan, schedule, and conduct competence evaluations within their area of expertise",
+      "Perform assessment/evaluation administration and provide appropriate feedback to learners"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Training Principles and Methodologies, Level 4, 30 Credits",
+        "Learner Assessment and Evaluation, Level 4, 25 Credits",
+        "Learning Design and Material Development, Level 4, 20 Credits",
+        "Workplace Training Context and Administration, Level 4, 15 Credits",
+        "Interpersonal Skills and Facilitation Techniques, Level 4, 10 Credits",
+        "Quality Assurance and Reporting, Level 4, 8 Credits"
+      ],
+      "practicalSkillModules": [
+        "Establish Learner Profiles and Address Special Needs, Level 4, 20 Credits",
+        "Prepare and Adapt Learning Materials, Level 4, 18 Credits",
+        "Demonstrate Facilitation Techniques, Level 4, 15 Credits",
+        "Conduct Training Sessions, Level 4, 12 Credits",
+        "Evaluate Training Effectiveness, Level 4, 10 Credits",
+        "Perform Assessment Administration, Level 4, 8 Credits"
+      ],
+      "workExperienceModules": [
+        "Occupational Training Practice, Level 4, 25 Credits",
+        "Training Program Implementation, Level 4, 20 Credits",
+        "Assessment and Evaluation Practice, Level 4, 15 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 3 qualification with Communication and Mathematics",
+    "rplInfo": "Recognition of Prior Learning (RPL): RPL for Access to the External Integrated Summative Assessment: Accredited providers and approved workplaces must apply the internal assessment criteria specified in the related curriculum document to establish and confirm prior learning. RPL for Access to the Qualification: Accredited providers and approved workplaces may recognise prior learning against the relevant access requirements.",
+    "articulationOptions": {
+      "horizontal": "FETC: Occupationally Directed Education, Training and Development Practices, NQF Level 4",
+      "vertical": "National Certificate: Occupationally Directed Education, Training and Development Practices, NQF Level 5"
+    },
+    "registrationPeriod": "July 1, 2018, to December 30, 2025",
+    "lastEnrollmentDate": "December 30, 2026",
+    "lastAchievementDate": "December 30, 2029"
+  },
+  {
+    "title": "Occupational Certificate: Adult Literacy Teacher",
+    "id": 101709,
+    "saqaId": 101709,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=101709",
+    "nqfLevel": 5,
+    "credits": 198,
+    "authority": "QCTO",
+    "category": "Education and teaching",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Adult Literacy Teacher. An Adult Literacy Teacher facilitates adult learning and literacy development, ensuring that adult learners acquire the necessary reading, writing, and numeracy skills to participate effectively in society and the workplace.",
+    "rationale": "This qualification addresses the critical need for qualified adult literacy educators in South Africa. It provides the foundation for effective adult education and literacy development, ensuring that educators have the necessary competencies to design, deliver, and assess literacy programs that meet adult learner needs.",
+    "exitLevelOutcomes": [
+      "Design and develop adult literacy programs based on learner needs and contexts",
+      "Deliver effective literacy instruction using appropriate methodologies for adult learners",
+      "Assess adult learner literacy levels and provide constructive feedback",
+      "Evaluate literacy program effectiveness and implement improvements"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Adult Learning Principles, Level 5, 30 Credits",
+        "Literacy Development Theories, Level 5, 25 Credits",
+        "Assessment and Evaluation in Adult Education, Level 5, 20 Credits",
+        "Curriculum Design for Adult Learners, Level 5, 35 Credits"
+      ],
+      "practicalSkillModules": [
+        "Design Adult Literacy Programs, Level 5, 40 Credits",
+        "Deliver Literacy Instruction, Level 5, 35 Credits",
+        "Assess Adult Learner Progress, Level 5, 30 Credits",
+        "Manage Adult Learning Environments, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Adult Literacy Teaching Practice, Level 5, 50 Credits",
+        "Literacy Program Management, Level 5, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and Mathematics"
+  },
+  {
+    "title": "Occupational Certificate: Financial Advisor",
+    "id": 105026,
+    "saqaId": 105026,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=105026",
+    "nqfLevel": 6,
+    "credits": 515,
+    "authority": "INSETA",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Financial Advisor. A Financial Advisor analyses the financial needs of clients and facilitates processes to implement solutions that will contribute towards the protection and growth of wealth for clients.",
+    "rationale": "The qualification caters for building competence at Levels 5 and 6. There are three-part qualifications enabling the development of new entrants into the occupation and then catering for the further development as the employees specialise and eventually grow to become fully fledged Financial Advisors. The effective use of wealth creation tools to grow wealth is essential for the protection and wellbeing of citizens. This industry provides an essential service in support of the development of the country and the achievement of the National Development Plan's objectives.",
+    "exitLevelOutcomes": [
+      "Provide advice to clients regarding the use of Long Term Insurance to manage risks and protect wealth",
+      "Provide advice to clients regarding the implementation of Employee benefits and Retirement Funds",
+      "Provide advice regarding the use of Health Care benefit programmes",
+      "Provide advice to clients to grow and protect wealth through appropriate Investments and related methods"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "241301-001-00-00-KM-01, Overview of the Investment Advisory Industry, Level 5, 13 Credits",
+        "241301-001-00-00-KM-02, Regulatory requirements for advising clients regarding insurance and investments, Level 5, 17 Credits",
+        "241301-001-00-00-KM-03, Health Care benefits advisory services, Level 5, 15 Credits",
+        "241301-001-00-00-KM-04, Principles of Providing advice to clients regarding the use of Employee and Pension Fund Benefits, Level 5, 20 Credits",
+        "241301-001-00-00-KM-05, Fundamentals of Investments, Level 5, 30 Credits",
+        "241301-001-00-00-KM-06, Principles of Providing advice to clients regarding Insurance, Savings and Retirement Planning, Level 5, 16 Credits",
+        "241301-001-00-00-KM-07, Principles of Providing Advice to clients regarding Investments, Level 6, 29 Credits"
+      ],
+      "practicalSkillModules": [
+        "241301-001-00-00-PM-01, Analyse clients long term wealth creation/protection needs, Level 5, 31 Credits",
+        "241301-001-00-00-PM-02, Evaluate available long-term wealth creation/protection options, Level 5, 27 Credits",
+        "241301-001-00-00-PM-03, Recommend and implement the most appropriate wealth creation/protection options, Level 5, 26 Credits",
+        "241301-001-00-00-PM-04, Analyse the client organisations needs relating to retirement funds and employee benefits, Level 5, 11 Credits",
+        "241301-001-00-00-PM-05, Evaluate the availability of various employee benefit and retirement fund options and structures, Level 5, 8 Credits",
+        "241301-001-00-00-PM-06, Advise client on the most appropriate structuring of retirement funds and employee benefits, Level 6, 18 Credits",
+        "241301-001-00-00-PM-07, Analyse Client needs regarding Health Care Benefits, Level 6, 17 Credits",
+        "241301-001-00-00-PM-08, Provide advice on the introduction of Health Care Benefit Programmes, Level 6, 26 Credits",
+        "241301-001-00-00-PM-09, Research, analyse and conduct due-diligence of investment opportunities, Level 6, 42 Credits",
+        "241301-001-00-00-PM-10, Advise clients regarding potential investment opportunities, Level 6, 41 Credits",
+        "241301-001-00-00-PM-11, Facilitate the implementation of agreed investment decisions, Level 6, 9 Credits"
+      ],
+      "workExperienceModules": [
+        "241301-001-00-00-WM-01, Participate in the processes of wealth creation, Level 5, 50 Credits",
+        "241301-001-00-00-WM-02, Support the provisioning of advice to clients on employee benefits and retirement structures for a period of three to six months, Level 5, 23 Credits",
+        "241301-001-00-00-WM-03, Participate in the processes of providing advice regarding the implementation of Health Care Benefit Programmes, Level 5, 14 Credits",
+        "241301-001-00-00-WM-04, Participate in the processes of advising on investment decisions over a period of six months, Level 5, 32 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication",
+    "rplInfo": "RPL for Access to the External Integrated Summative Assessment: Accredited providers and approved workplaces must apply the internal assessment criteria specified in the related curriculum document to establish and confirm prior learning. RPL for Access to the Qualification: Accredited providers and approved workplaces may recognise prior learning against the relevant access requirements."
+  },
+  {
+    "title": "Occupational Certificate: Software Tester ",
+    "id": 119438,
+    "saqaId": 119438,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=119438",
+    "nqfLevel": 5,
+    "credits": 70,
+    "authority": "QCTO",
+    "category": "IT and Related",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Software Tester. A Software Tester is responsible for testing software applications to ensure they meet quality standards and function correctly.",
+    "rationale": "This qualification provides the foundation for effective software testing practices. It ensures that testers have the necessary competencies to design, execute, and manage testing processes that meet industry standards and quality requirements.",
+    "exitLevelOutcomes": [
+      "Design and develop comprehensive test plans and test cases",
+      "Execute various types of software testing including functional, integration, and system testing",
+      "Identify, document, and track software defects and issues",
+      "Evaluate software quality and provide recommendations for improvement"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Software Testing Fundamentals, Level 5, 15 Credits",
+        "Test Planning and Design, Level 5, 12 Credits",
+        "Test Execution and Management, Level 5, 10 Credits",
+        "Quality Assurance Principles, Level 5, 8 Credits",
+        "Testing Tools and Technologies, Level 5, 15 Credits",
+        "Defect Management and Reporting, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Create Test Plans and Test Cases, Level 5, 20 Credits",
+        "Execute Manual Testing Procedures, Level 5, 15 Credits",
+        "Use Automated Testing Tools, Level 5, 12 Credits",
+        "Report and Track Defects, Level 5, 8 Credits",
+        "Perform Regression Testing, Level 5, 10 Credits",
+        "Document Test Results, Level 5, 5 Credits"
+      ],
+      "workExperienceModules": [
+        "Software Testing Practice, Level 5, 25 Credits",
+        "Quality Assurance Project Management, Level 5, 15 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Computer Literacy"
+  },
+  {
+    "title": "National certificate: Construction health and safety ",
+    "id": 77063,
+    "saqaId": 77063,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=77063",
+    "nqfLevel": 3,
+    "credits": 133,
+    "authority": "CETA",
+    "category": "Health and Safety and Construction",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Construction Health and Safety Officer. A Construction Health and Safety Officer ensures compliance with health and safety regulations on construction sites and implements safety protocols to protect workers and the public.",
+    "rationale": "This qualification addresses the critical need for qualified health and safety professionals in the construction industry. It provides the foundation for effective safety management and ensures compliance with national health and safety legislation.",
+    "exitLevelOutcomes": [
+      "Implement and maintain health and safety policies and procedures on construction sites",
+      "Conduct risk assessments and identify potential hazards in construction environments",
+      "Ensure compliance with the Occupational Health and Safety Act and related regulations",
+      "Investigate incidents and accidents and implement corrective measures"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Construction Health and Safety Legislation, Level 3, 20 Credits",
+        "Risk Assessment and Hazard Identification, Level 3, 18 Credits",
+        "Personal Protective Equipment (PPE), Level 3, 15 Credits",
+        "Construction Site Safety Management, Level 3, 25 Credits",
+        "Incident Investigation and Reporting, Level 3, 12 Credits",
+        "Emergency Procedures and First Aid, Level 3, 10 Credits",
+        "Environmental Health and Safety, Level 3, 8 Credits",
+        "Safety Training and Communication, Level 3, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Site Safety Inspections, Level 3, 25 Credits",
+        "Implement Safety Procedures, Level 3, 20 Credits",
+        "Use Safety Equipment and PPE, Level 3, 15 Credits",
+        "Investigate Incidents and Accidents, Level 3, 18 Credits",
+        "Deliver Safety Training, Level 3, 12 Credits",
+        "Maintain Safety Records, Level 3, 8 Credits"
+      ],
+      "workExperienceModules": [
+        "Construction Site Safety Practice, Level 3, 30 Credits",
+        "Safety Management Project, Level 3, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 2 qualification with Communication and Mathematics"
+  },
+  {
+    "title": "Occupational Skills Programme: Basic Emergency First Aid \r\nResponder ",
+    "id": "SP-230801",
+    "saqaId": "SP-230801",
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=SP-230801",
+    "nqfLevel": 2,
+    "credits": 2,
+    "authority": "QCTO",
+    "category": "Health and Safety and Construction",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Basic Emergency First Aid Responder. A Basic Emergency First Aid Responder provides immediate first aid assistance in emergency situations until professional medical help arrives.",
+    "rationale": "This qualification addresses the critical need for trained first aid responders in workplaces and communities. It provides essential life-saving skills and knowledge required to respond effectively to medical emergencies.",
+    "exitLevelOutcomes": [
+      "Assess emergency situations and determine appropriate first aid response",
+      "Provide basic life support including CPR and rescue breathing",
+      "Control bleeding and manage shock in emergency situations",
+      "Immobilize injuries and provide comfort care until medical help arrives"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Emergency First Aid Principles, Level 2, 1 Credit",
+        "Basic Life Support Techniques, Level 2, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Perform CPR and Rescue Breathing, Level 2, 1 Credit",
+        "Control Bleeding and Manage Shock, Level 2, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Emergency Response Practice, Level 2, 1 Credit"
+      ]
+    },
+    "entryRequirements": "Basic literacy and numeracy skills"
+  },
+  {
+    "title": "Occupational Skills Programme: Intermediate Emergency First Aid \r\nResponder",
+    "id": "SP-230802",
+    "saqaId": "SP-230802",
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=SP-230802",
+    "nqfLevel": 3,
+    "credits": 5,
+    "authority": "QCTO",
+    "category": "Health and Safety and Construction",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Intermediate Emergency First Aid Responder. An Intermediate Emergency First Aid Responder provides advanced first aid assistance and can manage more complex medical emergencies.",
+    "rationale": "This qualification builds upon basic first aid skills and provides advanced emergency response capabilities. It ensures responders can handle complex medical situations and provide comprehensive care until professional medical help arrives.",
+    "exitLevelOutcomes": [
+      "Assess and manage complex medical emergencies and trauma situations",
+      "Provide advanced life support including advanced CPR and airway management",
+      "Administer appropriate first aid medications and treatments",
+      "Coordinate emergency response and communicate with medical professionals"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Advanced Emergency First Aid Principles, Level 3, 2 Credits",
+        "Trauma Management and Advanced Life Support, Level 3, 2 Credits",
+        "Medical Emergency Assessment, Level 3, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Perform Advanced CPR and Airway Management, Level 3, 2 Credits",
+        "Manage Trauma and Medical Emergencies, Level 3, 2 Credits",
+        "Administer Emergency Medications, Level 3, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Advanced Emergency Response Practice, Level 3, 2 Credits"
+      ]
+    },
+    "entryRequirements": "Basic Emergency First Aid Responder qualification or equivalent"
+  },
+  {
+    "title": "National Certificate: Construction Contracting",
+    "id": 20813,
+    "saqaId": 20813,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=20813",
+    "nqfLevel": 2,
+    "credits": 190,
+    "authority": "QCTO",
+    "category": "Health and Safety and Construction",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Construction Contractor. A Construction Contractor manages construction projects, coordinates resources, and ensures projects are completed on time, within budget, and to quality standards.",
+    "rationale": "This qualification addresses the need for skilled construction contractors who can effectively manage construction projects. It provides comprehensive knowledge and skills required for successful project delivery in the construction industry.",
+    "exitLevelOutcomes": [
+      "Plan and manage construction projects from inception to completion",
+      "Coordinate construction teams and manage resources effectively",
+      "Ensure compliance with construction regulations and quality standards",
+      "Manage project budgets, timelines, and client relationships"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Construction Project Management, Level 2, 30 Credits",
+        "Construction Planning and Scheduling, Level 2, 25 Credits",
+        "Construction Cost Management, Level 2, 20 Credits",
+        "Construction Quality Control, Level 2, 15 Credits",
+        "Construction Safety Management, Level 2, 20 Credits",
+        "Construction Contracts and Legal Requirements, Level 2, 15 Credits",
+        "Construction Materials and Methods, Level 2, 25 Credits",
+        "Construction Communication and Leadership, Level 2, 20 Credits"
+      ],
+      "practicalSkillModules": [
+        "Develop Construction Project Plans, Level 2, 40 Credits",
+        "Manage Construction Teams, Level 2, 35 Credits",
+        "Monitor Construction Progress, Level 2, 30 Credits",
+        "Ensure Quality Control, Level 2, 25 Credits",
+        "Manage Construction Budgets, Level 2, 20 Credits",
+        "Coordinate Construction Activities, Level 2, 20 Credits"
+      ],
+      "workExperienceModules": [
+        "Construction Project Management Practice, Level 2, 50 Credits",
+        "Construction Contracting Project, Level 2, 30 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 1 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Trustee ",
+    "id": 118694,
+    "saqaId": 118694,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118694",
+    "nqfLevel": 4,
+    "credits": 31,
+    "authority": "QCTO",
+    "category": "Insurance and Finance courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Trustee. A Trustee is responsible for managing trust funds, ensuring compliance with trust laws, and protecting the interests of beneficiaries.",
+    "rationale": "This qualification addresses the need for qualified trustees who can effectively manage trust funds and ensure compliance with legal requirements. It provides essential knowledge and skills for responsible trust management.",
+    "exitLevelOutcomes": [
+      "Manage trust funds in accordance with legal requirements and best practices",
+      "Ensure compliance with trust laws and regulatory requirements",
+      "Protect the interests of beneficiaries and maintain trust records",
+      "Make informed decisions regarding trust investments and distributions"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Trust Law and Legal Framework, Level 4, 8 Credits",
+        "Trust Fund Management Principles, Level 4, 6 Credits",
+        "Fiduciary Responsibilities, Level 4, 5 Credits",
+        "Trust Investment Management, Level 4, 4 Credits",
+        "Trust Accounting and Reporting, Level 4, 4 Credits",
+        "Beneficiary Rights and Protection, Level 4, 4 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage Trust Fund Operations, Level 4, 10 Credits",
+        "Ensure Legal Compliance, Level 4, 8 Credits",
+        "Maintain Trust Records, Level 4, 6 Credits",
+        "Make Investment Decisions, Level 4, 5 Credits"
+      ],
+      "workExperienceModules": [
+        "Trust Management Practice, Level 4, 15 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 3 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Financial Advisor ",
+    "id": 105026,
+    "saqaId": 105026,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=105026",
+    "nqfLevel": 6,
+    "credits": 515,
+    "authority": "QCTO",
+    "category": "Insurance and Finance courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Financial Advisor. A Financial Advisor analyses the financial needs of clients and facilitates processes to implement solutions that will contribute towards the protection and growth of wealth for clients.",
+    "rationale": "This qualification addresses the need for qualified financial advisors who can provide comprehensive financial planning and investment advice. It provides comprehensive knowledge and skills required for effective financial advisory practice.",
+    "exitLevelOutcomes": [
+      "Analyze client financial needs and develop comprehensive financial plans",
+      "Provide investment advice and portfolio management services",
+      "Ensure compliance with financial services regulations",
+      "Build and maintain client relationships and trust"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Financial Planning Theory and Principles, Level 6, 80 Credits",
+        "Investment Analysis and Portfolio Management, Level 6, 70 Credits",
+        "Financial Services Regulations and Compliance, Level 6, 60 Credits",
+        "Risk Management and Insurance, Level 6, 50 Credits",
+        "Tax Planning and Estate Planning, Level 6, 40 Credits",
+        "Client Relationship Management, Level 6, 30 Credits"
+      ],
+      "practicalSkillModules": [
+        "Develop Financial Plans, Level 6, 90 Credits",
+        "Provide Investment Advice, Level 6, 80 Credits",
+        "Ensure Regulatory Compliance, Level 6, 70 Credits",
+        "Manage Client Relationships, Level 6, 60 Credits"
+      ],
+      "workExperienceModules": [
+        "Financial Advisory Practice, Level 6, 100 Credits",
+        "Financial Planning Project, Level 6, 80 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Internal Audit Manager (Internal Audit Quality Assurer)",
+    "id": 101370,
+    "saqaId": 101370,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=101370",
+    "nqfLevel": 8,
+    "credits": 116,
+    "authority": "QCTO",
+    "category": "Insurance and Finance courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Internal Audit Manager (Internal Audit Quality Assurer). An Internal Audit Manager oversees internal audit functions, ensures audit quality and compliance, and provides assurance on organizational risk management and control systems.",
+    "rationale": "This qualification addresses the critical need for qualified internal audit professionals who can ensure effective risk management and internal controls. It provides comprehensive knowledge and skills required for advanced internal audit practice.",
+    "exitLevelOutcomes": [
+      "Manage comprehensive internal audit functions and operations",
+      "Ensure audit quality and compliance with professional standards",
+      "Provide assurance on risk management and control systems",
+      "Lead audit teams and develop audit strategies"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Internal Audit Theory and Practice, Level 8, 25 Credits",
+        "Risk Management and Control Systems, Level 8, 20 Credits",
+        "Audit Quality Assurance and Standards, Level 8, 18 Credits",
+        "Corporate Governance and Compliance, Level 8, 15 Credits",
+        "Audit Leadership and Management, Level 8, 12 Credits",
+        "Professional Ethics and Communication, Level 8, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage Internal Audit Functions, Level 8, 30 Credits",
+        "Ensure Audit Quality, Level 8, 25 Credits",
+        "Provide Risk Assurance, Level 8, 22 Credits",
+        "Lead Audit Teams, Level 8, 20 Credits"
+      ],
+      "workExperienceModules": [
+        "Internal Audit Management Practice, Level 8, 35 Credits",
+        "Audit Management Project, Level 8, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 7 qualification with Mathematics and Communication, plus relevant experience in auditing or finance"
+  },
+  {
+    "title": "Occupational Certificate: Insurance Claims Administrator (Insurance Claims Assessor)",
+    "id": 99668,
+    "saqaId": 99668,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=99668",
+    "nqfLevel": 4,
+    "credits": 131,
+    "authority": "QCTO",
+    "category": "Insurance and Finance courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Insurance Claims Administrator (Insurance Claims Assessor). An Insurance Claims Administrator processes insurance claims, assesses damages, and ensures fair settlement of claims in accordance with policy terms and conditions.",
+    "rationale": "This qualification addresses the need for qualified insurance claims professionals who can effectively process and assess insurance claims. It provides comprehensive knowledge and skills required for accurate claims assessment and fair settlement processes.",
+    "exitLevelOutcomes": [
+      "Process insurance claims efficiently and accurately according to policy terms",
+      "Assess damages and determine appropriate claim settlements",
+      "Ensure compliance with insurance regulations and company policies",
+      "Communicate effectively with policyholders and stakeholders throughout the claims process"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Insurance Claims Processing Principles, Level 4, 20 Credits",
+        "Claims Assessment and Evaluation, Level 4, 18 Credits",
+        "Insurance Law and Regulations, Level 4, 15 Credits",
+        "Policy Interpretation and Application, Level 4, 12 Credits",
+        "Claims Investigation Techniques, Level 4, 10 Credits",
+        "Fraud Detection and Prevention, Level 4, 8 Credits",
+        "Customer Service and Communication, Level 4, 10 Credits",
+        "Claims Documentation and Reporting, Level 4, 8 Credits"
+      ],
+      "practicalSkillModules": [
+        "Process Insurance Claims, Level 4, 25 Credits",
+        "Assess and Evaluate Damages, Level 4, 20 Credits",
+        "Investigate Claims and Gather Evidence, Level 4, 15 Credits",
+        "Calculate Claim Settlements, Level 4, 12 Credits",
+        "Communicate with Policyholders, Level 4, 10 Credits",
+        "Maintain Claims Records, Level 4, 8 Credits"
+      ],
+      "workExperienceModules": [
+        "Insurance Claims Administration Practice, Level 4, 30 Credits",
+        "Claims Assessment Project, Level 4, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 3 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Employee and Pension Fund Benefit Adviser",
+    "id": 105025,
+    "saqaId": 105025,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=105025",
+    "nqfLevel": 5,
+    "credits": 110,
+    "authority": "QCTO",
+    "category": "Insurance and Finance courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Employee and Pension Fund Benefit Adviser. An Employee and Pension Fund Benefit Adviser provides advice on employee benefits and pension fund structures to help organizations design and implement comprehensive benefit programs.",
+    "rationale": "This qualification addresses the need for qualified benefit advisers who can help organizations design and manage employee benefit programs. It provides essential knowledge and skills for effective benefit planning and administration.",
+    "exitLevelOutcomes": [
+      "Design and implement comprehensive employee benefit programs",
+      "Advise on pension fund structures and retirement planning",
+      "Ensure compliance with benefit regulations and legal requirements",
+      "Communicate effectively with employers and employees about benefit options"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Employee Benefits Fundamentals, Level 5, 15 Credits",
+        "Pension Fund Structures and Regulations, Level 5, 12 Credits",
+        "Retirement Planning Principles, Level 5, 10 Credits",
+        "Benefit Administration Systems, Level 5, 8 Credits",
+        "Legal and Regulatory Framework, Level 5, 10 Credits",
+        "Communication and Advisory Skills, Level 5, 8 Credits"
+      ],
+      "practicalSkillModules": [
+        "Design Employee Benefit Programs, Level 5, 20 Credits",
+        "Advise on Pension Fund Options, Level 5, 15 Credits",
+        "Implement Benefit Administration, Level 5, 12 Credits",
+        "Provide Benefit Consultations, Level 5, 10 Credits",
+        "Manage Benefit Communications, Level 5, 8 Credits"
+      ],
+      "workExperienceModules": [
+        "Employee Benefits Advisory Practice, Level 5, 25 Credits",
+        "Pension Fund Advisory Project, Level 5, 15 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Insurance Underwriter",
+    "id": 117329,
+    "saqaId": 117329,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=117329",
+    "nqfLevel": 5,
+    "credits": 163,
+    "authority": "QCTO",
+    "category": "Insurance and Finance courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Insurance Underwriter. An Insurance Underwriter evaluates insurance applications, assesses risks, and determines appropriate coverage terms and premium rates for insurance policies.",
+    "rationale": "This qualification addresses the need for qualified insurance underwriters who can effectively assess risks and make informed underwriting decisions. It provides comprehensive knowledge and skills required for sound underwriting practices.",
+    "exitLevelOutcomes": [
+      "Evaluate insurance applications and assess risk factors",
+      "Determine appropriate coverage terms and premium rates",
+      "Ensure compliance with underwriting guidelines and regulations",
+      "Make informed underwriting decisions based on risk assessment"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Insurance Underwriting Principles, Level 5, 20 Credits",
+        "Risk Assessment and Evaluation, Level 5, 18 Credits",
+        "Insurance Products and Coverage, Level 5, 15 Credits",
+        "Underwriting Guidelines and Procedures, Level 5, 12 Credits",
+        "Legal and Regulatory Framework, Level 5, 10 Credits",
+        "Premium Calculation and Rating, Level 5, 8 Credits",
+        "Claims and Loss Experience Analysis, Level 5, 10 Credits",
+        "Communication and Documentation, Level 5, 8 Credits"
+      ],
+      "practicalSkillModules": [
+        "Assess Insurance Applications, Level 5, 25 Credits",
+        "Evaluate Risk Factors, Level 5, 20 Credits",
+        "Calculate Premiums and Rates, Level 5, 15 Credits",
+        "Make Underwriting Decisions, Level 5, 18 Credits",
+        "Document Underwriting Processes, Level 5, 10 Credits",
+        "Communicate with Stakeholders, Level 5, 8 Credits"
+      ],
+      "workExperienceModules": [
+        "Insurance Underwriting Practice, Level 5, 30 Credits",
+        "Underwriting Decision Making Project, Level 5, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Investment Adviser",
+    "id": 105021,
+    "saqaId": 105021,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=105021",
+    "nqfLevel": 6,
+    "credits": 213,
+    "authority": "QCTO",
+    "category": "Insurance and Finance courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Investment Adviser. An Investment Adviser provides professional investment advice, manages investment portfolios, and helps clients achieve their financial goals through strategic investment planning.",
+    "rationale": "This qualification addresses the need for qualified investment advisers who can provide professional investment guidance and portfolio management services. It provides comprehensive knowledge and skills required for effective investment advisory practice.",
+    "exitLevelOutcomes": [
+      "Provide comprehensive investment advice and portfolio management services",
+      "Analyze market trends and investment opportunities",
+      "Develop and implement investment strategies for clients",
+      "Ensure compliance with investment regulations and ethical standards"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Investment Theory and Portfolio Management, Level 6, 40 Credits",
+        "Financial Markets and Instruments, Level 6, 35 Credits",
+        "Risk Analysis and Management, Level 6, 30 Credits",
+        "Investment Regulations and Compliance, Level 6, 25 Credits",
+        "Client Relationship Management, Level 6, 20 Credits",
+        "Ethics and Professional Standards, Level 6, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Investment Advice, Level 6, 45 Credits",
+        "Manage Investment Portfolios, Level 6, 40 Credits",
+        "Analyze Market Opportunities, Level 6, 35 Credits",
+        "Ensure Regulatory Compliance, Level 6, 30 Credits"
+      ],
+      "workExperienceModules": [
+        "Investment Advisory Practice, Level 6, 50 Credits",
+        "Investment Management Project, Level 6, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Advanced Occupational Diploma: Financial Administration \r\nManager ",
+    "id": 121568,
+    "saqaId": 121568,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121568",
+    "nqfLevel": 7,
+    "credits": 232,
+    "authority": "QCTO",
+    "category": "Insurance and Finance courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Advanced Financial Administration Manager. A Financial Administration Manager oversees financial operations, manages financial systems, and ensures compliance with financial regulations and standards.",
+    "rationale": "This qualification addresses the need for highly skilled financial administration professionals who can manage complex financial operations and lead financial teams. It provides comprehensive knowledge and skills required for senior-level financial administration management.",
+    "exitLevelOutcomes": [
+      "Manage complex financial administration operations and systems",
+      "Oversee financial compliance and regulatory requirements",
+      "Lead financial administration teams and strategic planning",
+      "Implement and maintain financial control systems"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Advanced Financial Administration Theory, Level 7, 40 Credits",
+        "Financial Systems Management, Level 7, 35 Credits",
+        "Regulatory Compliance and Standards, Level 7, 30 Credits",
+        "Strategic Financial Planning, Level 7, 25 Credits",
+        "Leadership and Team Management, Level 7, 20 Credits",
+        "Risk Management and Control, Level 7, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage Financial Administration Operations, Level 7, 45 Credits",
+        "Implement Financial Control Systems, Level 7, 40 Credits",
+        "Ensure Regulatory Compliance, Level 7, 30 Credits",
+        "Lead Financial Administration Teams, Level 7, 25 Credits",
+        "Develop Strategic Financial Plans, Level 7, 20 Credits"
+      ],
+      "workExperienceModules": [
+        "Financial Administration Management Practice, Level 7, 50 Credits",
+        "Financial Administration Leadership Project, Level 7, 35 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 6 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Compliance Officer",
+    "id": 91671,
+    "saqaId": 91671,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=91671",
+    "nqfLevel": 6,
+    "credits": 240,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Compliance Officer. A Compliance Officer ensures organizational adherence to laws, regulations, and internal policies, monitors compliance activities, and implements corrective measures when necessary.",
+    "rationale": "This qualification addresses the critical need for qualified compliance professionals who can ensure organizational adherence to regulatory requirements. It provides comprehensive knowledge and skills required for effective compliance management and risk mitigation.",
+    "exitLevelOutcomes": [
+      "Monitor and assess organizational compliance with laws and regulations",
+      "Develop and implement compliance policies and procedures",
+      "Conduct compliance audits and risk assessments",
+      "Provide compliance training and guidance to staff"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Compliance Law and Regulations, Level 6, 40 Credits",
+        "Risk Assessment and Management, Level 6, 35 Credits",
+        "Audit and Investigation Techniques, Level 6, 30 Credits",
+        "Policy Development and Implementation, Level 6, 25 Credits",
+        "Communication and Training, Level 6, 20 Credits",
+        "Ethics and Professional Conduct, Level 6, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Compliance Audits, Level 6, 45 Credits",
+        "Develop Compliance Policies, Level 6, 40 Credits",
+        "Perform Risk Assessments, Level 6, 35 Credits",
+        "Implement Corrective Actions, Level 6, 30 Credits",
+        "Deliver Compliance Training, Level 6, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Compliance Management Practice, Level 6, 50 Credits",
+        "Compliance Audit Project, Level 6, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and Mathematics"
+  },
+  {
+    "title": "Occupational Certificate: Organisational Risk Practitioner",
+    "id": 94222,
+    "saqaId": 94222,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=94222",
+    "nqfLevel": 6,
+    "credits": 125,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Organisational Risk Practitioner. A Risk Practitioner identifies, assesses, and manages organizational risks, develops risk management strategies, and ensures compliance with risk management frameworks.",
+    "rationale": "This qualification addresses the growing need for qualified risk management professionals who can effectively identify and mitigate organizational risks. It provides comprehensive knowledge and skills required for effective risk management practice.",
+    "exitLevelOutcomes": [
+      "Identify and assess organizational risks across all business areas",
+      "Develop and implement risk management strategies and frameworks",
+      "Monitor and report on risk management activities",
+      "Provide risk management training and guidance to staff"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Risk Management Theory and Principles, Level 6, 25 Credits",
+        "Risk Assessment Methodologies, Level 6, 20 Credits",
+        "Risk Mitigation Strategies, Level 6, 15 Credits",
+        "Regulatory Compliance and Standards, Level 6, 15 Credits",
+        "Communication and Reporting, Level 6, 10 Credits",
+        "Business Continuity Planning, Level 6, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Risk Assessments, Level 6, 30 Credits",
+        "Develop Risk Management Plans, Level 6, 25 Credits",
+        "Implement Risk Controls, Level 6, 20 Credits",
+        "Monitor Risk Management Activities, Level 6, 15 Credits",
+        "Report on Risk Status, Level 6, 10 Credits"
+      ],
+      "workExperienceModules": [
+        "Risk Management Practice, Level 6, 30 Credits",
+        "Risk Assessment Project, Level 6, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and Mathematics"
+  },
+  {
+    "title": "Advanced Occupational Certificate: Human Resource \r\nManagement Officer ",
+    "id": 121151,
+    "saqaId": 121151,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121151",
+    "nqfLevel": 6,
+    "credits": 134,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Advanced Human Resource Management Officer. An HR Management Officer oversees human resource functions, manages employee relations, and implements HR policies and procedures to support organizational objectives.",
+    "rationale": "This qualification addresses the need for qualified HR professionals who can effectively manage human resources and support organizational development. It provides comprehensive knowledge and skills required for advanced HR management practice.",
+    "exitLevelOutcomes": [
+      "Manage comprehensive human resource functions and operations",
+      "Develop and implement HR policies and procedures",
+      "Oversee employee relations and performance management",
+      "Lead HR strategic planning and organizational development"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Advanced Human Resource Management Theory, Level 6, 30 Credits",
+        "Employee Relations and Labor Law, Level 6, 25 Credits",
+        "Performance Management Systems, Level 6, 20 Credits",
+        "Strategic HR Planning, Level 6, 15 Credits",
+        "Organizational Development, Level 6, 12 Credits",
+        "HR Information Systems, Level 6, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage HR Operations, Level 6, 35 Credits",
+        "Develop HR Policies and Procedures, Level 6, 30 Credits",
+        "Oversee Employee Relations, Level 6, 25 Credits",
+        "Implement Performance Management, Level 6, 20 Credits",
+        "Lead HR Strategic Planning, Level 6, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "HR Management Practice, Level 6, 40 Credits",
+        "HR Strategic Planning Project, Level 6, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and Mathematics"
+  },
+  {
+    "title": "Occupational Certificate: Supply Chain Manager",
+    "id": 111357,
+    "saqaId": 111357,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=111357",
+    "nqfLevel": 6,
+    "credits": 180,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Supply Chain Manager. A Supply Chain Manager oversees the entire supply chain process, from procurement to delivery, ensuring efficient operations and cost optimization.",
+    "rationale": "This qualification addresses the critical need for qualified supply chain professionals who can manage complex supply chain operations and optimize business processes. It provides comprehensive knowledge and skills required for effective supply chain management.",
+    "exitLevelOutcomes": [
+      "Manage end-to-end supply chain operations and processes",
+      "Optimize supply chain performance and cost efficiency",
+      "Develop and implement supply chain strategies",
+      "Lead supply chain teams and vendor relationships"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Supply Chain Management Theory, Level 6, 35 Credits",
+        "Procurement and Sourcing Strategies, Level 6, 30 Credits",
+        "Logistics and Distribution Management, Level 6, 25 Credits",
+        "Inventory Management and Control, Level 6, 20 Credits",
+        "Supplier Relationship Management, Level 6, 15 Credits",
+        "Supply Chain Technology and Systems, Level 6, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage Supply Chain Operations, Level 6, 40 Credits",
+        "Optimize Supply Chain Performance, Level 6, 35 Credits",
+        "Develop Supply Chain Strategies, Level 6, 30 Credits",
+        "Lead Supply Chain Teams, Level 6, 25 Credits",
+        "Manage Vendor Relationships, Level 6, 20 Credits"
+      ],
+      "workExperienceModules": [
+        "Supply Chain Management Practice, Level 6, 45 Credits",
+        "Supply Chain Optimization Project, Level 6, 35 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Skills Programme: Auxilary Community Development Facilitator",
+    "id": "SP-210601",
+    "saqaId": "SP-210601",
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=SP-210601",
+    "nqfLevel": 5,
+    "credits": 70,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Auxiliary Community Development Facilitator. An Auxiliary Community Development Facilitator provides support in community development initiatives, assists community facilitators, and helps coordinate community programs and activities.",
+    "rationale": "This qualification addresses the need for qualified auxiliary community development facilitators who can provide essential support in community development work. It provides comprehensive knowledge and skills required for effective auxiliary community facilitation.",
+    "exitLevelOutcomes": [
+      "Support community development initiatives and programs",
+      "Assist community facilitators in coordinating activities",
+      "Facilitate community engagement and participation",
+      "Support community needs assessment and planning"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Community Development Principles, Level 5, 15 Credits",
+        "Community Facilitation Basics, Level 5, 12 Credits",
+        "Community Engagement Techniques, Level 5, 10 Credits",
+        "Communication and Coordination, Level 5, 8 Credits"
+      ],
+      "practicalSkillModules": [
+        "Support Community Development Programs, Level 5, 20 Credits",
+        "Assist with Community Facilitation, Level 5, 18 Credits",
+        "Facilitate Community Engagement, Level 5, 15 Credits",
+        "Support Needs Assessment, Level 5, 12 Credits"
+      ],
+      "workExperienceModules": [
+        "Auxiliary Community Development Practice, Level 5, 25 Credits",
+        "Community Support Project, Level 5, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in community work"
+  },
+  {
+    "title": "Occupational Certificate: General Manager Public Service",
+    "id": 118791,
+    "saqaId": 118791,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118791",
+    "nqfLevel": 6,
+    "credits": 150,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a General Manager in the Public Service. A General Manager in Public Service oversees public sector operations, manages government programs, and ensures effective service delivery to citizens.",
+    "rationale": "This qualification addresses the need for qualified public service managers who can effectively lead government operations and ensure quality public service delivery. It provides comprehensive knowledge and skills required for effective public service management.",
+    "exitLevelOutcomes": [
+      "Lead and manage public service operations and programs",
+      "Ensure effective service delivery to citizens",
+      "Oversee government policy implementation",
+      "Manage public sector resources and budgets"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Public Service Management Theory, Level 6, 30 Credits",
+        "Government Policy and Legislation, Level 6, 25 Credits",
+        "Public Sector Finance and Budgeting, Level 6, 22 Credits",
+        "Service Delivery Excellence, Level 6, 20 Credits",
+        "Leadership and Strategic Planning, Level 6, 18 Credits",
+        "Public Administration, Level 6, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Lead Public Service Operations, Level 6, 35 Credits",
+        "Manage Government Programs, Level 6, 30 Credits",
+        "Ensure Service Delivery, Level 6, 28 Credits",
+        "Oversee Policy Implementation, Level 6, 25 Credits",
+        "Manage Public Resources, Level 6, 22 Credits"
+      ],
+      "workExperienceModules": [
+        "Public Service Management Practice, Level 6, 40 Credits",
+        "Government Program Management Project, Level 6, 30 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and relevant experience in public service"
+  },
+  {
+    "title": "Occupational Certificate: Quality Manager ",
+    "id": 118768,
+    "saqaId": 118768,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118768",
+    "nqfLevel": 6,
+    "credits": 270,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Quality Manager. A Quality Manager oversees quality management systems, ensures compliance with quality standards, and implements continuous improvement processes to enhance organizational performance.",
+    "rationale": "This qualification addresses the critical need for qualified quality management professionals who can ensure organizational excellence and compliance with quality standards. It provides comprehensive knowledge and skills required for effective quality management.",
+    "exitLevelOutcomes": [
+      "Develop and implement comprehensive quality management systems",
+      "Ensure compliance with quality standards and regulations",
+      "Lead continuous improvement initiatives and processes",
+      "Manage quality audits and corrective actions"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Quality Management Theory and Principles, Level 6, 45 Credits",
+        "Quality Standards and Compliance, Level 6, 40 Credits",
+        "Continuous Improvement Methodologies, Level 6, 35 Credits",
+        "Quality Auditing and Assessment, Level 6, 30 Credits",
+        "Statistical Process Control, Level 6, 25 Credits",
+        "Leadership and Change Management, Level 6, 20 Credits"
+      ],
+      "practicalSkillModules": [
+        "Implement Quality Management Systems, Level 6, 50 Credits",
+        "Ensure Quality Compliance, Level 6, 45 Credits",
+        "Lead Continuous Improvement, Level 6, 40 Credits",
+        "Conduct Quality Audits, Level 6, 35 Credits",
+        "Manage Quality Teams, Level 6, 30 Credits"
+      ],
+      "workExperienceModules": [
+        "Quality Management Practice, Level 6, 55 Credits",
+        "Quality Improvement Project, Level 6, 45 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Project Manager",
+    "id": 101869,
+    "saqaId": 101869,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=101869",
+    "nqfLevel": 5,
+    "credits": 240,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Project Manager. A Project Manager plans, executes, and controls projects to ensure successful delivery within scope, time, and budget constraints while meeting quality standards.",
+    "rationale": "This qualification addresses the growing need for qualified project management professionals who can effectively lead and deliver projects across various industries. It provides comprehensive knowledge and skills required for effective project management practice.",
+    "exitLevelOutcomes": [
+      "Plan and initiate projects with clear scope, timeline, and budget",
+      "Execute and monitor project activities and deliverables",
+      "Manage project teams and stakeholder relationships",
+      "Control project risks and ensure successful project closure"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Project Management Theory and Methodologies, Level 5, 40 Credits",
+        "Project Planning and Scheduling, Level 5, 35 Credits",
+        "Risk Management and Quality Control, Level 5, 30 Credits",
+        "Team Leadership and Communication, Level 5, 25 Credits",
+        "Budget Management and Cost Control, Level 5, 20 Credits",
+        "Stakeholder Management, Level 5, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Plan and Initiate Projects, Level 5, 45 Credits",
+        "Execute Project Activities, Level 5, 40 Credits",
+        "Monitor and Control Projects, Level 5, 35 Credits",
+        "Manage Project Teams, Level 5, 30 Credits",
+        "Close Projects Successfully, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Project Management Practice, Level 5, 50 Credits",
+        "Project Management Capstone Project, Level 5, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Labour Inspector",
+    "id": 118748,
+    "saqaId": 118748,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118748",
+    "nqfLevel": 5,
+    "credits": 209,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Labour Inspector. A Labour Inspector ensures compliance with labour laws and regulations, conducts workplace inspections, and protects workers' rights and safety.",
+    "rationale": "This qualification addresses the critical need for qualified labour inspectors who can ensure workplace compliance and protect workers' rights. It provides comprehensive knowledge and skills required for effective labour inspection practice.",
+    "exitLevelOutcomes": [
+      "Conduct comprehensive workplace inspections and assessments",
+      "Ensure compliance with labour laws and regulations",
+      "Investigate workplace violations and complaints",
+      "Protect workers' rights and promote workplace safety"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Labour Law and Employment Regulations, Level 5, 35 Credits",
+        "Workplace Inspection Techniques, Level 5, 30 Credits",
+        "Workers' Rights and Safety Standards, Level 5, 25 Credits",
+        "Investigation and Enforcement Procedures, Level 5, 22 Credits",
+        "Communication and Report Writing, Level 5, 18 Credits",
+        "Ethics and Professional Conduct, Level 5, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Workplace Inspections, Level 5, 40 Credits",
+        "Ensure Labour Law Compliance, Level 5, 35 Credits",
+        "Investigate Violations, Level 5, 30 Credits",
+        "Protect Workers' Rights, Level 5, 28 Credits",
+        "Prepare Inspection Reports, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Labour Inspection Practice, Level 5, 45 Credits",
+        "Workplace Investigation Project, Level 5, 35 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in labour relations"
+  },
+  {
+    "title": "Occupational Certificate: Physical Asset Manager",
+    "id": 118113,
+    "saqaId": 118113,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118113",
+    "nqfLevel": 7,
+    "credits": 225,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Physical Asset Manager. A Physical Asset Manager oversees the lifecycle management of physical assets, optimizes asset performance, and ensures cost-effective asset utilization.",
+    "rationale": "This qualification addresses the need for qualified asset management professionals who can effectively manage physical assets and optimize their value. It provides comprehensive knowledge and skills required for effective asset management practice.",
+    "exitLevelOutcomes": [
+      "Develop and implement comprehensive asset management strategies",
+      "Optimize asset performance and lifecycle management",
+      "Ensure cost-effective asset utilization and maintenance",
+      "Lead asset management teams and projects"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Asset Management Theory and Principles, Level 7, 40 Credits",
+        "Asset Lifecycle Management, Level 7, 35 Credits",
+        "Asset Performance Optimization, Level 7, 30 Credits",
+        "Financial Management of Assets, Level 7, 25 Credits",
+        "Risk Management and Compliance, Level 7, 20 Credits",
+        "Leadership and Strategic Planning, Level 7, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Develop Asset Management Strategies, Level 7, 45 Credits",
+        "Optimize Asset Performance, Level 7, 40 Credits",
+        "Manage Asset Lifecycle, Level 7, 35 Credits",
+        "Lead Asset Management Teams, Level 7, 30 Credits",
+        "Implement Asset Management Systems, Level 7, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Asset Management Practice, Level 7, 50 Credits",
+        "Asset Management Strategy Project, Level 7, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 6 qualification with Mathematics and Communication, plus relevant experience in asset management"
+  },
+  {
+    "title": "Occupational Certificate: Quality Assurer",
+    "id": 118769,
+    "saqaId": 118769,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118769",
+    "nqfLevel": 5,
+    "credits": 106,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Quality Assurer. A Quality Assurer ensures quality standards are met, conducts quality assessments, and implements quality assurance processes to maintain product and service excellence.",
+    "rationale": "This qualification addresses the need for qualified quality assurance professionals who can ensure consistent quality standards and continuous improvement. It provides comprehensive knowledge and skills required for effective quality assurance practice.",
+    "exitLevelOutcomes": [
+      "Conduct quality assessments and inspections",
+      "Implement quality assurance processes and procedures",
+      "Ensure compliance with quality standards and specifications",
+      "Monitor and report on quality performance metrics"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Quality Assurance Theory and Principles, Level 5, 20 Credits",
+        "Quality Standards and Specifications, Level 5, 18 Credits",
+        "Inspection and Testing Methods, Level 5, 15 Credits",
+        "Quality Control Techniques, Level 5, 12 Credits",
+        "Documentation and Reporting, Level 5, 10 Credits",
+        "Communication and Teamwork, Level 5, 8 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Quality Assessments, Level 5, 25 Credits",
+        "Implement Quality Processes, Level 5, 22 Credits",
+        "Ensure Quality Compliance, Level 5, 20 Credits",
+        "Monitor Quality Performance, Level 5, 18 Credits",
+        "Report Quality Findings, Level 5, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "Quality Assurance Practice, Level 5, 30 Credits",
+        "Quality Assessment Project, Level 5, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Marketing Coordinator",
+    "id": 706118,
+    "saqaId": 706118,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=706118",
+    "nqfLevel": 5,
+    "credits": 175,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Marketing Coordinator. A Marketing Coordinator supports marketing campaigns, coordinates marketing activities, and assists with brand promotion and customer engagement initiatives.",
+    "rationale": "This qualification addresses the need for qualified marketing professionals who can effectively coordinate marketing activities and support brand development. It provides comprehensive knowledge and skills required for effective marketing coordination.",
+    "exitLevelOutcomes": [
+      "Coordinate marketing campaigns and promotional activities",
+      "Support brand development and customer engagement",
+      "Assist with market research and analysis",
+      "Manage marketing communications and content"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Marketing Theory and Principles, Level 5, 30 Credits",
+        "Brand Management and Promotion, Level 5, 25 Credits",
+        "Market Research and Analysis, Level 5, 22 Credits",
+        "Digital Marketing and Communications, Level 5, 20 Credits",
+        "Customer Relationship Management, Level 5, 18 Credits",
+        "Project Coordination, Level 5, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Coordinate Marketing Campaigns, Level 5, 35 Credits",
+        "Support Brand Development, Level 5, 30 Credits",
+        "Conduct Market Research, Level 5, 28 Credits",
+        "Manage Marketing Communications, Level 5, 25 Credits",
+        "Support Customer Engagement, Level 5, 22 Credits"
+      ],
+      "workExperienceModules": [
+        "Marketing Coordination Practice, Level 5, 40 Credits",
+        "Marketing Campaign Project, Level 5, 30 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in marketing"
+  },
+  {
+    "title": "Occupational Certificate: Social Auxiliary Worker",
+    "id": 98890,
+    "saqaId": 98890,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=98890",
+    "nqfLevel": 5,
+    "credits": 129,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Social Auxiliary Worker. A Social Auxiliary Worker provides support services to social workers and social service professionals, assists with client care, and supports community development initiatives.",
+    "rationale": "This qualification addresses the need for qualified social auxiliary workers who can provide essential support services in social work settings. It provides comprehensive knowledge and skills required for effective social auxiliary work practice.",
+    "exitLevelOutcomes": [
+      "Provide support services to social workers and clients",
+      "Assist with community development and outreach programs",
+      "Maintain client confidentiality and professional standards",
+      "Support vulnerable individuals and families"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Social Work Theory and Practice, Level 5, 25 Credits",
+        "Community Development Principles, Level 5, 20 Credits",
+        "Client Care and Support Services, Level 5, 18 Credits",
+        "Professional Ethics and Confidentiality, Level 5, 15 Credits",
+        "Communication and Interpersonal Skills, Level 5, 12 Credits",
+        "Documentation and Record Keeping, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Client Support Services, Level 5, 30 Credits",
+        "Assist with Community Programs, Level 5, 25 Credits",
+        "Maintain Professional Standards, Level 5, 20 Credits",
+        "Support Vulnerable Populations, Level 5, 18 Credits",
+        "Document Client Interactions, Level 5, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "Social Auxiliary Work Practice, Level 5, 35 Credits",
+        "Community Support Project, Level 5, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in social services"
+  },
+  {
+    "title": "Occupational Certificate: Safety Inspector (Forestry and Related Industries Safety Health and Environment Officer)",
+    "id": 99712,
+    "saqaId": 99712,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=99712",
+    "nqfLevel": 4,
+    "credits": 278,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Safety Inspector in Forestry and Related Industries. A Safety Inspector ensures workplace safety compliance, conducts safety inspections, and promotes health and safety practices in forestry and related industries.",
+    "rationale": "This qualification addresses the critical need for qualified safety professionals who can ensure workplace safety in high-risk industries like forestry. It provides comprehensive knowledge and skills required for effective safety inspection practice.",
+    "exitLevelOutcomes": [
+      "Conduct comprehensive safety inspections in forestry and related industries",
+      "Ensure compliance with safety, health, and environmental regulations",
+      "Identify and assess workplace hazards and risks",
+      "Promote safety culture and provide safety training"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Safety, Health and Environment Theory, Level 4, 50 Credits",
+        "Forestry Industry Safety Standards, Level 4, 45 Credits",
+        "Hazard Identification and Risk Assessment, Level 4, 40 Credits",
+        "Environmental Protection and Conservation, Level 4, 35 Credits",
+        "Safety Inspection Techniques, Level 4, 30 Credits",
+        "Communication and Training Skills, Level 4, 25 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Safety Inspections, Level 4, 60 Credits",
+        "Ensure Safety Compliance, Level 4, 55 Credits",
+        "Assess Workplace Hazards, Level 4, 50 Credits",
+        "Promote Safety Culture, Level 4, 45 Credits",
+        "Provide Safety Training, Level 4, 40 Credits"
+      ],
+      "workExperienceModules": [
+        "Safety Inspection Practice, Level 4, 70 Credits",
+        "Forestry Safety Project, Level 4, 50 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 3 qualification with Communication and relevant experience in forestry or safety"
+  },
+  {
+    "title": "Occupational Certificate: Small Business Consultant",
+    "id": 118741,
+    "saqaId": 118741,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118741",
+    "nqfLevel": 5,
+    "credits": 244,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Small Business Consultant. A Small Business Consultant provides advisory services to small businesses, helps with business planning and development, and supports entrepreneurs in growing their enterprises.",
+    "rationale": "This qualification addresses the critical need for qualified business consultants who can support small business development and entrepreneurship. It provides comprehensive knowledge and skills required for effective small business consulting practice.",
+    "exitLevelOutcomes": [
+      "Provide comprehensive business advisory services to small businesses",
+      "Develop business plans and growth strategies",
+      "Support entrepreneurs in business development and management",
+      "Assist with financial planning and resource optimization"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Small Business Management Theory, Level 5, 40 Credits",
+        "Business Planning and Strategy Development, Level 5, 35 Credits",
+        "Financial Management for Small Business, Level 5, 30 Credits",
+        "Marketing and Sales Strategies, Level 5, 25 Credits",
+        "Entrepreneurship and Innovation, Level 5, 20 Credits",
+        "Consulting Skills and Client Relations, Level 5, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Business Advisory Services, Level 5, 45 Credits",
+        "Develop Business Plans, Level 5, 40 Credits",
+        "Support Business Development, Level 5, 35 Credits",
+        "Assist with Financial Planning, Level 5, 30 Credits",
+        "Guide Marketing Strategies, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Small Business Consulting Practice, Level 5, 50 Credits",
+        "Business Development Project, Level 5, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Governance Professional",
+    "id": 118115,
+    "saqaId": 118115,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118115",
+    "nqfLevel": 8,
+    "credits": 156,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Governance Professional. A Governance Professional ensures organizational compliance with governance standards, develops governance frameworks, and provides strategic guidance on corporate governance matters.",
+    "rationale": "This qualification addresses the critical need for qualified governance professionals who can ensure organizational compliance and ethical business practices. It provides comprehensive knowledge and skills required for effective governance practice.",
+    "exitLevelOutcomes": [
+      "Develop and implement comprehensive governance frameworks",
+      "Ensure compliance with governance standards and regulations",
+      "Provide strategic guidance on corporate governance matters",
+      "Lead governance initiatives and risk management"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Governance Theory and Principles, Level 8, 30 Credits",
+        "Corporate Governance Standards, Level 8, 25 Credits",
+        "Risk Management and Compliance, Level 8, 22 Credits",
+        "Ethics and Corporate Responsibility, Level 8, 20 Credits",
+        "Strategic Leadership and Decision Making, Level 8, 18 Credits",
+        "Legal and Regulatory Framework, Level 8, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Develop Governance Frameworks, Level 8, 35 Credits",
+        "Ensure Governance Compliance, Level 8, 30 Credits",
+        "Provide Strategic Governance Guidance, Level 8, 28 Credits",
+        "Lead Governance Initiatives, Level 8, 25 Credits",
+        "Manage Governance Risks, Level 8, 22 Credits"
+      ],
+      "workExperienceModules": [
+        "Governance Professional Practice, Level 8, 40 Credits",
+        "Governance Framework Development Project, Level 8, 30 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 7 qualification with Communication and relevant experience in governance or management"
+  },
+  {
+    "title": "Occupational Certificate: Tourist Information Officer",
+    "id": 101865,
+    "saqaId": 101865,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=101865",
+    "nqfLevel": 5,
+    "credits": 280,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Tourist Information Officer. A Tourist Information Officer provides information and assistance to tourists, promotes tourism destinations, and ensures excellent customer service in the tourism industry.",
+    "rationale": "This qualification addresses the need for qualified tourism professionals who can provide excellent information services and promote tourism destinations. It provides comprehensive knowledge and skills required for effective tourism information services.",
+    "exitLevelOutcomes": [
+      "Provide comprehensive tourist information and assistance",
+      "Promote tourism destinations and attractions",
+      "Deliver excellent customer service in tourism settings",
+      "Manage tourist inquiries and bookings"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Tourism Industry Knowledge, Level 5, 45 Credits",
+        "Customer Service Excellence, Level 5, 40 Credits",
+        "Destination Marketing and Promotion, Level 5, 35 Credits",
+        "Communication and Language Skills, Level 5, 30 Credits",
+        "Cultural Awareness and Sensitivity, Level 5, 25 Credits",
+        "Information Technology for Tourism, Level 5, 20 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Tourist Information Services, Level 5, 50 Credits",
+        "Promote Tourism Destinations, Level 5, 45 Credits",
+        "Deliver Customer Service, Level 5, 40 Credits",
+        "Manage Tourist Inquiries, Level 5, 35 Credits",
+        "Handle Bookings and Reservations, Level 5, 30 Credits"
+      ],
+      "workExperienceModules": [
+        "Tourist Information Practice, Level 5, 60 Credits",
+        "Tourism Promotion Project, Level 5, 50 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in tourism or hospitality"
+  },
+  {
+    "title": "Occupational Certificate: Environmental Monitor",
+    "id": 121889,
+    "saqaId": 121889,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121889",
+    "nqfLevel": 5,
+    "credits": 102,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Environmental Monitor. An Environmental Monitor conducts environmental assessments, monitors environmental conditions, and ensures compliance with environmental regulations and standards.",
+    "rationale": "This qualification addresses the growing need for qualified environmental professionals who can monitor and assess environmental conditions. It provides comprehensive knowledge and skills required for effective environmental monitoring practice.",
+    "exitLevelOutcomes": [
+      "Conduct comprehensive environmental monitoring and assessments",
+      "Ensure compliance with environmental regulations and standards",
+      "Collect and analyze environmental data and samples",
+      "Prepare environmental reports and documentation"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Environmental Science and Monitoring Theory, Level 5, 20 Credits",
+        "Environmental Regulations and Compliance, Level 5, 18 Credits",
+        "Data Collection and Analysis Methods, Level 5, 15 Credits",
+        "Environmental Impact Assessment, Level 5, 12 Credits",
+        "Report Writing and Documentation, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Environmental Monitoring, Level 5, 25 Credits",
+        "Collect and Analyze Environmental Data, Level 5, 22 Credits",
+        "Ensure Regulatory Compliance, Level 5, 20 Credits",
+        "Prepare Environmental Reports, Level 5, 18 Credits",
+        "Use Monitoring Equipment, Level 5, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "Environmental Monitoring Practice, Level 5, 30 Credits",
+        "Environmental Assessment Project, Level 5, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Higher Occupational Certificate: Business Development Officer",
+    "id": 121567,
+    "saqaId": 121567,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121567",
+    "nqfLevel": 5,
+    "credits": 230,
+    "authority": "QCTO",
+    "category": "Professional Courses",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Business Development Officer. A Business Development Officer identifies growth opportunities, develops business strategies, and builds relationships to expand business operations and increase revenue.",
+    "rationale": "This qualification addresses the need for qualified business development professionals who can drive business growth and expansion. It provides comprehensive knowledge and skills required for effective business development practice.",
+    "exitLevelOutcomes": [
+      "Identify and develop new business opportunities and markets",
+      "Build and maintain strategic business relationships and partnerships",
+      "Develop and implement business growth strategies",
+      "Analyze market trends and competitive landscape"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Business Development Theory and Strategy, Level 5, 40 Credits",
+        "Market Analysis and Research, Level 5, 35 Credits",
+        "Sales and Relationship Management, Level 5, 30 Credits",
+        "Financial Analysis and Planning, Level 5, 25 Credits",
+        "Strategic Planning and Implementation, Level 5, 20 Credits",
+        "Communication and Negotiation, Level 5, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Develop Business Strategies, Level 5, 45 Credits",
+        "Conduct Market Analysis, Level 5, 40 Credits",
+        "Build Business Relationships, Level 5, 35 Credits",
+        "Implement Growth Initiatives, Level 5, 30 Credits",
+        "Manage Sales Processes, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Business Development Practice, Level 5, 50 Credits",
+        "Business Growth Project, Level 5, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Skills Programmes :Community Counsellor ",
+    "id": "SP-211003",
+    "saqaId": "SP-211003",
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=SP-211003",
+    "nqfLevel": 5,
+    "credits": 25,
+    "authority": "QCTO",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Community Counsellor. A Community Counsellor provides counselling services to community members, supports mental health and well-being, and assists with community development initiatives.",
+    "rationale": "This qualification addresses the need for qualified community counsellors who can provide essential counselling services and support community mental health. It provides comprehensive knowledge and skills required for effective community counselling practice.",
+    "exitLevelOutcomes": [
+      "Provide basic counselling services to community members",
+      "Support mental health and well-being in communities",
+      "Assist with community development and support programs",
+      "Maintain professional counselling standards and ethics"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Counselling Theory and Principles, Level 5, 8 Credits",
+        "Community Mental Health, Level 5, 6 Credits",
+        "Communication and Listening Skills, Level 5, 5 Credits",
+        "Professional Ethics and Boundaries, Level 5, 4 Credits",
+        "Community Development, Level 5, 2 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Counselling Services, Level 5, 10 Credits",
+        "Support Community Mental Health, Level 5, 8 Credits",
+        "Maintain Professional Standards, Level 5, 5 Credits",
+        "Assist Community Programs, Level 5, 4 Credits"
+      ],
+      "workExperienceModules": [
+        "Community Counselling Practice, Level 5, 12 Credits",
+        "Community Support Project, Level 5, 8 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in community work"
+  },
+  {
+    "title": "Occupational Skills Programmes :Community Development Facilitator (Drug and Alcohol Abuse Awareness)",
+    "id": "SP-211006",
+    "saqaId": "SP-211006",
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=SP-211006",
+    "nqfLevel": 5,
+    "credits": 25,
+    "authority": "QCTO",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Community Development Facilitator specializing in Drug and Alcohol Abuse Awareness. A Community Development Facilitator educates communities about substance abuse, develops prevention programs, and supports recovery initiatives.",
+    "rationale": "This qualification addresses the critical need for qualified community facilitators who can educate communities about substance abuse and support prevention efforts. It provides comprehensive knowledge and skills required for effective community development facilitation.",
+    "exitLevelOutcomes": [
+      "Educate communities about drug and alcohol abuse prevention",
+      "Develop and implement substance abuse awareness programs",
+      "Support community recovery and rehabilitation initiatives",
+      "Facilitate community development and empowerment"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Substance Abuse Awareness and Prevention, Level 5, 8 Credits",
+        "Community Development Theory, Level 5, 6 Credits",
+        "Facilitation and Communication Skills, Level 5, 5 Credits",
+        "Recovery and Rehabilitation Support, Level 5, 4 Credits",
+        "Community Empowerment, Level 5, 2 Credits"
+      ],
+      "practicalSkillModules": [
+        "Facilitate Community Education, Level 5, 10 Credits",
+        "Develop Prevention Programs, Level 5, 8 Credits",
+        "Support Recovery Initiatives, Level 5, 5 Credits",
+        "Empower Communities, Level 5, 4 Credits"
+      ],
+      "workExperienceModules": [
+        "Community Facilitation Practice, Level 5, 12 Credits",
+        "Substance Abuse Prevention Project, Level 5, 8 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in community work"
+  },
+  {
+    "title": "Occupational Skills Programme: Basic Emergency First Aid \r\nResponder ",
+    "id": "SP-230801",
+    "saqaId": "SP-230801",
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=SP-230801",
+    "nqfLevel": 2,
+    "credits": 2,
+    "authority": "QCTO",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Basic Emergency First Aid Responder. A Basic Emergency First Aid Responder provides immediate first aid assistance in emergency situations until professional medical help arrives.",
+    "rationale": "This qualification addresses the critical need for qualified first aid responders who can provide immediate assistance in emergency situations. It provides comprehensive knowledge and skills required for effective basic first aid practice.",
+    "exitLevelOutcomes": [
+      "Provide immediate first aid assistance in emergency situations",
+      "Assess and manage basic medical emergencies and injuries",
+      "Maintain first aid equipment and supplies",
+      "Follow safety protocols and emergency procedures"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "First Aid Theory and Principles, Level 2, 1 Credit",
+        "Emergency Response Procedures, Level 2, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Provide Basic First Aid, Level 2, 1 Credit",
+        "Manage Emergency Situations, Level 2, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "First Aid Practice, Level 2, 1 Credit",
+        "Emergency Response Project, Level 2, 1 Credit"
+      ]
+    },
+    "entryRequirements": "NQF Level 1 qualification with Communication"
+  },
+  {
+    "title": "Occupational Skills Programme: Intermediate Emergency First Aid \r\nResponder",
+    "id": "SP-230802",
+    "saqaId": "SP-230802",
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=SP-230802",
+    "nqfLevel": 3,
+    "credits": 5,
+    "authority": "QCTO",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Intermediate Emergency First Aid Responder. An Intermediate Emergency First Aid Responder provides advanced first aid assistance in emergency situations and can manage more complex medical emergencies until professional medical help arrives.",
+    "rationale": "This qualification addresses the need for qualified intermediate first aid responders who can provide advanced assistance in emergency situations. It provides comprehensive knowledge and skills required for effective intermediate first aid practice.",
+    "exitLevelOutcomes": [
+      "Provide advanced first aid assistance in emergency situations",
+      "Manage complex medical emergencies and injuries",
+      "Coordinate emergency response activities",
+      "Train others in basic first aid procedures"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Advanced First Aid Theory and Principles, Level 3, 2 Credits",
+        "Emergency Response Coordination, Level 3, 1 Credit",
+        "Medical Emergency Management, Level 3, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Provide Advanced First Aid, Level 3, 2 Credits",
+        "Coordinate Emergency Response, Level 3, 1 Credit",
+        "Manage Medical Emergencies, Level 3, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Intermediate First Aid Practice, Level 3, 2 Credits",
+        "Emergency Response Coordination Project, Level 3, 1 Credit"
+      ]
+    },
+    "entryRequirements": "NQF Level 2 qualification with Communication and Basic First Aid certification"
+  },
+  {
+    "title": "Develop outcomes-based learning programmes",
+    "id": 123394,
+    "saqaId": 123394,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=123394",
+    "nqfLevel": 5,
+    "credits": 10,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to develop outcomes-based learning programmes. A learning programme developer creates structured educational content, designs learning outcomes, and develops assessment strategies for effective education delivery.",
+    "rationale": "This qualification addresses the need for qualified learning programme developers who can create effective educational content and learning experiences. It provides comprehensive knowledge and skills required for effective learning programme development.",
+    "exitLevelOutcomes": [
+      "Develop comprehensive outcomes-based learning programmes",
+      "Design learning outcomes and assessment strategies",
+      "Create structured educational content and materials",
+      "Ensure alignment with educational standards and requirements"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Learning Programme Development Theory, Level 5, 3 Credits",
+        "Outcomes-Based Education Principles, Level 5, 2 Credits",
+        "Assessment Design and Implementation, Level 5, 2 Credits",
+        "Educational Content Creation, Level 5, 2 Credits",
+        "Quality Assurance in Education, Level 5, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Develop Learning Programmes, Level 5, 4 Credits",
+        "Design Learning Outcomes, Level 5, 3 Credits",
+        "Create Educational Content, Level 5, 2 Credits",
+        "Implement Assessment Strategies, Level 5, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Learning Programme Development Practice, Level 5, 5 Credits",
+        "Learning Programme Development Project, Level 5, 3 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in education or training"
+  },
+  {
+    "title": "Faciliate the transfer and application of learning in the workplace",
+    "id": 123398,
+    "saqaId": 123398,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=123398",
+    "nqfLevel": 5,
+    "credits": 5,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to facilitate the transfer and application of learning in the workplace. A learning transfer facilitator ensures that training and development activities are effectively applied in real work situations to improve performance and productivity.",
+    "rationale": "This qualification addresses the need for qualified learning transfer facilitators who can ensure effective application of learning in workplace settings. It provides comprehensive knowledge and skills required for effective learning transfer facilitation.",
+    "exitLevelOutcomes": [
+      "Facilitate effective transfer of learning to workplace applications",
+      "Support learners in applying new skills and knowledge",
+      "Monitor and evaluate learning transfer effectiveness",
+      "Create supportive learning environments in the workplace"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Learning Transfer Theory and Principles, Level 5, 2 Credits",
+        "Workplace Learning Application, Level 5, 1 Credit",
+        "Performance Support and Coaching, Level 5, 1 Credit",
+        "Evaluation and Assessment, Level 5, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Facilitate Learning Transfer, Level 5, 2 Credits",
+        "Support Workplace Application, Level 5, 1 Credit",
+        "Monitor Learning Effectiveness, Level 5, 1 Credit",
+        "Create Learning Environments, Level 5, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Learning Transfer Practice, Level 5, 3 Credits",
+        "Workplace Learning Project, Level 5, 2 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in training or workplace development"
+  },
+  {
+    "title": "Design outcomes-based assessment",
+    "id": 120401,
+    "saqaId": 120401,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=120401",
+    "nqfLevel": 6,
+    "credits": 15,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to design outcomes-based assessments. An assessment designer creates comprehensive assessment strategies, develops assessment instruments, and ensures alignment with learning outcomes and educational standards.",
+    "rationale": "This qualification addresses the need for qualified assessment designers who can create effective and fair assessment strategies. It provides comprehensive knowledge and skills required for effective assessment design practice.",
+    "exitLevelOutcomes": [
+      "Design comprehensive outcomes-based assessment strategies",
+      "Develop assessment instruments and tools",
+      "Ensure alignment with learning outcomes and standards",
+      "Create fair and valid assessment processes"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Assessment Design Theory and Principles, Level 6, 4 Credits",
+        "Outcomes-Based Assessment Standards, Level 6, 3 Credits",
+        "Assessment Instrument Development, Level 6, 3 Credits",
+        "Quality Assurance in Assessment, Level 6, 3 Credits",
+        "Validity and Reliability, Level 6, 2 Credits"
+      ],
+      "practicalSkillModules": [
+        "Design Assessment Strategies, Level 6, 5 Credits",
+        "Develop Assessment Instruments, Level 6, 4 Credits",
+        "Ensure Assessment Alignment, Level 6, 3 Credits",
+        "Create Assessment Processes, Level 6, 3 Credits"
+      ],
+      "workExperienceModules": [
+        "Assessment Design Practice, Level 6, 6 Credits",
+        "Assessment Design Project, Level 6, 4 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and relevant experience in education or assessment"
+  },
+  {
+    "title": "Conduct outcomes-based assessment",
+    "id": 115753,
+    "saqaId": 115753,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=115753",
+    "nqfLevel": 5,
+    "credits": 15,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to conduct outcomes-based assessments. An assessment conductor implements assessment strategies, evaluates learner performance, and provides constructive feedback to support learning and development.",
+    "rationale": "This qualification addresses the need for qualified assessment conductors who can effectively implement assessment processes and evaluate learner performance. It provides comprehensive knowledge and skills required for effective assessment conduction.",
+    "exitLevelOutcomes": [
+      "Conduct comprehensive outcomes-based assessments",
+      "Evaluate learner performance against established criteria",
+      "Provide constructive feedback and support to learners",
+      "Maintain assessment integrity and fairness"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Assessment Conduction Theory and Principles, Level 5, 4 Credits",
+        "Outcomes-Based Assessment Implementation, Level 5, 3 Credits",
+        "Performance Evaluation Techniques, Level 5, 3 Credits",
+        "Feedback and Communication Skills, Level 5, 3 Credits",
+        "Assessment Ethics and Integrity, Level 5, 2 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Assessments, Level 5, 5 Credits",
+        "Evaluate Learner Performance, Level 5, 4 Credits",
+        "Provide Constructive Feedback, Level 5, 3 Credits",
+        "Maintain Assessment Standards, Level 5, 3 Credits"
+      ],
+      "workExperienceModules": [
+        "Assessment Conduction Practice, Level 5, 6 Credits",
+        "Assessment Implementation Project, Level 5, 4 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in education or assessment"
+  },
+  {
+    "title": "Faciliate learning using a variety of given methodogies",
+    "id": 117871,
+    "saqaId": 117871,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=117871",
+    "nqfLevel": 5,
+    "credits": 10,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to facilitate learning using a variety of methodologies. A learning facilitator employs diverse teaching methods, adapts to different learning styles, and creates engaging learning experiences for diverse learners.",
+    "rationale": "This qualification addresses the need for qualified learning facilitators who can effectively use various teaching methodologies to support diverse learners. It provides comprehensive knowledge and skills required for effective learning facilitation.",
+    "exitLevelOutcomes": [
+      "Facilitate learning using diverse teaching methodologies",
+      "Adapt facilitation approaches to different learning styles",
+      "Create engaging and interactive learning experiences",
+      "Support diverse learners in achieving learning outcomes"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Learning Facilitation Theory and Principles, Level 5, 3 Credits",
+        "Teaching Methodologies and Approaches, Level 5, 2 Credits",
+        "Learning Styles and Adaptation, Level 5, 2 Credits",
+        "Interactive Learning Techniques, Level 5, 2 Credits",
+        "Communication and Presentation Skills, Level 5, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Facilitate Learning Sessions, Level 5, 4 Credits",
+        "Adapt Teaching Methods, Level 5, 3 Credits",
+        "Create Interactive Experiences, Level 5, 2 Credits",
+        "Support Diverse Learners, Level 5, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Learning Facilitation Practice, Level 5, 5 Credits",
+        "Facilitation Methodology Project, Level 5, 3 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in education or training"
+  },
+  {
+    "title": "Conduct moderation of outcomes-based assessment",
+    "id": 115759,
+    "saqaId": 115759,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=115759",
+    "nqfLevel": 6,
+    "credits": 10,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to conduct moderation of outcomes-based assessments. An assessment moderator ensures assessment quality, consistency, and fairness by reviewing assessment processes and decisions.",
+    "rationale": "This qualification addresses the need for qualified assessment moderators who can ensure assessment quality and consistency. It provides comprehensive knowledge and skills required for effective assessment moderation.",
+    "exitLevelOutcomes": [
+      "Conduct comprehensive moderation of assessment processes",
+      "Ensure assessment quality and consistency",
+      "Review and validate assessment decisions",
+      "Maintain assessment standards and fairness"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Assessment Moderation Theory and Principles, Level 6, 3 Credits",
+        "Quality Assurance in Assessment, Level 6, 2 Credits",
+        "Moderation Processes and Procedures, Level 6, 2 Credits",
+        "Assessment Standards and Criteria, Level 6, 2 Credits",
+        "Ethics and Professional Conduct, Level 6, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Conduct Assessment Moderation, Level 6, 4 Credits",
+        "Ensure Assessment Quality, Level 6, 3 Credits",
+        "Review Assessment Decisions, Level 6, 2 Credits",
+        "Maintain Assessment Standards, Level 6, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Assessment Moderation Practice, Level 6, 5 Credits",
+        "Moderation Process Project, Level 6, 3 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and relevant experience in assessment"
+  },
+  {
+    "title": "Identify and respond to learners with special needs and barriers to learning",
+    "id": 10294,
+    "saqaId": 10294,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=10294",
+    "nqfLevel": 5,
+    "credits": 10,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to identify and respond to learners with special needs and barriers to learning. A special needs educator identifies learning barriers, develops appropriate support strategies, and ensures inclusive learning environments.",
+    "rationale": "This qualification addresses the critical need for qualified educators who can support learners with special needs and learning barriers. It provides comprehensive knowledge and skills required for effective special needs education.",
+    "exitLevelOutcomes": [
+      "Identify learners with special needs and learning barriers",
+      "Develop appropriate support strategies and interventions",
+      "Create inclusive learning environments",
+      "Support diverse learners in achieving learning outcomes"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Special Needs Education Theory, Level 5, 3 Credits",
+        "Learning Barriers and Disabilities, Level 5, 2 Credits",
+        "Inclusive Education Principles, Level 5, 2 Credits",
+        "Support Strategies and Interventions, Level 5, 2 Credits",
+        "Communication and Adaptation Skills, Level 5, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Identify Special Needs, Level 5, 4 Credits",
+        "Develop Support Strategies, Level 5, 3 Credits",
+        "Create Inclusive Environments, Level 5, 2 Credits",
+        "Support Diverse Learners, Level 5, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Special Needs Education Practice, Level 5, 5 Credits",
+        "Inclusive Education Project, Level 5, 3 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in education"
+  },
+  {
+    "title": "Devise intervention for learners who have special needs",
+    "id": 10305,
+    "saqaId": 10305,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=10305",
+    "nqfLevel": 6,
+    "credits": 16,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to devise interventions for learners who have special needs. A special needs intervention specialist develops comprehensive support plans, implements targeted interventions, and monitors progress for learners with diverse learning needs.",
+    "rationale": "This qualification addresses the need for qualified intervention specialists who can develop and implement effective support strategies for learners with special needs. It provides comprehensive knowledge and skills required for effective special needs intervention.",
+    "exitLevelOutcomes": [
+      "Develop comprehensive intervention strategies for learners with special needs",
+      "Implement targeted support programs and interventions",
+      "Monitor and evaluate intervention effectiveness",
+      "Collaborate with stakeholders to support learner success"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Special Needs Intervention Theory, Level 6, 4 Credits",
+        "Assessment and Diagnosis of Special Needs, Level 6, 3 Credits",
+        "Intervention Strategies and Methods, Level 6, 3 Credits",
+        "Progress Monitoring and Evaluation, Level 6, 3 Credits",
+        "Collaboration and Stakeholder Management, Level 6, 2 Credits",
+        "Ethics and Professional Practice, Level 6, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Develop Intervention Strategies, Level 6, 5 Credits",
+        "Implement Support Programs, Level 6, 4 Credits",
+        "Monitor Intervention Progress, Level 6, 3 Credits",
+        "Collaborate with Stakeholders, Level 6, 2 Credits"
+      ],
+      "workExperienceModules": [
+        "Special Needs Intervention Practice, Level 6, 6 Credits",
+        "Intervention Development Project, Level 6, 4 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and relevant experience in special needs education"
+  },
+  {
+    "title": "Conduct skills development administration in an organisation",
+    "id": 15227,
+    "saqaId": 15227,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=15227",
+    "nqfLevel": 4,
+    "credits": 4,
+    "authority": "ETDP- SETA",
+    "category": "Short Skills Programs",
+    "type": "accreditation",
+    "purpose": "The purpose of this qualification is to prepare a learner to conduct skills development administration in an organisation. A skills development administrator manages training programs, coordinates learning initiatives, and ensures compliance with skills development requirements.",
+    "rationale": "This qualification addresses the need for qualified skills development administrators who can effectively manage training programs and learning initiatives. It provides comprehensive knowledge and skills required for effective skills development administration.",
+    "exitLevelOutcomes": [
+      "Administer skills development programs and initiatives",
+      "Coordinate training activities and learning events",
+      "Ensure compliance with skills development requirements",
+      "Manage learning records and documentation"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Skills Development Administration Theory, Level 4, 2 Credits",
+        "Training Program Management, Level 4, 1 Credit",
+        "Compliance and Regulatory Requirements, Level 4, 1 Credit"
+      ],
+      "practicalSkillModules": [
+        "Administer Skills Development Programs, Level 4, 2 Credits",
+        "Coordinate Training Activities, Level 4, 1 Credit",
+        "Manage Learning Records, Level 4, 1 Credit"
+      ],
+      "workExperienceModules": [
+        "Skills Development Administration Practice, Level 4, 2 Credits",
+        "Administration Project, Level 4, 2 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 3 qualification with Communication and relevant experience in administration"
+  },
+  {
+    "title": "Occupational Certificate: Small Business Consultant",
+    "nqfLevel": "5 ",
+    "id": 118741,
+    "saqaId": 118741,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118741",
+    "credits": 244,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Small Business Consultant. A Small Business Consultant provides expert advice and support to small and medium enterprises, helping them improve their operations, financial management, and business growth strategies.",
+    "rationale": "This qualification addresses the critical need for qualified small business consultants who can support the growth and development of small and medium enterprises. It provides comprehensive knowledge and skills required for effective small business consulting practice.",
+    "exitLevelOutcomes": [
+      "Provide comprehensive business consulting services to small and medium enterprises",
+      "Analyze business operations and identify improvement opportunities",
+      "Develop and implement business growth strategies",
+      "Support clients in financial management and operational efficiency"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Small Business Consulting Theory and Principles, Level 5, 40 Credits",
+        "Business Analysis and Assessment, Level 5, 30 Credits",
+        "Financial Management for Small Business, Level 5, 25 Credits",
+        "Marketing and Sales Strategies, Level 5, 20 Credits",
+        "Operations Management, Level 5, 15 Credits",
+        "Legal and Regulatory Compliance, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Business Consultations, Level 5, 50 Credits",
+        "Develop Business Strategies, Level 5, 40 Credits",
+        "Implement Business Improvements, Level 5, 30 Credits",
+        "Support Client Growth, Level 5, 20 Credits"
+      ],
+      "workExperienceModules": [
+        "Small Business Consulting Practice, Level 5, 60 Credits",
+        "Consulting Project Portfolio, Level 5, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in business or consulting"
+  },
+  {
+    "title": "Occupational Certificate: Valuer (Municipal Property Assessor)",
+    "nqfLevel": "5 ",
+    "id": 99700,
+    "saqaId": 99700,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=99700",
+    "credits": 120,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Valuer (Municipal Property Assessor). A Municipal Property Assessor conducts property valuations for municipal purposes, ensures accurate property assessments, and supports municipal revenue collection and planning.",
+    "rationale": "This qualification addresses the need for qualified municipal property assessors who can provide accurate property valuations for municipal purposes. It provides comprehensive knowledge and skills required for effective property valuation practice.",
+    "exitLevelOutcomes": [
+      "Conduct accurate property valuations for municipal purposes",
+      "Apply valuation methodologies and assessment techniques",
+      "Ensure compliance with municipal valuation standards",
+      "Support municipal revenue collection and planning processes"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Property Valuation Theory and Principles, Level 5, 20 Credits",
+        "Municipal Valuation Standards and Regulations, Level 5, 15 Credits",
+        "Property Assessment Methodologies, Level 5, 15 Credits",
+        "Real Estate Market Analysis, Level 5, 10 Credits",
+        "Legal and Regulatory Framework, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Property Valuations, Level 5, 25 Credits",
+        "Apply Assessment Techniques, Level 5, 20 Credits",
+        "Prepare Valuation Reports, Level 5, 15 Credits",
+        "Support Municipal Processes, Level 5, 10 Credits"
+      ],
+      "workExperienceModules": [
+        "Municipal Property Valuation Practice, Level 5, 30 Credits",
+        "Valuation Assessment Project, Level 5, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in property or municipal services"
+  },
+  {
+    "title": "Occupational Certificate: Municipal Finance Manager ",
+    "nqfLevel": "8 ",
+    "id": 118775,
+    "saqaId": 118775,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118775",
+    "credits": 721,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Municipal Finance Manager. A Municipal Finance Manager oversees financial operations, manages municipal budgets, ensures financial compliance, and supports strategic financial planning for municipal organizations.",
+    "rationale": "This qualification addresses the critical need for qualified municipal finance managers who can effectively manage financial operations and ensure fiscal responsibility in municipal organizations. It provides comprehensive knowledge and skills required for effective municipal finance management.",
+    "exitLevelOutcomes": [
+      "Manage comprehensive municipal financial operations and budgets",
+      "Ensure compliance with municipal finance regulations and standards",
+      "Develop and implement strategic financial planning and policies",
+      "Oversee financial reporting and audit processes"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Municipal Finance Management Theory, Level 8, 80 Credits",
+        "Public Sector Financial Regulations, Level 8, 60 Credits",
+        "Budget Planning and Management, Level 8, 50 Credits",
+        "Financial Reporting and Compliance, Level 8, 40 Credits",
+        "Strategic Financial Planning, Level 8, 30 Credits",
+        "Audit and Risk Management, Level 8, 20 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage Municipal Financial Operations, Level 8, 100 Credits",
+        "Develop Financial Strategies, Level 8, 80 Credits",
+        "Ensure Financial Compliance, Level 8, 60 Credits",
+        "Oversee Financial Reporting, Level 8, 40 Credits"
+      ],
+      "workExperienceModules": [
+        "Municipal Finance Management Practice, Level 8, 120 Credits",
+        "Finance Management Project Portfolio, Level 8, 80 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 7 qualification with Communication and relevant experience in finance or municipal management"
+  },
+  {
+    "title": "Occupational Certificate: Library Assistant",
+    "nqfLevel": "5 ",
+    "id": 94598,
+    "saqaId": 94598,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=94598",
+    "credits": 127,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Library Assistant. A Library Assistant provides support services in library operations, assists patrons with information needs, manages library resources, and ensures efficient library service delivery.",
+    "rationale": "This qualification addresses the need for qualified library assistants who can provide effective support services in library operations. It provides comprehensive knowledge and skills required for effective library assistance practice.",
+    "exitLevelOutcomes": [
+      "Provide comprehensive library support services to patrons",
+      "Manage library resources and collections effectively",
+      "Assist patrons with information retrieval and research needs",
+      "Ensure efficient library operations and service delivery"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Library Science Theory and Principles, Level 5, 25 Credits",
+        "Information Management and Organization, Level 5, 20 Credits",
+        "Customer Service and Communication, Level 5, 15 Credits",
+        "Library Technology and Systems, Level 5, 12 Credits",
+        "Research and Reference Services, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Library Services, Level 5, 30 Credits",
+        "Manage Library Resources, Level 5, 25 Credits",
+        "Assist Patrons with Information Needs, Level 5, 20 Credits",
+        "Support Library Operations, Level 5, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "Library Assistant Practice, Level 5, 35 Credits",
+        "Library Service Project, Level 5, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in library or information services"
+  },
+  {
+    "title": "Occupational Certificate: Career Development Information Officer ",
+    "nqfLevel": "5 ",
+    "id": 96372,
+    "saqaId": 96372,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=96372",
+    "credits": 120,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Career Development Information Officer. A Career Development Information Officer provides career guidance and information services, assists individuals with career planning, and supports career development initiatives.",
+    "rationale": "This qualification addresses the need for qualified career development information officers who can provide effective career guidance and information services. It provides comprehensive knowledge and skills required for effective career development practice.",
+    "exitLevelOutcomes": [
+      "Provide comprehensive career development information and guidance services",
+      "Assist individuals with career planning and decision-making",
+      "Support career development initiatives and programs",
+      "Maintain current knowledge of career opportunities and market trends"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Career Development Theory and Principles, Level 5, 20 Credits",
+        "Career Information and Resources, Level 5, 15 Credits",
+        "Career Counseling and Guidance, Level 5, 15 Credits",
+        "Labor Market Analysis, Level 5, 10 Credits",
+        "Communication and Interviewing Skills, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Career Guidance Services, Level 5, 25 Credits",
+        "Assist with Career Planning, Level 5, 20 Credits",
+        "Support Career Development Programs, Level 5, 15 Credits",
+        "Maintain Career Information Resources, Level 5, 10 Credits"
+      ],
+      "workExperienceModules": [
+        "Career Development Information Practice, Level 5, 30 Credits",
+        "Career Guidance Project, Level 5, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in career guidance or human resources"
+  },
+  {
+    "title": "Occupational Certificate: Community Development Practitioner",
+    "nqfLevel": "Level 5 ",
+    "id": 97691,
+    "saqaId": 97691,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=97691",
+    "credits": 212,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Community Development Practitioner. A Community Development Practitioner facilitates community development initiatives, supports community empowerment, and works with communities to address social and economic challenges.",
+    "rationale": "This qualification addresses the critical need for qualified community development practitioners who can effectively support community development and empowerment. It provides comprehensive knowledge and skills required for effective community development practice.",
+    "exitLevelOutcomes": [
+      "Facilitate comprehensive community development initiatives and programs",
+      "Support community empowerment and capacity building",
+      "Work collaboratively with communities to address social challenges",
+      "Develop and implement sustainable community development strategies"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Community Development Theory and Principles, Level 5, 35 Credits",
+        "Social Work and Community Practice, Level 5, 30 Credits",
+        "Project Management and Planning, Level 5, 25 Credits",
+        "Community Engagement and Participation, Level 5, 20 Credits",
+        "Social Policy and Advocacy, Level 5, 15 Credits",
+        "Research and Evaluation Methods, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Facilitate Community Development, Level 5, 40 Credits",
+        "Support Community Empowerment, Level 5, 35 Credits",
+        "Manage Community Projects, Level 5, 30 Credits",
+        "Engage with Communities, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Community Development Practice, Level 5, 50 Credits",
+        "Community Development Project, Level 5, 35 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in community work or social services"
+  },
+  {
+    "title": "Occupational Certificate: Training and Development Practitioner",
+    "nqfLevel": "Level 5 ",
+    "id": 101321,
+    "saqaId": 101321,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=101321",
+    "credits": 190,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Training and Development Practitioner. A Training and Development Practitioner designs and delivers training programs, supports workforce development, and ensures effective learning and development outcomes.",
+    "rationale": "This qualification addresses the critical need for qualified training and development practitioners who can effectively support workforce development and learning. It provides comprehensive knowledge and skills required for effective training and development practice.",
+    "exitLevelOutcomes": [
+      "Design and deliver comprehensive training and development programs",
+      "Support workforce development and learning initiatives",
+      "Evaluate training effectiveness and learning outcomes",
+      "Manage training resources and coordinate development activities"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Training and Development Theory, Level 5, 30 Credits",
+        "Learning Design and Curriculum Development, Level 5, 25 Credits",
+        "Training Delivery and Facilitation, Level 5, 20 Credits",
+        "Assessment and Evaluation Methods, Level 5, 15 Credits",
+        "Workforce Development Strategies, Level 5, 15 Credits",
+        "Training Technology and Tools, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Design Training Programs, Level 5, 35 Credits",
+        "Deliver Training Sessions, Level 5, 30 Credits",
+        "Support Workforce Development, Level 5, 25 Credits",
+        "Evaluate Training Effectiveness, Level 5, 20 Credits"
+      ],
+      "workExperienceModules": [
+        "Training and Development Practice, Level 5, 45 Credits",
+        "Training Development Project, Level 5, 30 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in training or human resources"
+  },
+  {
+    "title": "Occupational Certificate: Adult Literacy Teacher",
+    "nqfLevel": "Level 5 ",
+    "id": 101709,
+    "saqaId": 101709,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=101709",
+    "credits": 198,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Adult Literacy Teacher. An Adult Literacy Teacher facilitates adult learning and literacy development, ensuring that adult learners acquire the necessary reading, writing, and numeracy skills to participate effectively in society and the workplace.",
+    "rationale": "This qualification addresses the critical need for qualified adult literacy teachers who can support adult learners in developing essential literacy skills. It provides comprehensive knowledge and skills required for effective adult literacy education.",
+    "exitLevelOutcomes": [
+      "Facilitate adult learning and literacy development programs",
+      "Design and implement appropriate teaching strategies for adult learners",
+      "Assess adult learner progress and provide constructive feedback",
+      "Create inclusive learning environments that support diverse adult learners"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Adult Learning Theory and Principles, Level 5, 35 Credits",
+        "Literacy Development and Teaching Methods, Level 5, 30 Credits",
+        "Assessment and Evaluation Techniques, Level 5, 25 Credits",
+        "Curriculum Design and Materials Development, Level 5, 20 Credits",
+        "Communication and Interpersonal Skills, Level 5, 15 Credits",
+        "Professional Ethics and Standards, Level 5, 12 Credits"
+      ],
+      "practicalSkillModules": [
+        "Facilitate Adult Literacy Learning, Level 5, 40 Credits",
+        "Design Teaching Strategies, Level 5, 35 Credits",
+        "Assess Learner Progress, Level 5, 30 Credits",
+        "Create Inclusive Learning Environments, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Adult Literacy Teaching Practice, Level 5, 45 Credits",
+        "Literacy Education Project, Level 5, 35 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in education or adult learning"
+  },
+  {
+    "title": "Occupational Certificate: School Principal (School Manager) ",
+    "nqfLevel": "Level 6 ",
+    "id": 101258,
+    "saqaId": 101258,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=101258",
+    "credits": 285,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a School Principal (School Manager). A School Principal provides educational leadership, manages school operations, and ensures quality education delivery while maintaining compliance with educational standards and regulations.",
+    "rationale": "This qualification addresses the critical need for qualified educational leaders who can effectively manage schools and provide quality education. It provides comprehensive knowledge and skills required for effective school leadership and management.",
+    "exitLevelOutcomes": [
+      "Provide educational leadership and strategic direction for the school",
+      "Manage school operations, resources, and administrative functions",
+      "Ensure quality education delivery and curriculum implementation",
+      "Lead and develop teaching staff and support personnel"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Educational Leadership Theory, Level 6, 50 Credits",
+        "School Management and Administration, Level 6, 45 Credits",
+        "Curriculum Development and Implementation, Level 6, 40 Credits",
+        "Educational Policy and Compliance, Level 6, 35 Credits",
+        "Human Resource Management in Education, Level 6, 30 Credits",
+        "Financial Management in Education, Level 6, 25 Credits"
+      ],
+      "practicalSkillModules": [
+        "Lead Educational Programs, Level 6, 60 Credits",
+        "Manage School Operations, Level 6, 55 Credits",
+        "Develop and Implement School Policies, Level 6, 50 Credits",
+        "Oversee Curriculum Implementation, Level 6, 45 Credits",
+        "Manage School Resources, Level 6, 40 Credits"
+      ],
+      "workExperienceModules": [
+        "School Leadership Practice, Level 6, 70 Credits",
+        "Educational Management Project, Level 6, 50 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Teaching qualification and Management experience"
+  },
+  {
+    "title": "Occupational Certificate: Trade Unionist",
+    "nqfLevel": "Level 4 ",
+    "id": 118790,
+    "saqaId": 118790,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118790",
+    "credits": 190,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Trade Unionist. A Trade Unionist represents workers' interests, negotiates on behalf of workers, and ensures fair labor practices and workers' rights protection.",
+    "rationale": "This qualification addresses the need for qualified trade union representatives who can effectively advocate for workers' rights and negotiate fair labor conditions. It provides comprehensive knowledge and skills required for effective trade union practice.",
+    "exitLevelOutcomes": [
+      "Represent workers' interests in negotiations and disputes",
+      "Advocate for fair labor practices and workers' rights",
+      "Negotiate collective agreements and workplace conditions",
+      "Provide guidance and support to union members"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Labor Law and Workers' Rights, Level 4, 40 Credits",
+        "Collective Bargaining and Negotiation, Level 4, 35 Credits",
+        "Trade Union History and Principles, Level 4, 30 Credits",
+        "Industrial Relations, Level 4, 25 Credits",
+        "Communication and Advocacy Skills, Level 4, 20 Credits",
+        "Conflict Resolution and Mediation, Level 4, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Represent Workers in Negotiations, Level 4, 45 Credits",
+        "Advocate for Workers' Rights, Level 4, 40 Credits",
+        "Conduct Collective Bargaining, Level 4, 35 Credits",
+        "Resolve Workplace Disputes, Level 4, 30 Credits",
+        "Support Union Members, Level 4, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Trade Union Practice, Level 4, 50 Credits",
+        "Workers' Rights Advocacy Project, Level 4, 35 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 3 qualification with Communication and relevant work experience"
+  },
+  {
+    "title": "Occupational Certificate: Learning and Development Advisor",
+    "nqfLevel": "Level 7",
+    "id": 118774,
+    "saqaId": 118774,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118774",
+    "credits": 195,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Learning and Development Advisor. A Learning and Development Advisor designs, implements, and evaluates learning and development programs to enhance organizational performance and employee capabilities.",
+    "rationale": "This qualification addresses the need for qualified learning and development professionals who can design effective training programs and support organizational learning. It provides comprehensive knowledge and skills required for advanced learning and development practice.",
+    "exitLevelOutcomes": [
+      "Design comprehensive learning and development strategies",
+      "Implement and manage learning programs and initiatives",
+      "Evaluate learning effectiveness and measure outcomes",
+      "Advise on learning technologies and methodologies"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Learning and Development Theory, Level 7, 40 Credits",
+        "Instructional Design and Curriculum Development, Level 7, 35 Credits",
+        "Learning Technologies and E-Learning, Level 7, 30 Credits",
+        "Assessment and Evaluation Methods, Level 7, 25 Credits",
+        "Organizational Development, Level 7, 20 Credits",
+        "Learning Analytics and Measurement, Level 7, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Design Learning Programs, Level 7, 45 Credits",
+        "Implement Learning Initiatives, Level 7, 40 Credits",
+        "Evaluate Learning Outcomes, Level 7, 35 Credits",
+        "Advise on Learning Technologies, Level 7, 30 Credits",
+        "Manage Learning Projects, Level 7, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Learning and Development Practice, Level 7, 50 Credits",
+        "Learning Strategy Development Project, Level 7, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 6 qualification with Communication and relevant experience in education or training"
+  },
+  {
+    "title": "Occupational Certificate: Market Research Analyst",
+    "nqfLevel": "5 ",
+    "id": 1119450,
+    "saqaId": 1119450,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=1119450",
+    "credits": 240,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Market Research Analyst. A Market Research Analyst conducts market research, analyzes data, and provides insights to support business decision-making and strategic planning.",
+    "rationale": "This qualification addresses the need for qualified market research professionals who can conduct effective research and provide valuable business insights. It provides comprehensive knowledge and skills required for market research practice.",
+    "exitLevelOutcomes": [
+      "Design and conduct comprehensive market research studies",
+      "Analyze market data and identify trends and patterns",
+      "Provide actionable business insights and recommendations",
+      "Present research findings to stakeholders and decision-makers"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Market Research Theory and Methods, Level 5, 40 Credits",
+        "Data Collection and Sampling Techniques, Level 5, 35 Credits",
+        "Statistical Analysis and Data Interpretation, Level 5, 30 Credits",
+        "Consumer Behavior and Market Dynamics, Level 5, 25 Credits",
+        "Research Design and Methodology, Level 5, 20 Credits",
+        "Business Intelligence and Reporting, Level 5, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Design Market Research Studies, Level 5, 45 Credits",
+        "Collect and Analyze Market Data, Level 5, 40 Credits",
+        "Interpret Research Findings, Level 5, 35 Credits",
+        "Present Research Results, Level 5, 30 Credits",
+        "Provide Business Recommendations, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Market Research Practice, Level 5, 50 Credits",
+        "Market Research Project, Level 5, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "\r\nAdvanced Occupational Certificate: Human Resource Management \r\nOfficer ",
+    "nqfLevel": "Level 6 ",
+    "id": 121151,
+    "saqaId": 121151,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121151",
+    "credits": 134,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Advanced Human Resource Management Officer. An Advanced HR Management Officer manages complex HR functions, develops HR strategies, and ensures effective human resource management practices within organizations.",
+    "rationale": "This qualification addresses the need for qualified advanced HR professionals who can manage complex human resource functions and develop strategic HR initiatives. It provides comprehensive knowledge and skills required for advanced HR management practice.",
+    "exitLevelOutcomes": [
+      "Manage comprehensive human resource functions and operations",
+      "Develop and implement strategic HR policies and procedures",
+      "Support organizational development and change management",
+      "Ensure compliance with labor laws and HR best practices"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Advanced Human Resource Management Theory, Level 6, 25 Credits",
+        "Strategic HR Planning and Development, Level 6, 20 Credits",
+        "Employee Relations and Labor Law, Level 6, 18 Credits",
+        "Performance Management and Development, Level 6, 15 Credits",
+        "Compensation and Benefits Management, Level 6, 12 Credits",
+        "HR Information Systems and Technology, Level 6, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage HR Operations, Level 6, 30 Credits",
+        "Develop HR Strategies, Level 6, 25 Credits",
+        "Support Organizational Development, Level 6, 20 Credits",
+        "Ensure HR Compliance, Level 6, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "Advanced HR Management Practice, Level 6, 35 Credits",
+        "HR Management Project, Level 6, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and relevant experience in human resources"
+  },
+  {
+    "title": "Occupational Certificate: Energy Kinesiology Practitioner",
+    "nqfLevel": "Level 5 ",
+    "id": 118869,
+    "saqaId": 118869,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118869",
+    "credits": 65,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Energy Kinesiology Practitioner. An Energy Kinesiology Practitioner uses muscle testing and energy balancing techniques to assess and address physical, emotional, and energetic imbalances in clients.",
+    "rationale": "This qualification addresses the growing interest in alternative and complementary health practices. It provides comprehensive knowledge and skills required for safe and effective energy kinesiology practice.",
+    "exitLevelOutcomes": [
+      "Assess client energy systems using muscle testing techniques",
+      "Identify and address energetic imbalances and blockages",
+      "Apply energy balancing and correction techniques",
+      "Maintain professional standards and client safety"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Energy Kinesiology Theory and Principles, Level 5, 15 Credits",
+        "Muscle Testing and Assessment Techniques, Level 5, 12 Credits",
+        "Energy Balancing and Correction Methods, Level 5, 10 Credits",
+        "Anatomy and Physiology for Energy Work, Level 5, 8 Credits",
+        "Professional Ethics and Safety, Level 5, 6 Credits",
+        "Client Communication and Documentation, Level 5, 4 Credits"
+      ],
+      "practicalSkillModules": [
+        "Perform Muscle Testing Assessments, Level 5, 18 Credits",
+        "Apply Energy Balancing Techniques, Level 5, 15 Credits",
+        "Conduct Client Consultations, Level 5, 12 Credits",
+        "Maintain Professional Practice, Level 5, 10 Credits",
+        "Document Client Sessions, Level 5, 8 Credits"
+      ],
+      "workExperienceModules": [
+        "Energy Kinesiology Practice, Level 5, 20 Credits",
+        "Client Case Study Project, Level 5, 15 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant health or wellness background"
+  },
+  {
+    "title": "Occupational Certificate: Social Security Assessor",
+    "nqfLevel": "Level 6 ",
+    "id": 105028,
+    "saqaId": 105028,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=105028",
+    "credits": 192,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Social Security Assessor. A Social Security Assessor evaluates social security applications, determines eligibility for benefits, and ensures compliance with social security regulations and policies.",
+    "rationale": "This qualification addresses the critical need for qualified social security professionals who can effectively assess applications and ensure fair distribution of social security benefits. It provides comprehensive knowledge and skills required for social security assessment practice.",
+    "exitLevelOutcomes": [
+      "Evaluate social security applications and determine eligibility",
+      "Apply social security laws, regulations, and policies",
+      "Conduct thorough assessments and investigations",
+      "Maintain accurate records and documentation"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Social Security Law and Policy, Level 6, 40 Credits",
+        "Assessment and Investigation Techniques, Level 6, 35 Credits",
+        "Eligibility Criteria and Benefit Calculations, Level 6, 30 Credits",
+        "Documentation and Record Keeping, Level 6, 25 Credits",
+        "Communication and Client Relations, Level 6, 20 Credits",
+        "Ethics and Professional Conduct, Level 6, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Social Security Assessments, Level 6, 45 Credits",
+        "Evaluate Application Eligibility, Level 6, 40 Credits",
+        "Investigate and Verify Information, Level 6, 35 Credits",
+        "Maintain Accurate Documentation, Level 6, 30 Credits",
+        "Communicate with Applicants, Level 6, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Social Security Assessment Practice, Level 6, 50 Credits",
+        "Assessment Case Study Project, Level 6, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and relevant experience in social services"
+  },
+  {
+    "title": "Occupational Certificate: Social Auxiliary Worker",
+    "nqfLevel": "5 ",
+    "id": 98890,
+    "saqaId": 98890,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=98890",
+    "credits": 129,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Social Auxiliary Worker. A Social Auxiliary Worker provides support services to social workers and social service professionals, assists with client care, and supports community development initiatives.",
+    "rationale": "This qualification addresses the need for qualified social auxiliary workers who can provide essential support services in social work settings. It provides comprehensive knowledge and skills required for effective social auxiliary work practice.",
+    "exitLevelOutcomes": [
+      "Provide support services to social workers and clients",
+      "Assist with community development and outreach programs",
+      "Maintain client confidentiality and professional standards",
+      "Support vulnerable individuals and families"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Social Work Theory and Practice, Level 5, 25 Credits",
+        "Community Development Principles, Level 5, 20 Credits",
+        "Client Care and Support Services, Level 5, 18 Credits",
+        "Professional Ethics and Confidentiality, Level 5, 15 Credits",
+        "Communication and Interpersonal Skills, Level 5, 12 Credits",
+        "Documentation and Record Keeping, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Client Support Services, Level 5, 30 Credits",
+        "Assist with Community Programs, Level 5, 25 Credits",
+        "Maintain Professional Standards, Level 5, 20 Credits",
+        "Support Vulnerable Populations, Level 5, 18 Credits",
+        "Document Client Interactions, Level 5, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "Social Auxiliary Work Practice, Level 5, 35 Credits",
+        "Community Development Project, Level 5, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in social services"
+  },
+  {
+    "title": "Occupational Certificate: Child and Youth Care Worker",
+    "nqfLevel": "5 ",
+    "id": 99510,
+    "saqaId": 99510,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=99510",
+    "credits": 190,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Child and Youth Care Worker. A Child and Youth Care Worker provides care, support, and guidance to children and youth in various settings, ensuring their safety, well-being, and development.",
+    "rationale": "This qualification addresses the critical need for qualified child and youth care professionals who can provide quality care and support to vulnerable children and youth. It provides comprehensive knowledge and skills required for effective child and youth care practice.",
+    "exitLevelOutcomes": [
+      "Provide quality care and support to children and youth",
+      "Develop and implement care plans and activities",
+      "Ensure child safety and protection",
+      "Support family reunification and community integration"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Child and Youth Development Theory, Level 5, 35 Credits",
+        "Child Protection and Safety, Level 5, 30 Credits",
+        "Care Planning and Implementation, Level 5, 25 Credits",
+        "Family and Community Support, Level 5, 20 Credits",
+        "Communication and Counseling Skills, Level 5, 15 Credits",
+        "Professional Ethics and Legal Framework, Level 5, 12 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide Child and Youth Care, Level 5, 40 Credits",
+        "Develop and Implement Care Plans, Level 5, 35 Credits",
+        "Ensure Child Safety and Protection, Level 5, 30 Credits",
+        "Support Family and Community Integration, Level 5, 25 Credits",
+        "Maintain Professional Standards, Level 5, 20 Credits"
+      ],
+      "workExperienceModules": [
+        "Child and Youth Care Practice, Level 5, 45 Credits",
+        "Care Planning Project, Level 5, 35 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience working with children and youth"
+  },
+  {
+    "title": "Occupational Certificate: Health Information Manager",
+    "nqfLevel": "Level 7",
+    "id": 101838,
+    "saqaId": 101838,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=101838",
+    "credits": 454,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Health Information Manager. A Health Information Manager oversees health information systems, ensures data integrity and security, and manages health records to support healthcare delivery and decision-making.",
+    "rationale": "This qualification addresses the critical need for qualified health information professionals who can manage complex health information systems and ensure data quality. It provides comprehensive knowledge and skills required for effective health information management.",
+    "exitLevelOutcomes": [
+      "Manage comprehensive health information systems and databases",
+      "Ensure data integrity, security, and compliance with health regulations",
+      "Oversee health records management and quality assurance",
+      "Lead health information technology initiatives and projects"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Health Information Systems Theory, Level 7, 60 Credits",
+        "Health Data Management and Analytics, Level 7, 55 Credits",
+        "Health Information Security and Privacy, Level 7, 50 Credits",
+        "Health Records Management, Level 7, 45 Credits",
+        "Health Information Technology, Level 7, 40 Credits",
+        "Healthcare Compliance and Regulations, Level 7, 35 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage Health Information Systems, Level 7, 70 Credits",
+        "Ensure Data Integrity and Security, Level 7, 65 Credits",
+        "Oversee Health Records Management, Level 7, 60 Credits",
+        "Lead Health IT Projects, Level 7, 55 Credits",
+        "Implement Quality Assurance, Level 7, 50 Credits"
+      ],
+      "workExperienceModules": [
+        "Health Information Management Practice, Level 7, 80 Credits",
+        "Health Information Systems Project, Level 7, 60 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 6 qualification with Mathematics and Communication, plus relevant experience in health or information management"
+  },
+  {
+    "title": "Occupational Certificate: Health Promotion Officer",
+    "nqfLevel": "Level 3",
+    "id": 94597,
+    "saqaId": 94597,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=94597",
+    "credits": 163,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Health Promotion Officer. A Health Promotion Officer develops and implements health promotion programs, educates communities about health issues, and advocates for healthy lifestyle choices.",
+    "rationale": "This qualification addresses the need for qualified health promotion professionals who can effectively promote health and wellness in communities. It provides comprehensive knowledge and skills required for health promotion practice.",
+    "exitLevelOutcomes": [
+      "Develop and implement health promotion programs and campaigns",
+      "Educate communities about health issues and healthy lifestyle choices",
+      "Advocate for health policies and community health initiatives",
+      "Evaluate health promotion program effectiveness"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Health Promotion Theory and Principles, Level 3, 30 Credits",
+        "Community Health Education, Level 3, 25 Credits",
+        "Health Communication and Advocacy, Level 3, 20 Credits",
+        "Program Planning and Implementation, Level 3, 18 Credits",
+        "Health Policy and Legislation, Level 3, 15 Credits",
+        "Evaluation and Research Methods, Level 3, 12 Credits"
+      ],
+      "practicalSkillModules": [
+        "Develop Health Promotion Programs, Level 3, 35 Credits",
+        "Conduct Community Health Education, Level 3, 30 Credits",
+        "Advocate for Health Policies, Level 3, 25 Credits",
+        "Implement Health Campaigns, Level 3, 22 Credits",
+        "Evaluate Program Effectiveness, Level 3, 18 Credits"
+      ],
+      "workExperienceModules": [
+        "Health Promotion Practice, Level 3, 40 Credits",
+        "Community Health Project, Level 3, 30 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 2 qualification with Communication and relevant experience in health or community work"
+  },
+  {
+    "title": "Higher Occupational Certificate: Occupational Health and Safety Practitioner",
+    "nqfLevel": "5 ",
+    "id": 121527,
+    "saqaId": 121527,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121527",
+    "credits": 120,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Occupational Health and Safety Practitioner. An OHS Practitioner identifies workplace hazards, implements safety measures, and ensures compliance with occupational health and safety regulations.",
+    "rationale": "This qualification addresses the critical need for qualified occupational health and safety professionals who can ensure workplace safety and compliance. It provides comprehensive knowledge and skills required for effective OHS practice.",
+    "exitLevelOutcomes": [
+      "Identify and assess workplace health and safety hazards",
+      "Develop and implement safety policies and procedures",
+      "Ensure compliance with OHS regulations and standards",
+      "Conduct safety training and promote safety culture"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Occupational Health and Safety Theory, Level 5, 25 Credits",
+        "Hazard Identification and Risk Assessment, Level 5, 20 Credits",
+        "OHS Legislation and Compliance, Level 5, 18 Credits",
+        "Safety Management Systems, Level 5, 15 Credits",
+        "Emergency Preparedness and Response, Level 5, 12 Credits",
+        "Safety Training and Communication, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Safety Inspections, Level 5, 30 Credits",
+        "Develop Safety Policies and Procedures, Level 5, 25 Credits",
+        "Implement Safety Measures, Level 5, 22 Credits",
+        "Conduct Safety Training, Level 5, 20 Credits",
+        "Investigate Incidents, Level 5, 18 Credits"
+      ],
+      "workExperienceModules": [
+        "OHS Practice, Level 5, 35 Credits",
+        "Safety Management Project, Level 5, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in workplace safety"
+  },
+  {
+    "title": "Higher Occupational Certificate: Business Development Officer",
+    "nqfLevel": "5 ",
+    "id": 121567,
+    "saqaId": 121567,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121567",
+    "credits": 230,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Business Development Officer. A Business Development Officer identifies growth opportunities, develops business strategies, and builds relationships to expand business operations and increase revenue.",
+    "rationale": "This qualification addresses the need for qualified business development professionals who can drive business growth and expansion. It provides comprehensive knowledge and skills required for effective business development practice.",
+    "exitLevelOutcomes": [
+      "Identify and evaluate business growth opportunities",
+      "Develop and implement business development strategies",
+      "Build and maintain strategic business relationships",
+      "Analyze market trends and competitive landscape"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Business Development Theory and Strategy, Level 5, 40 Credits",
+        "Market Analysis and Research, Level 5, 35 Credits",
+        "Sales and Relationship Management, Level 5, 30 Credits",
+        "Financial Analysis and Planning, Level 5, 25 Credits",
+        "Strategic Planning and Implementation, Level 5, 20 Credits",
+        "Communication and Negotiation, Level 5, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Develop Business Strategies, Level 5, 45 Credits",
+        "Conduct Market Analysis, Level 5, 40 Credits",
+        "Build Business Relationships, Level 5, 35 Credits",
+        "Implement Growth Initiatives, Level 5, 30 Credits",
+        "Manage Sales Processes, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Business Development Practice, Level 5, 50 Credits",
+        "Business Growth Project, Level 5, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Environmental Monitor",
+    "nqfLevel": "5 ",
+    "id": 121889,
+    "saqaId": 121889,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121889",
+    "credits": 102,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Environmental Monitor. An Environmental Monitor conducts environmental assessments, monitors environmental conditions, and ensures compliance with environmental regulations and standards.",
+    "rationale": "This qualification addresses the growing need for qualified environmental professionals who can monitor and assess environmental conditions. It provides comprehensive knowledge and skills required for effective environmental monitoring practice.",
+    "exitLevelOutcomes": [
+      "Conduct environmental assessments and monitoring activities",
+      "Collect and analyze environmental data and samples",
+      "Ensure compliance with environmental regulations",
+      "Report on environmental conditions and findings"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Environmental Science and Monitoring, Level 5, 20 Credits",
+        "Environmental Regulations and Compliance, Level 5, 18 Credits",
+        "Data Collection and Analysis Methods, Level 5, 15 Credits",
+        "Environmental Impact Assessment, Level 5, 12 Credits",
+        "Sampling and Testing Techniques, Level 5, 10 Credits",
+        "Report Writing and Documentation, Level 5, 8 Credits"
+      ],
+      "practicalSkillModules": [
+        "Conduct Environmental Monitoring, Level 5, 25 Credits",
+        "Collect and Analyze Environmental Data, Level 5, 22 Credits",
+        "Ensure Regulatory Compliance, Level 5, 20 Credits",
+        "Prepare Environmental Reports, Level 5, 18 Credits",
+        "Use Monitoring Equipment, Level 5, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "Environmental Monitoring Practice, Level 5, 30 Credits",
+        "Environmental Assessment Project, Level 5, 20 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Mathematics and Communication"
+  },
+  {
+    "title": "Occupational Certificate: Water Infrastructure Manager",
+    "nqfLevel": "8 ",
+    "id": 104623,
+    "saqaId": 104623,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=104623",
+    "credits": 304,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Water Infrastructure Manager. A Water Infrastructure Manager oversees water infrastructure systems, manages water resources, and ensures sustainable water supply and distribution.",
+    "rationale": "This qualification addresses the critical need for qualified water infrastructure professionals who can manage complex water systems and ensure sustainable water supply. It provides comprehensive knowledge and skills required for effective water infrastructure management.",
+    "exitLevelOutcomes": [
+      "Manage comprehensive water infrastructure systems and operations",
+      "Oversee water resource planning and management",
+      "Ensure water quality and regulatory compliance",
+      "Lead water infrastructure development and maintenance projects"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Water Infrastructure Management Theory, Level 8, 50 Credits",
+        "Water Resource Planning and Management, Level 8, 45 Credits",
+        "Water Quality and Treatment, Level 8, 40 Credits",
+        "Infrastructure Design and Engineering, Level 8, 35 Credits",
+        "Regulatory Compliance and Environmental Impact, Level 8, 30 Credits",
+        "Project Management and Leadership, Level 8, 25 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage Water Infrastructure Systems, Level 8, 60 Credits",
+        "Oversee Water Resource Operations, Level 8, 55 Credits",
+        "Ensure Water Quality Standards, Level 8, 50 Credits",
+        "Lead Infrastructure Projects, Level 8, 45 Credits",
+        "Manage Regulatory Compliance, Level 8, 40 Credits"
+      ],
+      "workExperienceModules": [
+        "Water Infrastructure Management Practice, Level 8, 70 Credits",
+        "Water Infrastructure Development Project, Level 8, 50 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 7 qualification with Mathematics and Communication, plus relevant experience in water or infrastructure management"
+  },
+  {
+    "title": "Occupational Certificate: Firefighter",
+    "nqfLevel": "Level 4 ",
+    "id": 98991,
+    "saqaId": 98991,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=98991",
+    "credits": 149,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Firefighter. A Firefighter responds to emergency situations, performs fire suppression and rescue operations, and ensures public safety during fire emergencies.",
+    "rationale": "This qualification addresses the critical need for qualified firefighters who can respond to emergencies and protect public safety. It provides comprehensive knowledge and skills required for effective firefighting practice.",
+    "exitLevelOutcomes": [
+      "Respond to fire emergencies and perform fire suppression operations",
+      "Conduct rescue operations and provide emergency medical assistance",
+      "Operate firefighting equipment and vehicles safely and effectively",
+      "Maintain physical fitness and emergency preparedness"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Fire Science and Behavior, Level 4, 30 Credits",
+        "Firefighting Techniques and Equipment, Level 4, 25 Credits",
+        "Rescue Operations and Emergency Response, Level 4, 22 Credits",
+        "Emergency Medical Services, Level 4, 20 Credits",
+        "Safety and Risk Management, Level 4, 18 Credits",
+        "Communication and Teamwork, Level 4, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Perform Fire Suppression Operations, Level 4, 35 Credits",
+        "Conduct Rescue Operations, Level 4, 30 Credits",
+        "Operate Firefighting Equipment, Level 4, 28 Credits",
+        "Provide Emergency Medical Care, Level 4, 25 Credits",
+        "Maintain Physical Fitness, Level 4, 22 Credits"
+      ],
+      "workExperienceModules": [
+        "Firefighting Practice, Level 4, 40 Credits",
+        "Emergency Response Project, Level 4, 30 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 3 qualification with Communication and physical fitness requirements"
+  },
+  {
+    "title": "Occupational Certificate: Recruitment Manager",
+    "nqfLevel": "Level 6",
+    "id": 118251,
+    "saqaId": 118251,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=118251",
+    "credits": 186,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Recruitment Manager. A Recruitment Manager oversees the recruitment process, develops talent acquisition strategies, and ensures effective hiring practices to meet organizational staffing needs.",
+    "rationale": "This qualification addresses the need for qualified recruitment professionals who can effectively manage talent acquisition and hiring processes. It provides comprehensive knowledge and skills required for effective recruitment management.",
+    "exitLevelOutcomes": [
+      "Develop and implement comprehensive recruitment strategies",
+      "Oversee the entire recruitment and selection process",
+      "Build and maintain talent pipelines and networks",
+      "Ensure compliance with employment laws and best practices"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Recruitment and Selection Theory, Level 6, 35 Credits",
+        "Talent Acquisition Strategies, Level 6, 30 Credits",
+        "Employment Law and Compliance, Level 6, 25 Credits",
+        "Interviewing and Assessment Techniques, Level 6, 22 Credits",
+        "HR Information Systems, Level 6, 20 Credits",
+        "Communication and Negotiation, Level 6, 18 Credits"
+      ],
+      "practicalSkillModules": [
+        "Develop Recruitment Strategies, Level 6, 40 Credits",
+        "Oversee Selection Processes, Level 6, 35 Credits",
+        "Build Talent Pipelines, Level 6, 30 Credits",
+        "Conduct Interviews and Assessments, Level 6, 28 Credits",
+        "Manage Recruitment Systems, Level 6, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Recruitment Management Practice, Level 6, 45 Credits",
+        "Talent Acquisition Project, Level 6, 35 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 5 qualification with Communication and relevant experience in HR or recruitment"
+  },
+  {
+    "title": "Advanced Occupational Certificate: Human Resource Management Officer",
+    "nqfLevel": "Level 5 ",
+    "id": 121151,
+    "saqaId": 121151,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121151",
+    "credits": 134,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Advanced Human Resource Management Officer. An Advanced HR Management Officer manages complex HR functions, develops HR strategies, and ensures effective human resource management practices within organizations.",
+    "rationale": "This qualification addresses the need for qualified advanced HR professionals who can manage complex human resource functions and develop strategic HR initiatives. It provides comprehensive knowledge and skills required for advanced HR management practice.",
+    "exitLevelOutcomes": [
+      "Manage comprehensive human resource functions and operations",
+      "Develop and implement strategic HR policies and procedures",
+      "Support organizational development and change management",
+      "Ensure compliance with labor laws and HR best practices"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Advanced Human Resource Management Theory, Level 5, 25 Credits",
+        "Strategic HR Planning and Development, Level 5, 20 Credits",
+        "Employee Relations and Labor Law, Level 5, 18 Credits",
+        "Performance Management and Development, Level 5, 15 Credits",
+        "Compensation and Benefits Management, Level 5, 12 Credits",
+        "HR Information Systems and Technology, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Manage HR Operations, Level 5, 30 Credits",
+        "Develop HR Strategies, Level 5, 25 Credits",
+        "Support Organizational Development, Level 5, 20 Credits",
+        "Ensure HR Compliance, Level 5, 15 Credits"
+      ],
+      "workExperienceModules": [
+        "Advanced HR Management Practice, Level 5, 35 Credits",
+        "HR Management Project, Level 5, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in human resources"
+  },
+  {
+    "title": "Higher Occupational Certificate: Human Resource Management Administrator",
+    "nqfLevel": "Level 5 ",
+    "id": 121150,
+    "saqaId": 121150,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=121150",
+    "credits": 120,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as a Human Resource Management Administrator. An HR Management Administrator provides administrative support for HR functions, manages employee records, and assists with HR processes and procedures.",
+    "rationale": "This qualification addresses the need for qualified HR administrators who can provide essential administrative support for human resource functions. It provides comprehensive knowledge and skills required for effective HR administration.",
+    "exitLevelOutcomes": [
+      "Provide comprehensive administrative support for HR functions",
+      "Manage employee records and HR documentation",
+      "Assist with HR processes and procedures",
+      "Maintain HR information systems and databases"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Human Resource Administration Theory, Level 5, 25 Credits",
+        "Employee Records Management, Level 5, 20 Credits",
+        "HR Information Systems, Level 5, 18 Credits",
+        "Employment Law and Compliance, Level 5, 15 Credits",
+        "Communication and Customer Service, Level 5, 12 Credits",
+        "Documentation and Filing Systems, Level 5, 10 Credits"
+      ],
+      "practicalSkillModules": [
+        "Provide HR Administrative Support, Level 5, 30 Credits",
+        "Manage Employee Records, Level 5, 25 Credits",
+        "Use HR Information Systems, Level 5, 22 Credits",
+        "Assist with HR Processes, Level 5, 20 Credits",
+        "Maintain HR Documentation, Level 5, 18 Credits"
+      ],
+      "workExperienceModules": [
+        "HR Administration Practice, Level 5, 35 Credits",
+        "HR Administration Project, Level 5, 25 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in administration"
+  },
+  {
+    "title": "Occupational Certificate: Office Supervisor",
+    "nqfLevel": "5 ",
+    "id": 11840,
+    "saqaId": 11840,
+    "saqaUrl": "https://allqs.saqa.org.za/showQualification.php?id=11840",
+    "credits": 240,
+    "authority": "QCTO",
+    "category": "Assessment Centre",
+    "type": "assessment",
+    "purpose": "The purpose of this qualification is to prepare a learner to operate as an Office Supervisor. An Office Supervisor oversees office operations, manages administrative staff, and ensures efficient office procedures and customer service delivery.",
+    "rationale": "This qualification addresses the need for qualified office supervisors who can effectively manage office operations and lead administrative teams. It provides comprehensive knowledge and skills required for effective office supervision.",
+    "exitLevelOutcomes": [
+      "Supervise office operations and administrative staff",
+      "Manage office procedures and workflow efficiency",
+      "Ensure quality customer service delivery",
+      "Oversee office resources and equipment management"
+    ],
+    "qualificationRules": {
+      "knowledgeModules": [
+        "Office Management Theory and Practice, Level 5, 40 Credits",
+        "Supervision and Leadership Skills, Level 5, 35 Credits",
+        "Customer Service Excellence, Level 5, 30 Credits",
+        "Office Technology and Systems, Level 5, 25 Credits",
+        "Communication and Interpersonal Skills, Level 5, 20 Credits",
+        "Resource Management and Planning, Level 5, 15 Credits"
+      ],
+      "practicalSkillModules": [
+        "Supervise Office Operations, Level 5, 45 Credits",
+        "Manage Administrative Staff, Level 5, 40 Credits",
+        "Ensure Customer Service Quality, Level 5, 35 Credits",
+        "Oversee Office Resources, Level 5, 30 Credits",
+        "Implement Office Procedures, Level 5, 25 Credits"
+      ],
+      "workExperienceModules": [
+        "Office Supervision Practice, Level 5, 50 Credits",
+        "Office Management Project, Level 5, 40 Credits"
+      ]
+    },
+    "entryRequirements": "NQF Level 4 qualification with Communication and relevant experience in office administration"
+  }
+]

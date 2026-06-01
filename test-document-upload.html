@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            transition: border-color 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #8b5cf6;
+        }
+        .upload-area.dragover {
+            border-color: #8b5cf6;
+            background-color: #f3f4f6;
+        }
+        .file-info {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #8b5cf6;
+        }
+        .content-preview {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .btn {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #7c3aed;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Document Upload Test</h1>
+        <p>This page demonstrates the document upload functionality for the AI Course Builder.</p>
+        
+        <div class="upload-area" id="uploadArea">
+            <input type="file" id="fileInput" accept=".pdf,.txt,.doc,.docx,.json" style="display: none;">
+            <div>
+                <h3>📁 Upload Document</h3>
+                <p>Click to upload or drag and drop your document here</p>
+                <p><small>Supported formats: PDF, TXT, DOC, DOCX, JSON</small></p>
+            </div>
+        </div>
+
+        <div id="fileInfo" class="file-info hidden">
+            <h4>📄 File Information</h4>
+            <div id="fileName"></div>
+            <div id="fileSize"></div>
+            <div id="fileType"></div>
+            <div class="stats">
+                <span id="wordCount"></span>
+                <span id="charCount"></span>
+            </div>
+        </div>
+
+        <div id="contentPreview" class="content-preview hidden">
+            <h4>📝 Content Preview</h4>
+            <div id="contentText"></div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button class="btn" id="processBtn" disabled>Process Document</button>
+            <button class="btn" id="clearBtn" style="background: #ef4444; margin-left: 10px;">Clear</button>
+        </div>
+
+        <div id="result" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const contentPreview = document.getElementById('contentPreview');
+        const processBtn = document.getElementById('processBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const result = document.getElementById('result');
+
+        let selectedFile = null;
+
+        // File input handling
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+
+        // Drag and drop handling
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            selectedFile = file;
+            displayFileInfo(file);
+            processBtn.disabled = false;
+        }
+
+        function displayFileInfo(file) {
+            document.getElementById('fileName').textContent = `Name: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${formatFileSize(file.size)}`;
+            document.getElementById('fileType').textContent = `Type: ${file.type || 'Unknown'}`;
+            fileInfo.classList.remove('hidden');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function countWords(text) {
+            return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+        }
+
+        processBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            processBtn.disabled = true;
+            processBtn.textContent = 'Processing...';
+
+            try {
+                const content = await readFileContent(selectedFile);
+                const wordCount = countWords(content);
+                const charCount = content.length;
+
+                document.getElementById('wordCount').textContent = `Words: ${wordCount}`;
+                document.getElementById('charCount').textContent = `Characters: ${charCount}`;
+
+                document.getElementById('contentText').textContent = content.substring(0, 500) + (content.length > 500 ? '...' : '');
+                contentPreview.classList.remove('hidden');
+
+                result.innerHTML = `
+                    <div style="background: #d1fae5; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+                        <h4 style="color: #065f46; margin: 0 0 10px 0;">✅ Document Processed Successfully!</h4>
+                        <p style="color: #047857; margin: 0;">The AI Course Builder can now use this content to create a targeted course.</p>
+                    </div>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <div style="background: #fee2e2; padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444;">
+                        <h4 style="color: #991b1b; margin: 0 0 10px 0;">❌ Error Processing Document</h4>
+                        <p style="color: #b91c1c; margin: 0;">${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                processBtn.disabled = false;
+                processBtn.textContent = 'Process Document';
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.classList.add('hidden');
+            contentPreview.classList.add('hidden');
+            processBtn.disabled = true;
+            result.innerHTML = '';
+        });
+
+        async function readFileContent(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    if (!content) {
+                        reject(new Error('Failed to read file content'));
+                        return;
+                    }
+                    
+                    if (file.type === 'text/plain' || file.type.includes('text/') || file.type === 'application/json') {
+                        resolve(content);
+                    } else if (file.type === 'application/pdf') {
+                        // For demo purposes, we'll just return a placeholder
+                        resolve(`PDF content extracted (${file.size} bytes). In the actual implementation, this would use a proper PDF parsing library.`);
+                    } else {
+                        reject(new Error('Unsupported file type. Please upload a text, PDF, or JSON file.'));
+                    }
+                };
+                
+                reader.onerror = () => {
+                    reject(new Error('Failed to read file'));
+                };
+                
+                if (file.type === 'application/pdf') {
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    reader.readAsText(file);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
