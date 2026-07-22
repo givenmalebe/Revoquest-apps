@@ -5,4 +5,9 @@ import "./index.css";
 // Initialize Firebase
 import "./firebase/config";
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Redirect revolearn.co.za → revoquest.co.za/funnel
+if (window.location.hostname === "revolearn.co.za") {
+  window.location.replace("https://revoquest.co.za/funnel");
+} else {
+  createRoot(document.getElementById("root")!).render(<App />);
+}

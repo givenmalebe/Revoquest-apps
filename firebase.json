@@ -40,21 +40,6 @@
           "destination": "/index.html"
         }
       ]
-    },
-    {
-      "site": "revolearn-redirect",
-      "public": "revolearn-redirect/public",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
     }
   ],
   "emulators": {
