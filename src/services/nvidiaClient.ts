@@ -1,9 +1,23 @@
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { nativeFetch } from '../utils/nativeFetch';
+import { auth } from '../firebase/config';
 
 export const DEFAULT_NVIDIA_MODEL = 'meta/llama-3.1-8b-instruct';
 
+const FIREBASE_REGION = 'us-central1';
+
 export function hasNvidiaConfigured(): boolean {
   return !!import.meta.env.VITE_FIREBASE_PROJECT_ID?.trim();
+}
+
+function getCloudFunctionUrl(functionName: string): string {
+  const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+  return `https://${FIREBASE_REGION}-${projectId}.cloudfunctions.net/${functionName}`;
+}
+
+async function getIdToken(): Promise<string> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('User not authenticated. Please log in and try again.');
+  return user.getIdToken();
 }
 
 export interface NvidiaChatMessage {
@@ -26,24 +40,43 @@ export async function nvidiaChatCompletion(
   messages: NvidiaChatMessage[],
   options?: NvidiaCompletionOptions
 ): Promise<NvidiaCompletionResult> {
-  const functions = getFunctions();
-  const secureProxy = httpsCallable<
-    { messages: any[]; options?: any },
-    any
-  >(functions, 'secureNvidiaChat');
+  const url = getCloudFunctionUrl('secureNvidiaChat');
+  const idToken = await getIdToken();
 
-  const response = await secureProxy({
-    messages,
-    options: {
-      model: options?.model ?? DEFAULT_NVIDIA_MODEL,
-      temperature: options?.temperature ?? 0.7,
-      max_tokens: options?.max_tokens,
-      response_format: options?.response_format,
+  const body = JSON.stringify({
+    data: {
+      messages,
+      options: {
+        model: options?.model ?? DEFAULT_NVIDIA_MODEL,
+        temperature: options?.temperature ?? 0.7,
+        max_tokens: options?.max_tokens,
+        response_format: options?.response_format,
+      },
     },
   });
 
-  const data = response.data;
-  const message = data?.choices?.[0]?.message;
+  const response = await nativeFetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
+    },
+    body,
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    let detail = text;
+    try {
+      const json = JSON.parse(text);
+      detail = json?.error?.message || json?.result?.message || text;
+    } catch { /* use raw text */ }
+    throw new Error(`Cloud Function error (${response.status}): ${detail}`);
+  }
+
+  const json = await response.json();
+  const result = json?.result ?? json?.data ?? json;
+  const message = result?.choices?.[0]?.message;
   const content =
     typeof message?.content === 'string' ? message.content : message?.content != null ? String(message.content) : '';
 
