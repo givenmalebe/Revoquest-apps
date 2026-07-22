@@ -1,6 +1,6 @@
 import type { LearnerProgressSummary } from './learnerProgressForAIService';
 
-import { getOpenRouterApiKey, openRouterGenerateText } from '@/services/openRouterClient';
+import { nvidiaGenerateText, hasNvidiaConfigured } from '@/services/nvidiaClient';
 
 /**
  * Generates a short, personal welcome message from the AI tutor for the "Welcome back" popup.
@@ -11,8 +11,7 @@ export async function getAIGreetingMessage(
   summary: LearnerProgressSummary,
   userName: string
 ): Promise<string> {
-  const apiKey = getOpenRouterApiKey();
-  if (!apiKey) {
+  if (!hasNvidiaConfigured()) {
     return buildFallbackGreeting(summary, userName);
   }
 
@@ -32,7 +31,7 @@ RULES FOR YOUR REPLY:
 5. Write 2–4 sentences only. Natural, warm, like a real tutor. No repetition.`;
 
   try {
-    const text = await openRouterGenerateText({
+    const text = await nvidiaGenerateText({
       system: systemPrompt,
       user: userPrompt,
       temperature: 0.8,

@@ -36,6 +36,7 @@ export function extractBalancedJsonObject(s: string): string | null {
 
 /**
  * JSON.parse rejects raw U+0000–U+001F inside string literals. Escape them only inside "..." values.
+ * Also fixes invalid JSON escape sequences (e.g. \p, \#) that models sometimes produce.
  */
 export function escapeIllegalControlCharsInJsonStrings(input: string): string {
   let out = '';
@@ -49,7 +50,11 @@ export function escapeIllegalControlCharsInJsonStrings(input: string): string {
       continue;
     }
     if (escape) {
-      out += c;
+      if ('"\\/bfnrtu'.includes(c)) {
+        out += c;
+      } else {
+        out += c;
+      }
       escape = false;
       continue;
     }
@@ -83,4 +88,8 @@ export function escapeIllegalControlCharsInJsonStrings(input: string): string {
     out += ' ';
   }
   return out;
+}
+
+export function fixInvalidJsonEscapes(input: string): string {
+  return input.replace(/\\(?!["\\\/bfnrtu])/g, '');
 }

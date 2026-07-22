@@ -2,7 +2,7 @@ import { SlideData } from './SlideRenderer';
 import { DemoData } from './DemonstrationModule';
 import { WebSearchService } from '../../services/webSearchService';
 import { CreativeDiagramGenerator } from './CreativeDiagramGenerator';
-import { openRouterGenerateText } from '@/services/openRouterClient';
+import { nvidiaGenerateText } from '@/services/nvidiaClient';
 
 export interface PresentationData {
   id: string;
@@ -1251,6 +1251,8 @@ Requirements:
 - Write in an educational, engaging tone suitable for students
 - Include specific examples, analogies, and explanations
 - Make content progressively build understanding
+- Each slide MUST have 3-4 detailed paragraphs — write like a textbook, not bullet points
+- Include step-by-step walkthroughs, real-world examples, and thorough analysis
 - Add helpful study tips and memory aids
 - Include questions to encourage critical thinking
 - Make each slide substantial but digestible
@@ -1281,7 +1283,7 @@ Format your response as JSON with this structure:
 }`;
 
     try {
-      const aiContent = await openRouterGenerateText({ user: prompt, temperature: 0.7, max_tokens: 8192 });
+      const aiContent = await nvidiaGenerateText({ user: prompt, temperature: 0.7, max_tokens: 8192 });
       
       // Parse JSON response with better error handling
       const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
@@ -1370,7 +1372,7 @@ Format your response as JSON:
 
     try {
       console.log('🎨 Generating AI diagram for:', topic);
-      const aiContent = await openRouterGenerateText({ user: prompt, temperature: 0.7, max_tokens: 8192 });
+      const aiContent = await nvidiaGenerateText({ user: prompt, temperature: 0.7, max_tokens: 8192 });
       
       console.log('📊 Raw AI diagram response:', aiContent.substring(0, 200) + '...');
       
@@ -1718,7 +1720,7 @@ Evaluate based on:
 Respond with only "APPROVED" if the presentation meets high educational standards, or "NEEDS_IMPROVEMENT" if it requires enhancement.`;
 
     try {
-      const evaluation = (await openRouterGenerateText({ user: prompt, temperature: 0.3, max_tokens: 64 })).trim();
+      const evaluation = (await nvidiaGenerateText({ user: prompt, temperature: 0.3, max_tokens: 64 })).trim();
       
       return evaluation.includes('APPROVED');
     } catch (error) {

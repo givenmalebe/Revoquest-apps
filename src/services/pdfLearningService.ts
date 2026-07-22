@@ -1,13 +1,13 @@
-/** Text model for PDF lesson generation (OpenRouter). Override with VITE_OPENROUTER_MODEL. */
-import { getOpenRouterApiKey, openRouterGenerateText, openRouterGenerateImageDataUrl } from '@/services/openRouterClient';
+/** Text model for PDF lesson generation (NVIDIA). */
+import { nvidiaGenerateText, hasNvidiaConfigured } from '@/services/nvidiaClient';
 import { escapeIllegalControlCharsInJsonStrings, extractBalancedJsonObject } from '@/utils/jsonTextSafe';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 
-async function callOpenRouterJson(prompt: string, maxOutputTokens: number): Promise<string> {
+async function callNvidiaJson(prompt: string, maxOutputTokens: number): Promise<string> {
   const system =
     'You output a single valid JSON value (object or array as requested). No markdown, no commentary. Escape newlines inside JSON strings as \\n—never output raw line breaks inside a quoted string.';
   const run = async (useJsonMode: boolean) => {
-    return openRouterGenerateText({
+    return nvidiaGenerateText({
       system,
       user: prompt,
       temperature: 0.25,
@@ -22,7 +22,7 @@ async function callOpenRouterJson(prompt: string, maxOutputTokens: number): Prom
     }
     return text;
   } catch (first) {
-    console.warn('OpenRouter JSON mode failed, retrying without response_format:', first);
+    console.warn('NVIDIA JSON mode failed, retrying without response_format:', first);
     const text = await run(false);
     if (!text || text.length < 10) {
       throw new Error('AI returned no content. Check your API key and quota.');
@@ -262,7 +262,7 @@ JSON shape:
 Document:
 ${excerpt}`;
 
-  const raw = await callOpenRouterJson(prompt, 16384);
+  const raw = await callNvidiaJson(prompt, 16384);
   const parsed = tryParseJson<SlidesPayload>(raw);
   const arr = parsed?.slides;
   if (!Array.isArray(arr) || arr.length === 0) return null;
@@ -331,7 +331,7 @@ Rules: Escape double quotes inside JSON as \\". No script, style, iframe, onclic
 Document excerpt:
 ${excerpt.slice(0, 38000)}`;
 
-  const raw = await callOpenRouterJson(prompt, 16384);
+  const raw = await callNvidiaJson(prompt, 16384);
   const parsed = tryParseJson<{ lessons?: unknown[] }>(raw);
   const arr = parsed?.lessons;
   if (!Array.isArray(arr) || arr.length === 0) return null;
@@ -381,14 +381,7 @@ Course context: ${courseTitle}
 Key ideas to visualize (do not render as text in the image): ${bulletSummary.slice(0, 500)}
 Style: modern flat infographic, professional, soft colors, no logos, no watermarks, no readable paragraphs—icons and diagrams only. 16:9 friendly composition.`;
 
-  if (getOpenRouterApiKey()) {
-    try {
-      const fromOr = await openRouterGenerateImageDataUrl(prompt);
-      if (fromOr) return fromOr;
-    } catch (e) {
-      console.warn('OpenRouter slide image error:', e);
-    }
-  }
+  // NVIDIA does not support image generation; skip straight to Gemini proxy
 
   // Fallback to secure Gemini image proxy in the backend
   try {
@@ -425,8 +418,8 @@ export async function generateContentForSlide(params: {
   slideIndex: number;
   totalSlides: number;
 }): Promise<GeneratedSlideContent> {
-  if (!getOpenRouterApiKey()) {
-    throw new Error('OpenRouter API key missing (VITE_OPENROUTER_API_KEY)');
+  if (!hasNvidiaConfigured()) {
+    throw new Error('NVIDIA API not configured');
   }
   const { excerpt, fileName, course, slide, slideIndex, totalSlides } = params;
   const maxExcerpt = excerpt.length > 55000 ? excerpt.slice(0, 55000) + '\n...[truncated]' : excerpt;
@@ -453,7 +446,7 @@ OUTPUT ONLY valid JSON:
   "plainText": "Full lesson plain text"
 }
 
-CRITICAL: Exactly 4, 5, or 6 objects in slidePanels. Each panel is ONE STEP shown alone on screen (not all at once). Order panels as a lesson sequence: step 1 → step 2 → … bullet = step title; body = long paragraph ONLY for that step (left column). No repeating the same idea across panels—each step adds new depth.
+CRITICAL: Exactly 4, 5, or 6 objects in slidePanels. Each panel is ONE STEP shown alone on screen (not all at once). Order panels as a lesson sequence: step 1 → step 2 → … bullet = step title; body = long paragraph ONLY for that step (left column). No repeating the same idea across panels—each step adds new depth. Each panel body MUST be at least 5-8 detailed sentences — do not write brief summaries. Teach each concept thoroughly with definitions, examples, step-by-step reasoning, and real-world applications.
 
 lessonHtml structure — MUST include all of the following:
 
@@ -461,7 +454,7 @@ lessonHtml structure — MUST include all of the following:
 
 2) cc-block cc-objectives: h2 "Learning objectives"; ul 3–4 bullets.
 
-3) cc-block: h2 "Main content"; p + h3 subheads; teach the topic.
+3) cc-block: h2 "Main content"; p + h3 subheads; teach the topic. Each content block MUST have 3-4 substantial paragraphs — explain concepts in depth like a university textbook. Include analogies, step-by-step reasoning, worked examples, and real-world applications. Do not write brief summaries.
 
 4) cc-table-block: h2 "At a glance" or "Compare" or similar COLORED heading; then <table><thead><tr><th>...</th></tr></thead><tbody><tr><td>...</td></tr> at least 3 rows—smart comparison, checklist, or concept vs definition.
 
@@ -478,7 +471,7 @@ Tags: article, section, div, p, br, h1, h2, h3, strong, em, ul, ol, li, blockquo
 Document:
 ${maxExcerpt}`;
 
-  const raw = await callOpenRouterJson(prompt, 16384);
+  const raw = await callNvidiaJson(prompt, 16384);
   const parsed = tryParseJson<{
     slidePanels?: { bullet?: string; body?: string }[];
     slideBullets?: unknown[];
@@ -581,8 +574,7 @@ export async function generatePDFLearningContent(
   extractedText: string,
   fileName: string
 ): Promise<PDFLearningResult> {
-  const apiKey = getOpenRouterApiKey();
-  if (!apiKey) {
+  if (!hasNvidiaConfigured()) {
     const fallbackLessons = structureRawTextAsLessons(extractedText, fileName);
     return {
       textContent: extractedText,

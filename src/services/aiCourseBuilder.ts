@@ -1,5 +1,5 @@
-import { getOpenRouterApiKey, openRouterGenerateText } from '@/services/openRouterClient';
-import { escapeIllegalControlCharsInJsonStrings, extractBalancedJsonObject } from '@/utils/jsonTextSafe';
+import { nvidiaGenerateText } from '@/services/nvidiaClient';
+import { escapeIllegalControlCharsInJsonStrings, extractBalancedJsonObject, fixInvalidJsonEscapes } from '@/utils/jsonTextSafe';
 
 export interface AICourseRequest {
   topic: string;
@@ -72,20 +72,13 @@ export interface YouTubeVideoResult {
 class AICourseBuilderService {
   async generateCourseStructure(request: AICourseRequest, documentContent?: string): Promise<AICourseResponse> {
     try {
-      if (!getOpenRouterApiKey()) {
-        throw new Error(
-          'AI not configured. Set OPENROUTER_API_KEY in firebase-functions/.env and deploy functions.'
-        );
-      }
-
       const prompt = this.buildCourseGenerationPrompt(request, documentContent);
-      const text = await openRouterGenerateText({
+      const text = await nvidiaGenerateText({
         system:
-          'You are an expert curriculum designer. Output exactly one JSON object and nothing else—no markdown fences, no commentary. The object MUST include a non-empty "learningOutcomes" array (at least 5 strings) and a non-empty "units" array (at least 3 units). Every unit MUST include a non-empty "lessons" array (at least 2 lessons each). Escape newlines inside strings as \\n; do not break JSON strings across unescaped line breaks.',
+          'You are an expert curriculum designer. Output exactly one JSON object and nothing else—no markdown fences, no commentary. The object MUST include a non-empty "learningOutcomes" array (at least 5 strings) and a non-empty "units" array (exactly 6 units). Every unit MUST include a non-empty "lessons" array (exactly 3 lessons each). Escape newlines inside strings as \\n; do not break JSON strings across unescaped line breaks.',
         user: prompt,
         temperature: 0.55,
-        max_tokens: 32768,
-        response_format: { type: 'json_object' },
+        max_tokens: 8192,
       });
 
       const parsed = this.parseCourseJson(text);
@@ -98,14 +91,8 @@ class AICourseBuilderService {
 
   async generateYouTubeVideos(searchQuery: string, count: number = 3): Promise<YouTubeVideoResult[]> {
     try {
-      if (!getOpenRouterApiKey()) {
-        throw new Error(
-          'AI not configured. Set OPENROUTER_API_KEY in firebase-functions/.env and deploy functions.'
-        );
-      }
-
       const prompt = this.buildYouTubeSearchPrompt(searchQuery, count);
-      const text = await openRouterGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
+      const text = await nvidiaGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
       
       return this.parseYouTubeResponse(text);
     } catch (error) {
@@ -116,14 +103,6 @@ class AICourseBuilderService {
 
   async generateImage(prompt: string): Promise<string> {
     try {
-      if (!getOpenRouterApiKey()) {
-        throw new Error(
-          'AI not configured. Set OPENROUTER_API_KEY in firebase-functions/.env and deploy functions.'
-        );
-      }
-
-      // For now, return a placeholder URL
-      // In production, integrate with DALL-E, Midjourney, or similar
       return `https://via.placeholder.com/400x300/6366f1/ffffff?text=${encodeURIComponent(prompt)}`;
     } catch (error) {
       console.error('Error generating image:', error);
@@ -148,62 +127,50 @@ IMPORTANT: Analyze the uploaded document and create a course structure that:
 ` : '';
 
     return `
-Create a comprehensive, professional course structure for the following request:
+Create a course structure for:
 
 Topic: ${request.topic}
 Level: ${request.level}
 Duration: ${request.duration} hours
-Category: ${request.category || 'General'}
-Target Audience: ${request.targetAudience || 'General learners'}
-Learning Goals: ${request.learningGoals?.join(', ') || 'Master the fundamentals'}
-Prerequisites: ${request.prerequisites?.join(', ') || 'None'}
 
 ${documentSection}
 
-IMPORTANT: Generate REAL, SPECIFIC content for ${request.topic}. Do NOT use generic placeholders like "Welcome and Course Overview" or "Understanding the Fundamentals". Create meaningful, topic-specific lesson titles, descriptions, and content that directly relate to ${request.topic}.
+IMPORTANT: Use real, specific titles for ${request.topic}. No generic placeholders.
 
-Please generate a detailed course structure with the following format (return as valid JSON):
+Return this exact JSON structure (no markdown, no commentary):
 
 {
   "title": "Course Title",
-  "description": "Detailed course description (2-3 paragraphs)",
-  "shortDescription": "Brief course description (1-2 sentences)",
-  "learningOutcomes": ["Outcome 1", "Outcome 2", "Outcome 3", "Outcome 4", "Outcome 5"],
-  "targetAudience": "Target audience description",
-  "prerequisites": ["Prerequisite 1", "Prerequisite 2"],
-  "courseOverview": "Course overview and approach",
-  "practicalApproach": "How the course emphasizes practical learning",
-  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
-  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
+  "description": "2-3 sentence description",
+  "shortDescription": "One sentence",
+  "learningOutcomes": ["outcome1", "outcome2", "outcome3", "outcome4", "outcome5"],
+  "targetAudience": "Who this is for",
+  "prerequisites": ["prereq1", "prereq2"],
+  "courseOverview": "One paragraph overview",
+  "practicalApproach": "One paragraph",
+  "tags": ["tag1", "tag2", "tag3"],
+  "keywords": ["kw1", "kw2", "kw3"],
   "estimatedHours": ${request.duration},
-  "thumbnailPrompt": "Description for course thumbnail image",
+  "thumbnailPrompt": "Image description",
   "units": [
     {
       "id": 1,
       "title": "Unit Title",
-      "description": "Unit description",
+      "description": "2 sentences about this unit",
       "order": 1,
       "lessons": [
         {
-          "id": "lesson-1",
+          "id": "lesson-1-1",
           "title": "Lesson Title",
-          "description": "Lesson description",
-          "type": "video",
+          "description": "2 sentences about what the learner will learn",
+          "type": "reading",
           "duration": 30,
-          "content": "Detailed lesson content",
-          "objectives": ["Objective 1", "Objective 2"],
-          "resources": ["Resource 1", "Resource 2"],
-          "youtubeUrl": "",
-          "pdfUrl": "",
-          "order": 1,
-          "isPublished": true,
-          "youtubeSearchQuery": "search query for this lesson",
-          "readingContent": "Comprehensive article content with multiple paragraphs",
-          "quiz": {
-            "questions": [],
-            "passingScore": 70,
-            "timeLimit": 0
-          }
+          "content": "2-3 sentence teaching outline",
+          "objectives": ["objective1", "objective2"],
+          "resources": ["resource1"],
+          "youtubeSearchQuery": "search query",
+          "readingContent": "",
+          "quiz": {"questions": [], "passingScore": 70, "timeLimit": 0}
         }
       ]
     }
@@ -211,30 +178,12 @@ Please generate a detailed course structure with the following format (return as
 }
 
 Requirements:
-- Create 3-5 units for a comprehensive course (adjust based on duration)
-- Each unit should have 2-4 lessons
-- Mix different lesson types (video, reading, quiz, project, discussion)
-- Include realistic durations (15-90 minutes per lesson)
-- Add detailed content and objectives for each lesson
-- Include relevant YouTube search queries for video lessons
-- For READING lessons: Generate comprehensive article-style content with multiple detailed paragraphs covering the topic
-- For QUIZ lessons: Include 5-10 relevant questions with multiple choice answers
-- For PROJECT lessons: Provide step-by-step project instructions and deliverables
-- For DISCUSSION lessons: Include thought-provoking discussion topics and questions
-- For EVERY lesson, the "content" field must be a full teaching outline: at least 4–8 short paragraphs (or structured bullets with explanations) covering definitions, steps, one example, and one "common mistake" note—aim for ~350–900 words of teaching text per lesson (escape any line breaks inside JSON strings as \\n).
-- "description" for each lesson must be 2–4 sentences that clearly state what the learner will do and learn (not a single generic sentence).
-- Use only valid JSON: double-quoted strings; escape inner quotes as \\" and newlines as \\n—never emit raw line breaks inside a JSON string.
-- Ensure the total duration matches the requested ${request.duration} hours
-- Make the content practical and engaging
-- Include real-world examples and applications
-- Focus on hands-on learning and practical skills
-- Generate specific, actionable learning outcomes
-- Create detailed lesson descriptions that explain what students will learn
-- Include practical examples and real-world applications
-- Make lesson titles descriptive and specific to the topic
-- Ensure content is appropriate for the specified level (${request.level})
-
-Return only one JSON object (no markdown). Required top-level keys: title, description, shortDescription, learningOutcomes, targetAudience, prerequisites, courseOverview, practicalApproach, tags, keywords, estimatedHours, thumbnailPrompt, units.
+- EXACTLY 6 units, each with EXACTLY 3 lessons
+- Mix lesson types: reading, video, quiz, project, discussion
+- Keep "content" to 2-3 sentences only (will be expanded later)
+- Keep "readingContent" empty (will be expanded later)
+- Use valid JSON only. Escape newlines as \\n inside strings.
+- Return only one JSON object, nothing else.
     `;
   }
 
@@ -272,12 +221,20 @@ Requirements:
     let trimmed = text.trim().replace(/^\uFEFF/, '');
     trimmed = trimmed.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
     const chunk = extractBalancedJsonObject(trimmed) ?? trimmed;
-    const escaped = escapeIllegalControlCharsInJsonStrings(chunk);
+    const fixed = fixInvalidJsonEscapes(chunk);
+    const escaped = escapeIllegalControlCharsInJsonStrings(fixed);
     const noTrailingCommas = escaped.replace(/,(\s*[}\]])/g, '$1');
     try {
       return JSON.parse(noTrailingCommas);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
+      if (/unterminated|Unexpected end|position \d+/i.test(msg)) {
+        const repaired = this.repairTruncatedJson(noTrailingCommas);
+        if (repaired) {
+          console.warn('JSON was truncated; repaired successfully');
+          return repaired;
+        }
+      }
       const match = /at position (\d+)/i.exec(msg);
       if (match) {
         const pos = parseInt(match[1], 10);
@@ -289,6 +246,27 @@ Requirements:
         console.warn('JSON.parse failed after control-char escape:', msg);
       }
       throw e;
+    }
+  }
+
+  private repairTruncatedJson(text: string): unknown | null {
+    let s = text;
+    const inString = (s.match(/"/g) || []).length % 2 !== 0;
+    if (inString) s += '"';
+    let depth = 0;
+    for (const ch of s) {
+      if (ch === '{' || ch === '[') depth++;
+      if (ch === '}' || ch === ']') depth--;
+    }
+    while (depth > 0) {
+      const lastOpen = Math.max(s.lastIndexOf('{'), s.lastIndexOf('['));
+      s += lastOpen >= 0 && s[lastOpen] === '{' ? '}' : ']';
+      depth--;
+    }
+    try {
+      return JSON.parse(s);
+    } catch {
+      return null;
     }
   }
 

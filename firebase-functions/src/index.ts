@@ -8,6 +8,7 @@ dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
 // Force redeploy - switching to live Yoco mode - 2025-03-27
 
 import {HttpsError, onCall, onRequest} from "firebase-functions/v2/https";
+import {defineSecret} from "firebase-functions/params";
 import * as logger from "firebase-functions/logger";
 import * as nodemailer from "nodemailer";
 import {getFirestore, FieldValue} from "firebase-admin/firestore";
@@ -35,6 +36,8 @@ const FIREBASE_AUTH_ACTION_BASE_URL =
 // Yoco Payment — keys only from env / Firebase secrets (never hardcode)
 const functionsConfig = getFunctionsConfig();
 const yocoConfig = functionsConfig.yoco ?? {};
+
+const nvidiaApiKey = defineSecret("NVIDIA_API_KEY_SECRET");
 
 const YOCO_ENVIRONMENT = process.env.YOCO_ENVIRONMENT || yocoConfig.environment || "test";
 const YOCO_TEST_SECRET_KEY = process.env.YOCO_TEST_SECRET_KEY || "";
@@ -1677,7 +1680,7 @@ export const deleteUserByAdmin = onCall({ cors: CORS_ORIGINS }, async (request) 
  * secureOpenRouterChat: Secure backend proxy for OpenRouter chat completions.
  * Authenticates the user and calls OpenRouter without exposing the API key on the frontend.
  */
-export const secureOpenRouterChat = onCall({ cors: CORS_ORIGINS, secrets: ["OPENROUTER_API_KEY"] }, async (request) => {
+export const secureOpenRouterChat = onCall({ cors: CORS_ORIGINS }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new Error("Unauthorized. You must be logged in.");
@@ -1752,7 +1755,7 @@ export const secureOpenRouterChat = onCall({ cors: CORS_ORIGINS, secrets: ["OPEN
  * secureOpenRouterImage: Secure backend proxy for OpenRouter educational illustrations/images.
  * Authenticates the user and handles the OpenRouter multimodal image endpoints.
  */
-export const secureOpenRouterImage = onCall({ cors: CORS_ORIGINS, secrets: ["OPENROUTER_API_KEY"] }, async (request) => {
+export const secureOpenRouterImage = onCall({ cors: CORS_ORIGINS }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new Error("Unauthorized. You must be logged in.");
@@ -1831,7 +1834,7 @@ export const secureOpenRouterImage = onCall({ cors: CORS_ORIGINS, secrets: ["OPE
  * secureGeminiImage: Secure backend proxy for direct Gemini image illustrations as a fallback.
  * Authenticates the user and connects to the Google Generative Language API securely.
  */
-export const secureGeminiImage = onCall({ cors: CORS_ORIGINS, secrets: ["GEMINI_API_KEY"] }, async (request) => {
+export const secureGeminiImage = onCall({ cors: CORS_ORIGINS }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new Error("Unauthorized. You must be logged in.");
@@ -1875,6 +1878,84 @@ export const secureGeminiImage = onCall({ cors: CORS_ORIGINS, secrets: ["GEMINI_
   } catch (error: any) {
     logger.error("secureGeminiImage global catch:", error);
     throw new Error(error.message || "Failed to contact Gemini image service.");
+  }
+});
+
+/**
+ * secureNvidiaChat: Secure backend proxy for NVIDIA API chat completions.
+ * OpenAI-compatible endpoint. Authenticates the user and proxies without exposing the API key.
+ */
+export const secureNvidiaChat = onCall({ cors: CORS_ORIGINS, secrets: [nvidiaApiKey], timeoutSeconds: 300 }, async (request) => {
+  try {
+    const uid = request.auth?.uid;
+    if (!uid) {
+      throw new HttpsError("unauthenticated", "You must be logged in.");
+    }
+
+    let apiKey: string;
+    try {
+      apiKey = nvidiaApiKey.value();
+    } catch (secretErr: any) {
+      logger.error("secureNvidiaChat: Failed to read NVIDIA secret:", { message: secretErr.message });
+      throw new HttpsError("failed-precondition", `NVIDIA secret not available: ${secretErr.message}`);
+    }
+
+    if (!apiKey) {
+      logger.error("secureNvidiaChat: NVIDIA_API_KEY is empty.");
+      throw new HttpsError("failed-precondition", "NVIDIA API key is empty. Set NVIDIA_API_KEY_SECRET in Firebase.");
+    }
+
+    const { messages, options } = request.data as {
+      messages: any[];
+      options?: {
+        model?: string;
+        temperature?: number;
+        max_tokens?: number;
+        response_format?: { type: "json_object" };
+      };
+    };
+
+    if (!messages || !Array.isArray(messages)) {
+      throw new HttpsError("invalid-argument", "Missing required 'messages' array.");
+    }
+
+    const body: Record<string, any> = {
+      model: options?.model || "meta/llama-3.1-8b-instruct",
+      messages,
+      temperature: options?.temperature ?? 0.7,
+    };
+
+    if (options?.max_tokens != null) {
+      body.max_tokens = options.max_tokens;
+    }
+    if (options?.response_format) {
+      body.response_format = options.response_format;
+    }
+
+    logger.info("secureNvidiaChat: Calling NVIDIA API", { model: body.model, messageCount: messages.length });
+
+    const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    const rawText = await response.text();
+    if (!response.ok) {
+      logger.error("secureNvidiaChat API Error:", { status: response.status, rawText: rawText.slice(0, 500) });
+      throw new HttpsError("internal", `NVIDIA API error (${response.status}): ${rawText.slice(0, 300)}`);
+    }
+
+    const parsed = JSON.parse(rawText);
+    logger.info("secureNvidiaChat: Success", { model: body.model, hasChoices: !!parsed?.choices?.length });
+    return parsed;
+  } catch (error: any) {
+    if (error instanceof HttpsError) throw error;
+    logger.error("secureNvidiaChat global catch:", { message: error.message, stack: error.stack });
+    throw new HttpsError("internal", `NVIDIA proxy failed: ${error.message || "Unknown error"}`);
   }
 });
 

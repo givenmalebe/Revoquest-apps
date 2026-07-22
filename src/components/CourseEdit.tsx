@@ -42,7 +42,7 @@ import {
   Presentation
 } from "lucide-react";
 
-import { getOpenRouterModel } from '@/services/openRouterClient';
+import { DEFAULT_NVIDIA_MODEL } from '@/services/nvidiaClient';
 
 import { Course, DatabaseService, CourseAssessment, AssessmentSubmission } from "@/firebase/database";
 import { collection, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
@@ -415,7 +415,8 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
         editingLesson.title || 'Lesson',
         editingLesson.description || '',
         topic,
-        duration
+        duration,
+        editingLesson.richTextContent
       );
       const quizContent = await lessonContentService.generateQuizFromLessonContent(
         editingLesson.title || 'Lesson',
@@ -2160,7 +2161,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
                                     {generatingLearnContent && (
                                       <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded">
                                         <div className="animate-spin w-4 h-4 border border-blue-600 border-t-transparent rounded-full" />
-                                        <span>AI ({getOpenRouterModel()}) generating lesson...</span>
+                                        <span>AI ({DEFAULT_NVIDIA_MODEL}) generating lesson...</span>
                                       </div>
                                     )}
                                     {learnContentGenerated && !generatingLessonImages && (
@@ -2226,24 +2227,99 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
                                           dangerouslySetInnerHTML={{ __html: editingLesson.richTextContent }}
                                         />
                                         <style>{`
-                                          .creation-curriculum-preview .curriculum-lesson { display: block; }
-                                          .creation-curriculum-preview .section-heading { font-size: 1rem; font-weight: 700; color: #0f172a; margin: 0 0 0.35rem 0; }
-                                          .creation-curriculum-preview .section-rule { border: none; border-bottom: 2px solid #93c5fd; margin: 0 0 0.75rem 0; }
-                                          .creation-curriculum-preview .lesson-objectives { margin-bottom: 1.25rem; }
-                                          .creation-curriculum-preview .objectives-intro { font-size: 0.8125rem; color: #475569; margin: 0 0 0.5rem 0; }
-                                          .creation-curriculum-preview .objectives-list { margin: 0; padding-left: 1.25rem; font-size: 0.8125rem; line-height: 1.6; }
-                                          .creation-curriculum-preview .main-content { margin-top: 1rem; }
-                                          .creation-curriculum-preview .content-block { margin-bottom: 1rem; }
-                                          .creation-curriculum-preview .content-subheading { font-size: 0.9375rem; font-weight: 600; color: #1e293b; margin: 0 0 0.35rem 0; }
-                                          .creation-curriculum-preview .unit-context { font-size: 0.8125rem; color: #1e40af; font-weight: 600; margin: 0 0 0.5rem 0; }
-                                          .creation-curriculum-preview .objectives-heading { font-size: 0.9375rem; font-weight: 700; color: #1e40af; margin: 0 0 0.35rem 0; }
-                                          .creation-curriculum-preview .objective-item { padding-left: 1.25rem; position: relative; margin-bottom: 0.25rem; }
-                                          .creation-curriculum-preview .objective-item::before { content: "✓"; position: absolute; left: 0; color: #16a34a; font-weight: 700; }
-                                          .creation-curriculum-preview .formula-box, .creation-curriculum-preview .key-rule-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 0.5rem 0.75rem; margin: 0.5rem 0; }
-                                          .creation-curriculum-preview .key-takeaways .takeaways-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-                                          .creation-curriculum-preview .takeaway-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
+                                          .creation-curriculum-preview .curriculum-lesson { display: block; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #1e293b; line-height: 1.7; }
+                                          .creation-curriculum-preview .lesson-time-estimate { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0.625rem 1rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%); border: 1px solid #7dd3fc; border-radius: 0.75rem; }
+                                          .creation-curriculum-preview .time-badge { padding: 0.3rem 0.75rem; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; font-weight: 700; border-radius: 9999px; font-size: 0.75rem; box-shadow: 0 2px 6px rgba(14,165,233,0.3); }
+                                          .creation-curriculum-preview .time-hint { color: #0c4a6e; font-size: 0.75rem; }
+                                          .creation-curriculum-preview .unit-context { font-size: 0.75rem; color: #2563eb; font-weight: 700; margin: 0 0 0.75rem 0; text-transform: uppercase; letter-spacing: 0.05em; }
+                                          .creation-curriculum-preview .section-heading { font-size: 1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0; }
+                                          .creation-curriculum-preview .section-rule { border: none; height: 2px; background: linear-gradient(90deg, #3b82f6 0%, #93c5fd 50%, transparent 100%); margin: 0 0 0.75rem 0; border-radius: 2px; }
+                                          .creation-curriculum-preview .lesson-objectives { margin-bottom: 1rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 40%, #bfdbfe 100%); border-left: 4px solid #2563eb; border-radius: 0 0.5rem 0.5rem 0; padding: 0.75rem 1rem; box-shadow: 0 2px 8px rgba(37,99,235,0.08); }
+                                          .creation-curriculum-preview .objectives-heading { font-size: 0.875rem; font-weight: 800; color: #1e40af; margin: 0 0 0.35rem 0; }
+                                          .creation-curriculum-preview .objectives-intro { font-size: 0.75rem; color: #475569; margin: 0 0 0.5rem 0; }
+                                          .creation-curriculum-preview .objectives-list { margin: 0; padding-left: 0; list-style: none; font-size: 0.8125rem; line-height: 1.7; color: #1e3a5f; }
+                                          .creation-curriculum-preview .objective-item { padding-left: 1.5rem; position: relative; margin-bottom: 0.25rem; }
+                                          .creation-curriculum-preview .objective-item::before { content: "✓"; position: absolute; left: 0; color: #16a34a; font-weight: 800; }
+                                          .creation-curriculum-preview .section-badge { display: inline-block; padding: 0.2rem 0.5rem; font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #1e40af; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 0.25rem; border: 1px solid #93c5fd; margin-bottom: 0.5rem; }
+                                          .creation-curriculum-preview .key-term-badge { padding: 0.1rem 0.35rem; background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); color: #3730a3; border-radius: 0.2rem; font-weight: 700; border: 1px solid #a5b4fc; font-size: 0.8em; }
+                                          .creation-curriculum-preview .main-content { margin-top: 0.75rem; }
+                                          .creation-curriculum-preview .content-block { margin-bottom: 1rem; padding: 0.75rem 1rem; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+                                          .creation-curriculum-preview .content-subheading { font-size: 0.875rem; font-weight: 800; color: #1e40af; margin: 0 0 0.5rem 0; }
+                                          .creation-curriculum-preview .content-block p { font-size: 0.8125rem; line-height: 1.65; color: #475569; margin: 0 0 0.5rem 0; }
+                                          .creation-curriculum-preview .formula-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; border-radius: 0.5rem; padding: 0.625rem 0.875rem; margin: 0.5rem 0; text-align: center; font-size: 0.8125rem; color: #1e3a5f; font-weight: 600; }
+                                          .creation-curriculum-preview .key-rule-box { background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); border: 1px solid #fbbf24; border-left: 4px solid #eab308; border-radius: 0 0.5rem 0.5rem 0; padding: 0.625rem 0.875rem; margin: 0.5rem 0; font-size: 0.8125rem; color: #713f12; }
+                                          .creation-curriculum-preview .key-rule-box h4 { margin: 0 0 0.25rem 0; font-weight: 800; color: #854d0e; font-size: 0.8125rem; }
+                                          .creation-curriculum-preview .example-block { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border: 1px solid #d8b4fe; border-left: 4px solid #8b5cf6; border-radius: 0 0.5rem 0.5rem 0; padding: 0.625rem 0.875rem; margin: 0.5rem 0; }
+                                          .creation-curriculum-preview .example-title { font-size: 0.8125rem; font-weight: 800; color: #6d28d9; margin: 0 0 0.35rem 0; }
+                                          .creation-curriculum-preview .solution-steps { margin: 0.35rem 0 0 0; padding-left: 1rem; color: #4c1d95; font-size: 0.8125rem; line-height: 1.7; }
+                                          .creation-curriculum-preview .exam-tip-box { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #86efac; border-left: 4px solid #22c55e; border-radius: 0 0.5rem 0.5rem 0; padding: 0.625rem 0.875rem; margin: 0.5rem 0; font-size: 0.8125rem; color: #166534; }
+                                          .creation-curriculum-preview .exam-tip-box strong { color: #15803d; }
+                                          .creation-curriculum-preview .callout-box { margin: 0.5rem 0; padding: 0.625rem 0.875rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 4px solid #3b82f6; border-radius: 0 0.5rem 0.5rem 0; font-size: 0.8125rem; color: #1e40af; }
+                                          .creation-curriculum-preview .callout-box strong { color: #1d4ed8; }
+                                          .creation-curriculum-preview .definition-box { margin: 0.5rem 0; padding: 0.625rem 0.875rem; background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); border-left: 4px solid #8b5cf6; border-radius: 0 0.5rem 0.5rem 0; font-size: 0.8125rem; }
+                                          .creation-curriculum-preview .definition-box h4 { font-size: 0.8125rem; font-weight: 800; color: #6d28d9; margin: 0 0 0.25rem 0; }
+                                          .creation-curriculum-preview .definition-box p { margin: 0; color: #4c1d95; line-height: 1.6; }
+                                          .creation-curriculum-preview .warning-box { margin: 0.5rem 0; padding: 0.625rem 0.875rem; background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border-left: 4px solid #f97316; border-radius: 0 0.5rem 0.5rem 0; font-size: 0.8125rem; }
+                                          .creation-curriculum-preview .warning-box h4 { font-size: 0.8125rem; font-weight: 800; color: #c2410c; margin: 0 0 0.25rem 0; }
+                                          .creation-curriculum-preview .warning-box p { margin: 0; color: #9a3412; line-height: 1.6; }
+                                          .creation-curriculum-preview .highlight-box { margin: 0.5rem 0; padding: 0.625rem 0.875rem; background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); border: 1px solid #fbbf24; border-radius: 0.5rem; font-size: 0.8125rem; }
+                                          .creation-curriculum-preview .highlight-box h4 { font-size: 0.8125rem; font-weight: 800; color: #854d0e; margin: 0 0 0.25rem 0; }
+                                          .creation-curriculum-preview .highlight-box p { margin: 0; color: #713f12; line-height: 1.6; }
+                                          .creation-curriculum-preview .info-box { margin: 0.5rem 0; padding: 0.625rem 0.875rem; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 4px solid #22c55e; border-radius: 0 0.5rem 0.5rem 0; font-size: 0.8125rem; }
+                                          .creation-curriculum-preview .info-box h4 { font-size: 0.8125rem; font-weight: 800; color: #15803d; margin: 0 0 0.25rem 0; }
+                                          .creation-curriculum-preview .info-box p { margin: 0; color: #166534; line-height: 1.6; }
+                                          .creation-curriculum-preview .quote-box { margin: 0.5rem 0; padding: 0.625rem 0.875rem; background: #f8fafc; border-left: 4px solid #94a3b8; border-radius: 0 0.5rem 0.5rem 0; font-style: italic; color: #475569; font-size: 0.8125rem; }
+                                          .creation-curriculum-preview .quote-box cite { display: block; margin-top: 0.35rem; font-size: 0.6875rem; font-style: normal; color: #94a3b8; font-weight: 600; }
+                                          .creation-curriculum-preview .deep-dive { margin: 0.5rem 0; padding: 0.75rem 1rem; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; border-radius: 0.5rem; }
+                                          .creation-curriculum-preview .deep-dive h4 { font-size: 0.8125rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0; padding-bottom: 0.35rem; border-bottom: 1px solid #e2e8f0; }
+                                          .creation-curriculum-preview .deep-dive p { margin: 0 0 0.35rem 0; font-size: 0.8125rem; line-height: 1.6; color: #334155; }
+                                          .creation-curriculum-preview .real-world-box { margin: 0.5rem 0; padding: 0.625rem 0.875rem; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #6ee7b7; border-radius: 0.5rem; }
+                                          .creation-curriculum-preview .real-world-box h4 { font-size: 0.8125rem; font-weight: 800; color: #047857; margin: 0 0 0.25rem 0; }
+                                          .creation-curriculum-preview .real-world-box p { margin: 0; color: #065f46; line-height: 1.6; font-size: 0.8125rem; }
+                                          .creation-curriculum-preview .common-mistake-box { margin: 0.5rem 0; padding: 0.625rem 0.875rem; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-left: 4px solid #ef4444; border-radius: 0 0.5rem 0.5rem 0; font-size: 0.8125rem; }
+                                          .creation-curriculum-preview .common-mistake-box h4 { font-size: 0.8125rem; font-weight: 800; color: #b91c1c; margin: 0 0 0.25rem 0; }
+                                          .creation-curriculum-preview .common-mistake-box p { margin: 0; color: #991b1b; line-height: 1.6; }
+                                          .creation-curriculum-preview .content-divider { border: none; height: 2px; background: linear-gradient(90deg, transparent 0%, #cbd5e1 20%, #94a3b8 50%, #cbd5e1 80%, transparent 100%); margin: 1rem 0; border-radius: 2px; }
+                                          .creation-curriculum-preview .section-number { display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border-radius: 50%; font-size: 0.6875rem; font-weight: 800; margin-right: 0.35rem; box-shadow: 0 2px 4px rgba(37,99,235,0.2); }
+                                          .creation-curriculum-preview .quiz-prep-box { margin: 0.75rem 0; padding: 0.75rem 1rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1px solid #f59e0b; border-radius: 0.5rem; }
+                                          .creation-curriculum-preview .quiz-prep-heading { font-size: 0.8125rem; font-weight: 800; color: #92400e; margin: 0 0 0.25rem 0; }
+                                          .creation-curriculum-preview .quiz-prep-text { font-size: 0.75rem; color: #78350f; margin: 0; }
+                                          .creation-curriculum-preview .key-takeaways { margin-top: 0.75rem; }
+                                          .creation-curriculum-preview .takeaways-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
+                                          .creation-curriculum-preview .takeaway-card { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
+                                          .creation-curriculum-preview .takeaway-title { font-size: 0.8125rem; font-weight: 800; color: #1e40af; margin: 0 0 0.2rem 0; }
+                                          .creation-curriculum-preview .takeaway-card p { margin: 0; font-size: 0.75rem; line-height: 1.5; color: #1e3a5f; }
+                                          .creation-curriculum-preview .practice-opportunities { margin-top: 0.75rem; }
+                                          .creation-curriculum-preview .challenge-set { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #86efac; border-radius: 0.5rem; padding: 0.625rem 0.875rem; margin: 0.5rem 0; }
+                                          .creation-curriculum-preview .challenge-set h4 { font-size: 0.8125rem; font-weight: 800; color: #166534; margin: 0 0 0.35rem 0; }
+                                          .creation-curriculum-preview .practice-list { margin: 0.35rem 0 0 0.75rem; padding-left: 1rem; font-size: 0.8125rem; color: #166534; line-height: 1.7; }
+                                          .creation-curriculum-preview .comparison-table { overflow-x: auto; margin: 0.5rem 0; border-radius: 0.5rem; border: 1px solid #e2e8f0; }
+                                          .creation-curriculum-preview .comparison-table table { width: 100%; font-size: 0.75rem; border-collapse: collapse; }
+                                          .creation-curriculum-preview .comparison-table th { background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%); color: white; padding: 0.5rem 0.625rem; text-align: left; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+                                          .creation-curriculum-preview .comparison-table td { padding: 0.5rem 0.625rem; border-bottom: 1px solid #e2e8f0; }
+                                          .creation-curriculum-preview .comparison-table tr:nth-child(even) td { background: #f8fafc; }
+                                          .creation-curriculum-preview .comparison-table tr:last-child td { border-bottom: none; }
+                                          .creation-curriculum-preview .key-terms-box { margin-top: 0.75rem; padding: 0.625rem 0.875rem; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 0.5rem; border: 1px solid #e2e8f0; }
+                                          .creation-curriculum-preview .key-terms-box h3 { font-size: 0.8125rem; font-weight: 800; color: #475569; margin: 0 0 0.5rem 0; text-transform: uppercase; letter-spacing: 0.04em; }
+                                          .creation-curriculum-preview .term { display: inline-block; padding: 0.15rem 0.5rem; margin: 0.15rem 0.2rem 0.15rem 0; background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); color: #3730a3; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; border: 1px solid #a5b4fc; }
+                                          .creation-curriculum-preview .lesson-intro { margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
+                                          .creation-curriculum-preview .lesson-intro p { font-size: 0.875rem; line-height: 1.7; color: #334155; }
+                                          .creation-curriculum-preview .lesson-steps { margin-top: 0.75rem; margin-bottom: 0.75rem; }
+                                          .creation-curriculum-preview .step-list { list-style: none; padding-left: 0; counter-reset: step; }
+                                          .creation-curriculum-preview .step { counter-increment: step; margin-bottom: 0.75rem; padding: 0.75rem 1rem; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 0.5rem; border-left: 4px solid #3b82f6; position: relative; }
+                                          .creation-curriculum-preview .step::before { content: counter(step); position: absolute; left: -0.5rem; top: 0.75rem; width: 1.5rem; height: 1.5rem; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border-radius: 50%; font-size: 0.6875rem; font-weight: 800; line-height: 1.5rem; text-align: center; box-shadow: 0 2px 4px rgba(37,99,235,0.2); }
+                                          .creation-curriculum-preview .step-title { font-size: 0.875rem; font-weight: 700; color: #1e293b; margin: 0 0 0.35rem 0; padding-left: 0.35rem; }
+                                          .creation-curriculum-preview .step-body { padding-left: 0.35rem; }
+                                          .creation-curriculum-preview .step-body p { margin: 0.15rem 0 0 0; font-size: 0.8125rem; line-height: 1.6; color: #475569; }
+                                          .creation-curriculum-preview .key-points-box, .creation-curriculum-preview .summary-box { margin-top: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; }
+                                          .creation-curriculum-preview .key-points-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; }
+                                          .creation-curriculum-preview .key-points-box h3, .creation-curriculum-preview .summary-box h3 { font-size: 0.8125rem; font-weight: 800; color: #1e293b; margin: 0 0 0.5rem 0; }
+                                          .creation-curriculum-preview .key-points-list { margin: 0; padding-left: 1rem; color: #1e3a5f; font-size: 0.8125rem; line-height: 1.6; }
+                                          .creation-curriculum-preview .summary-box { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #86efac; }
+                                          .creation-curriculum-preview .summary-box p { margin: 0; font-size: 0.8125rem; line-height: 1.6; color: #166534; }
                                           .creation-curriculum-preview .lesson-generated-image { width: 100%; max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.5rem 0; display: block; }
-                                          .creation-curriculum-preview figure.lesson-image { margin: 0.5rem 0; padding: 1rem; background: #f1f5f9; border-radius: 0.5rem; font-size: 0.75rem; color: #64748b; }
+                                          .creation-curriculum-preview .lesson-image { margin: 0.5rem 0; padding: 0.75rem 1rem; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 0.5rem; font-size: 0.75rem; color: #64748b; border: 1px solid #cbd5e1; }
+                                          .creation-curriculum-preview .lesson-step-section { margin-bottom: 0.75rem; }
                                         `}</style>
                                       </div>
                                     )}

@@ -27,7 +27,7 @@ import {
   X
 } from 'lucide-react';
 import { aiCourseBuilderService, AICourseRequest, AICourseResponse, YouTubeVideoResult } from '@/services/aiCourseBuilder';
-import { getOpenRouterApiKey } from '@/services/openRouterClient';
+import { hasNvidiaConfigured } from '@/services/nvidiaClient';
 import { youtubeService } from '@/services/youtubeService';
 import { lessonContentService } from '@/services/lessonContentService';
 import { documentProcessor, DocumentProcessingResult } from '@/services/documentProcessor';
@@ -131,14 +131,11 @@ const AICourseBuilder: React.FC<AICourseBuilderProps> = ({ onCourseGenerated, on
     setError('');
     
     try {
-      // Check if we have an OpenRouter API key
-      const orKey = getOpenRouterApiKey();
-      console.log('🔍 Checking API key:', {
-        hasKey: !!orKey,
-        isDefault: false,
-      });
+      // Check if NVIDIA AI is available (proxied via Cloud Function)
+      const aiAvailable = hasNvidiaConfigured();
+      console.log('🔍 Checking NVIDIA API availability:', { available: aiAvailable });
       
-      if (!orKey) {
+      if (!aiAvailable) {
         // Generate a mock course for testing when API key is not available
         console.log('🔧 API key not available - generating mock course for testing');
         const mockCourse = await generateMockCourse({
@@ -152,7 +149,7 @@ const AICourseBuilder: React.FC<AICourseBuilderProps> = ({ onCourseGenerated, on
         return;
       }
       
-      console.log('🚀 Using real AI generation with OpenRouter');
+      console.log('🚀 Using real AI generation with NVIDIA');
 
       const courseData = await aiCourseBuilderService.generateCourseStructure({
         ...courseRequest,
@@ -777,8 +774,8 @@ const AICourseBuilder: React.FC<AICourseBuilderProps> = ({ onCourseGenerated, on
                       )}
                     </Button>
                     <p className="text-xs text-gray-500 mt-2 text-center">
-                      {!getOpenRouterApiKey()
-                        ? 'AI unavailable — set OPENROUTER_API_KEY in firebase-functions/.env and deploy functions'
+                      {!hasNvidiaConfigured()
+                        ? 'AI unavailable — set NVIDIA_API_KEY in firebase-functions/.env and deploy functions'
                         : documentContent 
                           ? 'AI will analyze your document and create a targeted course'
                           : 'AI-powered course generation enabled'

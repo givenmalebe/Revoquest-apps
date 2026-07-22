@@ -1,4 +1,4 @@
-import { openRouterGenerateText } from '@/services/openRouterClient';
+import { nvidiaGenerateText } from '@/services/nvidiaClient';
 
 export interface CanvasLayer {
   id: string;
@@ -203,7 +203,7 @@ class CanvasService {
     Use appropriate colors and styling for the prompt.
     Create multiple elements if needed to represent the prompt fully.`;
 
-    const text = await openRouterGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
+    const text = await nvidiaGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
 
     try {
       const parsed = JSON.parse(text);
@@ -258,7 +258,7 @@ class CanvasService {
       "description": "What changes were made"
     }`;
 
-    const text = await openRouterGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
+    const text = await nvidiaGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
 
     try {
       const parsed = JSON.parse(text);
@@ -293,7 +293,7 @@ class CanvasService {
     Available transformations: rotate, scale, move, flip, skew
     Return transformation commands in JSON format.`;
 
-    const text = await openRouterGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
+    const text = await nvidiaGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
 
     // Parse and apply transformations
     try {
@@ -316,7 +316,7 @@ class CanvasService {
     Available styles: colors, gradients, shadows, borders, effects
     Return styling commands in JSON format.`;
 
-    const text = await openRouterGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
+    const text = await nvidiaGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
 
     try {
       const parsed = JSON.parse(text);
@@ -338,7 +338,7 @@ class CanvasService {
     Create a sophisticated design with multiple elements, proper spacing, colors, and visual hierarchy.
     Return a comprehensive JSON structure with all elements needed.`;
 
-    const text = await openRouterGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
+    const text = await nvidiaGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
 
     try {
       const parsed = JSON.parse(text);
@@ -380,7 +380,7 @@ class CanvasService {
 
     Provide analysis in JSON format with suggestions for improvement.`;
 
-    const text = await openRouterGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
+    const text = await nvidiaGenerateText({ user: aiPrompt, temperature: 0.7, max_tokens: 4096 });
 
     // Return analysis results (could be used for suggestions)
     return canvas;

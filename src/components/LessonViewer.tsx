@@ -1171,104 +1171,83 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
             <style>{`
               .curriculum-lesson-content .curriculum-lesson {
                 display: block;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                color: #1e293b;
+                line-height: 1.7;
               }
+              .curriculum-lesson-content .curriculum-lesson * { box-sizing: border-box; }
+
+              /* ===== TIME ESTIMATE ===== */
               .curriculum-lesson-content .lesson-time-estimate {
                 display: flex;
                 flex-wrap: wrap;
                 align-items: center;
                 gap: 0.75rem;
-                margin-bottom: 1.5rem;
-                padding: 0.875rem 1.25rem;
-                background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-                border: 1px solid #bae6fd;
-                border-radius: 0.75rem;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+                margin-bottom: 2rem;
+                padding: 1rem 1.5rem;
+                background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+                border: 1px solid #7dd3fc;
+                border-radius: 1rem;
+                box-shadow: 0 4px 12px rgba(14,165,233,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
               }
               .curriculum-lesson-content .time-badge {
                 display: inline-flex;
                 align-items: center;
-                gap: 0.35rem;
-                padding: 0.35rem 0.75rem;
-                background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+                gap: 0.4rem;
+                padding: 0.4rem 1rem;
+                background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
                 color: white;
                 font-size: 0.8125rem;
-                font-weight: 600;
+                font-weight: 700;
                 border-radius: 9999px;
-                box-shadow: 0 1px 2px rgba(2,132,199,0.3);
+                box-shadow: 0 2px 8px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+                letter-spacing: 0.01em;
               }
               .curriculum-lesson-content .time-hint {
                 font-size: 0.8125rem;
                 color: #0c4a6e;
-                opacity: 0.9;
+                opacity: 0.85;
+                font-weight: 500;
               }
-              .curriculum-lesson-content .quiz-prep-box {
-                margin-top: 2rem;
-                margin-bottom: 1.5rem;
-                padding: 1.25rem 1.5rem;
-                background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-                border: 1px solid #fcd34d;
-                border-radius: 0.75rem;
-                box-shadow: 0 2px 4px rgba(251,191,36,0.15);
-              }
-              .curriculum-lesson-content .quiz-prep-heading {
-                font-size: 1rem;
-                font-weight: 700;
-                color: #92400e;
-                margin: 0 0 0.5rem 0;
-              }
-              .curriculum-lesson-content .quiz-prep-text {
-                font-size: 0.9375rem;
-                line-height: 1.6;
-                color: #78350f;
-                margin: 0;
-              }
-              .curriculum-lesson-content .section-badge {
-                display: inline-block;
-                padding: 0.2rem 0.5rem;
-                font-size: 0.75rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.025em;
-                color: #1e40af;
-                background: #dbeafe;
-                border-radius: 0.375rem;
-                margin-bottom: 0.5rem;
-              }
-              .curriculum-lesson-content .key-term-badge {
-                padding: 0.1rem 0.35rem;
-                background: #e0e7ff;
-                color: #3730a3;
-                border-radius: 0.25rem;
-                font-weight: 600;
-              }
+
+              /* ===== UNIT CONTEXT ===== */
               .curriculum-lesson-content .unit-context {
-                font-size: 0.9375rem;
-                color: #1e40af;
-                font-weight: 600;
-                margin: 0 0 1rem 0;
-              }
-              .curriculum-lesson-content .section-heading {
-                font-size: 1.25rem;
+                font-size: 0.875rem;
+                color: #2563eb;
                 font-weight: 700;
+                margin: 0 0 1.5rem 0;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+              }
+
+              /* ===== SECTION HEADINGS ===== */
+              .curriculum-lesson-content .section-heading {
+                font-size: 1.375rem;
+                font-weight: 800;
                 color: #0f172a;
                 margin: 0 0 0.5rem 0;
+                letter-spacing: -0.01em;
               }
               .curriculum-lesson-content .section-rule {
                 border: none;
-                border-bottom: 2px solid #93c5fd;
-                margin: 0 0 1rem 0;
+                height: 3px;
+                background: linear-gradient(90deg, #3b82f6 0%, #93c5fd 50%, transparent 100%);
+                margin: 0 0 1.25rem 0;
+                border-radius: 2px;
               }
+
+              /* ===== LEARNING OBJECTIVES ===== */
               .curriculum-lesson-content .lesson-objectives {
-                margin-bottom: 1.75rem;
-                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-                border-left: 4px solid #2563eb;
-                border-radius: 0 0.5rem 0.5rem 0;
-                padding: 1rem 1.25rem;
-                box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+                margin-bottom: 2rem;
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 40%, #bfdbfe 100%);
+                border-left: 5px solid #2563eb;
+                border-radius: 0 0.75rem 0.75rem 0;
+                padding: 1.25rem 1.5rem;
+                box-shadow: 0 4px 16px rgba(37,99,235,0.1), inset 0 1px 0 rgba(255,255,255,0.6);
               }
               .curriculum-lesson-content .objectives-heading {
                 font-size: 1.125rem;
-                font-weight: 700;
+                font-weight: 800;
                 color: #1e40af;
                 margin: 0 0 0.5rem 0;
               }
@@ -1276,97 +1255,428 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                 font-size: 0.9375rem;
                 color: #475569;
                 margin: 0 0 0.75rem 0;
+                font-weight: 500;
               }
               .curriculum-lesson-content .objectives-list {
                 margin: 0;
                 padding-left: 0;
                 list-style: none;
-                color: #334155;
+                color: #1e3a5f;
                 font-size: 0.9375rem;
-                line-height: 1.7;
+                line-height: 1.8;
               }
               .curriculum-lesson-content .objective-item {
                 margin-bottom: 0.5rem;
-                padding-left: 1.75rem;
+                padding-left: 2rem;
                 position: relative;
               }
               .curriculum-lesson-content .objective-item::before {
                 content: "✓";
                 position: absolute;
                 left: 0;
+                top: 0;
                 color: #16a34a;
-                font-weight: 700;
+                font-weight: 800;
                 font-size: 1rem;
+                text-shadow: 0 1px 2px rgba(22,163,74,0.2);
               }
+
+              /* ===== SECTION BADGES ===== */
+              .curriculum-lesson-content .section-badge {
+                display: inline-block;
+                padding: 0.25rem 0.625rem;
+                font-size: 0.6875rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: #1e40af;
+                background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+                border-radius: 0.375rem;
+                margin-bottom: 0.75rem;
+                border: 1px solid #93c5fd;
+              }
+
+              /* ===== KEY TERM BADGE ===== */
+              .curriculum-lesson-content .key-term-badge {
+                padding: 0.125rem 0.4rem;
+                background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+                color: #3730a3;
+                border-radius: 0.25rem;
+                font-weight: 700;
+                border: 1px solid #a5b4fc;
+                font-size: 0.875em;
+              }
+
+              /* ===== CONTENT BLOCKS (cards) ===== */
               .curriculum-lesson-content .main-content {
                 margin-top: 1.5rem;
               }
               .curriculum-lesson-content .content-block {
                 margin-bottom: 2rem;
+                padding: 1.5rem;
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 1rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+                transition: box-shadow 0.2s ease;
+              }
+              .curriculum-lesson-content .content-block:hover {
+                box-shadow: 0 4px 16px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
               }
               .curriculum-lesson-content .content-subheading {
                 font-size: 1.125rem;
-                font-weight: 700;
+                font-weight: 800;
                 color: #1e40af;
                 margin: 0 0 0.75rem 0;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
               }
               .curriculum-lesson-content .content-block p {
                 font-size: 0.9375rem;
-                line-height: 1.65;
+                line-height: 1.75;
                 color: #475569;
                 margin: 0 0 0.75rem 0;
               }
-              .curriculum-lesson-content .formula-box {
-                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-                border: 1px solid #e2e8f0;
-                border-radius: 0.5rem;
-                padding: 1rem 1.25rem;
-                margin: 0.75rem 0;
-                text-align: center;
-                font-size: 1rem;
-                color: #1e293b;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+              .curriculum-lesson-content .content-block p:last-child {
+                margin-bottom: 0;
               }
+
+              /* ===== FORMULA BOX ===== */
+              .curriculum-lesson-content .formula-box {
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+                border: 2px solid #93c5fd;
+                border-radius: 0.75rem;
+                padding: 1.25rem 1.5rem;
+                margin: 1rem 0;
+                text-align: center;
+                font-size: 1.0625rem;
+                color: #1e3a5f;
+                box-shadow: 0 3px 10px rgba(59,130,246,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+                font-weight: 600;
+                letter-spacing: 0.01em;
+              }
+
+              /* ===== KEY RULE BOX ===== */
               .curriculum-lesson-content .key-rule-box {
-                background: #fefce8;
-                border: 1px solid #fef08a;
-                border-radius: 0.5rem;
-                padding: 1rem 1.25rem;
-                margin: 0.75rem 0;
+                background: linear-gradient(135deg, #fefce8 0%, #fef9c3 50%, #fde68a 100%);
+                border: 2px solid #fbbf24;
+                border-left: 6px solid #eab308;
+                border-radius: 0 0.75rem 0.75rem 0;
+                padding: 1.25rem 1.5rem;
+                margin: 1rem 0;
                 font-size: 0.9375rem;
                 color: #713f12;
+                box-shadow: 0 3px 10px rgba(234,179,8,0.12);
+                line-height: 1.7;
               }
+              .curriculum-lesson-content .key-rule-box h4 {
+                margin: 0 0 0.5rem 0;
+                font-weight: 800;
+                color: #854d0e;
+              }
+
+              /* ===== EXAMPLE BLOCK ===== */
               .curriculum-lesson-content .example-block {
-                background: #f8fafc;
-                border-radius: 0.5rem;
-                padding: 1.25rem;
+                background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%);
+                border: 1px solid #d8b4fe;
+                border-left: 5px solid #8b5cf6;
+                border-radius: 0 0.75rem 0.75rem 0;
+                padding: 1.25rem 1.5rem;
                 margin: 1rem 0;
-                border: 1px solid #e2e8f0;
+                box-shadow: 0 3px 10px rgba(139,92,246,0.1);
               }
               .curriculum-lesson-content .example-title {
                 font-size: 1rem;
-                font-weight: 700;
-                color: #1e293b;
+                font-weight: 800;
+                color: #6d28d9;
                 margin: 0 0 0.5rem 0;
               }
               .curriculum-lesson-content .solution-steps {
-                margin: 0.5rem 0 0 1rem;
+                margin: 0.5rem 0 0 0;
                 padding-left: 1.25rem;
-                color: #334155;
+                color: #4c1d95;
                 font-size: 0.9375rem;
-                line-height: 1.7;
+                line-height: 1.8;
               }
+              .curriculum-lesson-content .solution-steps li {
+                margin-bottom: 0.35rem;
+              }
+              .curriculum-lesson-content .solution-steps li:last-child {
+                margin-bottom: 0;
+              }
+
+              /* ===== EXAM TIP BOX ===== */
               .curriculum-lesson-content .exam-tip-box {
-                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-                border: 1px solid #86efac;
-                border-radius: 0.5rem;
-                padding: 1rem 1.25rem;
+                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+                border: 2px solid #86efac;
+                border-left: 6px solid #22c55e;
+                border-radius: 0 0.75rem 0.75rem 0;
+                padding: 1.25rem 1.5rem;
                 margin: 1rem 0;
                 font-size: 0.9375rem;
                 color: #166534;
+                box-shadow: 0 3px 10px rgba(34,197,94,0.1);
+                line-height: 1.7;
               }
-              .curriculum-lesson-content .exam-tip-box strong { color: #15803d; }
-              .curriculum-lesson-content .key-takeaways { margin-top: 2rem; }
+              .curriculum-lesson-content .exam-tip-box strong {
+                color: #15803d;
+                font-weight: 800;
+              }
+
+              /* ===== CALLOUT BOX ===== */
+              .curriculum-lesson-content .callout-box {
+                margin: 1.25rem 0;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+                border-left: 5px solid #3b82f6;
+                border-radius: 0 0.75rem 0.75rem 0;
+                box-shadow: 0 3px 12px rgba(59,130,246,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+              }
+              .curriculum-lesson-content .callout-box p {
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+                color: #1e40af;
+              }
+              .curriculum-lesson-content .callout-box strong {
+                color: #1d4ed8;
+                font-weight: 800;
+              }
+
+              /* ===== DEFINITION BOX ===== */
+              .curriculum-lesson-content .definition-box {
+                margin: 1.25rem 0;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%);
+                border-left: 5px solid #8b5cf6;
+                border-radius: 0 0.75rem 0.75rem 0;
+                box-shadow: 0 3px 12px rgba(139,92,246,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+              }
+              .curriculum-lesson-content .definition-box h4 {
+                font-size: 0.9375rem;
+                font-weight: 800;
+                color: #6d28d9;
+                margin: 0 0 0.5rem 0;
+              }
+              .curriculum-lesson-content .definition-box p {
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+                color: #4c1d95;
+              }
+
+              /* ===== WARNING BOX ===== */
+              .curriculum-lesson-content .warning-box {
+                margin: 1.25rem 0;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%);
+                border-left: 5px solid #f97316;
+                border-radius: 0 0.75rem 0.75rem 0;
+                box-shadow: 0 3px 12px rgba(249,115,22,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+              }
+              .curriculum-lesson-content .warning-box h4 {
+                font-size: 0.9375rem;
+                font-weight: 800;
+                color: #c2410c;
+                margin: 0 0 0.5rem 0;
+              }
+              .curriculum-lesson-content .warning-box p {
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+                color: #9a3412;
+              }
+
+              /* ===== HIGHLIGHT BOX ===== */
+              .curriculum-lesson-content .highlight-box {
+                margin: 1.25rem 0;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #fefce8 0%, #fef9c3 50%, #fde68a 100%);
+                border: 2px solid #fbbf24;
+                border-radius: 0.75rem;
+                box-shadow: 0 3px 12px rgba(250,204,21,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
+              }
+              .curriculum-lesson-content .highlight-box h4 {
+                font-size: 0.9375rem;
+                font-weight: 800;
+                color: #854d0e;
+                margin: 0 0 0.5rem 0;
+              }
+              .curriculum-lesson-content .highlight-box p {
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+                color: #713f12;
+              }
+
+              /* ===== INFO BOX ===== */
+              .curriculum-lesson-content .info-box {
+                margin: 1.25rem 0;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+                border-left: 5px solid #22c55e;
+                border-radius: 0 0.75rem 0.75rem 0;
+                box-shadow: 0 3px 12px rgba(34,197,94,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+              }
+              .curriculum-lesson-content .info-box h4 {
+                font-size: 0.9375rem;
+                font-weight: 800;
+                color: #15803d;
+                margin: 0 0 0.5rem 0;
+              }
+              .curriculum-lesson-content .info-box p {
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+                color: #166534;
+              }
+
+              /* ===== QUOTE BOX ===== */
+              .curriculum-lesson-content .quote-box {
+                margin: 1.25rem 0;
+                padding: 1.25rem 1.75rem;
+                background: #f8fafc;
+                border-left: 5px solid #94a3b8;
+                border-radius: 0 0.75rem 0.75rem 0;
+                font-style: italic;
+                color: #475569;
+                font-size: 1rem;
+                line-height: 1.75;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+              }
+              .curriculum-lesson-content .quote-box cite {
+                display: block;
+                margin-top: 0.75rem;
+                font-size: 0.8125rem;
+                font-style: normal;
+                color: #94a3b8;
+                font-weight: 600;
+              }
+
+              /* ===== DEEP DIVE ===== */
+              .curriculum-lesson-content .deep-dive {
+                margin: 1.5rem 0;
+                padding: 1.5rem;
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+                border: 1px solid #cbd5e1;
+                border-radius: 1rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8);
+              }
+              .curriculum-lesson-content .deep-dive h4 {
+                font-size: 1rem;
+                font-weight: 800;
+                color: #0f172a;
+                margin: 0 0 0.75rem 0;
+                padding-bottom: 0.75rem;
+                border-bottom: 2px solid #e2e8f0;
+              }
+              .curriculum-lesson-content .deep-dive p {
+                margin: 0 0 0.75rem 0;
+                font-size: 0.9375rem;
+                line-height: 1.75;
+                color: #334155;
+              }
+              .curriculum-lesson-content .deep-dive p:last-child {
+                margin-bottom: 0;
+              }
+
+              /* ===== REAL-WORLD BOX ===== */
+              .curriculum-lesson-content .real-world-box {
+                margin: 1.25rem 0;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #a7f3d0 100%);
+                border: 2px solid #6ee7b7;
+                border-radius: 0.75rem;
+                box-shadow: 0 3px 12px rgba(16,185,129,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+              }
+              .curriculum-lesson-content .real-world-box h4 {
+                font-size: 0.9375rem;
+                font-weight: 800;
+                color: #047857;
+                margin: 0 0 0.5rem 0;
+              }
+              .curriculum-lesson-content .real-world-box p {
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+                color: #065f46;
+              }
+
+              /* ===== COMMON MISTAKE BOX ===== */
+              .curriculum-lesson-content .common-mistake-box {
+                margin: 1.25rem 0;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%);
+                border-left: 5px solid #ef4444;
+                border-radius: 0 0.75rem 0.75rem 0;
+                box-shadow: 0 3px 12px rgba(239,68,68,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+              }
+              .curriculum-lesson-content .common-mistake-box h4 {
+                font-size: 0.9375rem;
+                font-weight: 800;
+                color: #b91c1c;
+                margin: 0 0 0.5rem 0;
+              }
+              .curriculum-lesson-content .common-mistake-box p {
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+                color: #991b1b;
+              }
+
+              /* ===== CONTENT DIVIDER ===== */
+              .curriculum-lesson-content .content-divider {
+                border: none;
+                height: 3px;
+                background: linear-gradient(90deg, transparent 0%, #cbd5e1 15%, #94a3b8 50%, #cbd5e1 85%, transparent 100%);
+                margin: 2.5rem 0;
+                border-radius: 2px;
+              }
+
+              /* ===== SECTION NUMBER ===== */
+              .curriculum-lesson-content .section-number {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 2.25rem;
+                height: 2.25rem;
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                color: white;
+                border-radius: 50%;
+                font-size: 0.875rem;
+                font-weight: 800;
+                flex-shrink: 0;
+                box-shadow: 0 3px 8px rgba(37,99,235,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+              }
+
+              /* ===== QUIZ PREP ===== */
+              .curriculum-lesson-content .quiz-prep-box {
+                margin-top: 2.5rem;
+                margin-bottom: 1.5rem;
+                padding: 1.5rem;
+                background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+                border: 2px solid #f59e0b;
+                border-radius: 1rem;
+                box-shadow: 0 4px 16px rgba(245,158,11,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
+              }
+              .curriculum-lesson-content .quiz-prep-heading {
+                font-size: 1.0625rem;
+                font-weight: 800;
+                color: #92400e;
+                margin: 0 0 0.5rem 0;
+              }
+              .curriculum-lesson-content .quiz-prep-text {
+                font-size: 0.9375rem;
+                line-height: 1.65;
+                color: #78350f;
+                margin: 0;
+              }
+
+              /* ===== KEY TAKEAWAYS ===== */
+              .curriculum-lesson-content .key-takeaways {
+                margin-top: 2.5rem;
+              }
               .curriculum-lesson-content .takeaways-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
@@ -1379,43 +1689,51 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                 }
               }
               .curriculum-lesson-content .takeaway-card {
-                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-                border: 1px solid #bfdbfe;
-                border-radius: 0.5rem;
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+                border: 1px solid #93c5fd;
+                border-radius: 0.75rem;
                 padding: 1rem 1.25rem;
-                box-shadow: 0 2px 6px rgba(59,130,246,0.08);
+                box-shadow: 0 3px 10px rgba(59,130,246,0.1), inset 0 1px 0 rgba(255,255,255,0.6);
+                transition: transform 0.15s ease, box-shadow 0.15s ease;
+              }
+              .curriculum-lesson-content .takeaway-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(59,130,246,0.15);
               }
               .curriculum-lesson-content .takeaway-title {
                 font-size: 0.9375rem;
-                font-weight: 700;
+                font-weight: 800;
                 color: #1e40af;
                 margin: 0 0 0.35rem 0;
               }
               .curriculum-lesson-content .takeaway-card p {
                 margin: 0;
                 font-size: 0.875rem;
-                line-height: 1.5;
-                color: #334155;
+                line-height: 1.6;
+                color: #1e3a5f;
               }
+
+              /* ===== PRACTICE ===== */
               .curriculum-lesson-content .practice-opportunities { margin-top: 2rem; }
               .curriculum-lesson-content .challenge-set {
-                background: #f8fafc;
-                border-radius: 0.5rem;
-                padding: 1.25rem;
+                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                border: 1px solid #86efac;
+                border-radius: 0.75rem;
+                padding: 1.25rem 1.5rem;
                 margin: 1rem 0;
-                border: 1px solid #e2e8f0;
               }
               .curriculum-lesson-content .challenge-set h4 {
                 font-size: 1rem;
-                font-weight: 700;
-                color: #1e293b;
+                font-weight: 800;
+                color: #166534;
                 margin: 0 0 0.5rem 0;
               }
               .curriculum-lesson-content .practice-list {
                 margin: 0.5rem 0 0 1rem;
                 padding-left: 1.25rem;
                 font-size: 0.9375rem;
-                color: #334155;
+                color: #166534;
+                line-height: 1.8;
               }
               .curriculum-lesson-content .solutions-link {
                 margin-top: 0.75rem;
@@ -1423,12 +1741,16 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                 color: #2563eb;
                 text-decoration: underline;
                 cursor: pointer;
+                font-weight: 600;
               }
+
+              /* ===== COMPARISON TABLE ===== */
               .curriculum-lesson-content .comparison-table {
                 overflow-x: auto;
-                margin: 1rem 0;
-                border-radius: 0.5rem;
+                margin: 1.5rem 0;
+                border-radius: 0.75rem;
                 border: 1px solid #e2e8f0;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.05);
               }
               .curriculum-lesson-content .comparison-table table {
                 width: 100%;
@@ -1438,29 +1760,109 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
               .curriculum-lesson-content .comparison-table th {
                 background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
                 color: white;
-                font-weight: 600;
-                padding: 0.75rem 1rem;
+                font-weight: 700;
+                padding: 0.875rem 1rem;
                 text-align: left;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
               }
               .curriculum-lesson-content .comparison-table td {
-                padding: 0.75rem 1rem;
+                padding: 0.875rem 1rem;
                 border-bottom: 1px solid #e2e8f0;
                 color: #334155;
               }
-              .curriculum-lesson-content .comparison-table tr:last-child td { border-bottom: none; }
+              .curriculum-lesson-content .comparison-table tr:nth-child(even) td {
+                background: #f8fafc;
+              }
+              .curriculum-lesson-content .comparison-table tr:last-child td {
+                border-bottom: none;
+              }
+              .curriculum-lesson-content .comparison-table tr:hover td {
+                background: #f1f5f9;
+              }
+
+              /* ===== KEY POINTS / SUMMARY BOXES ===== */
+              .curriculum-lesson-content .key-points-box,
+              .curriculum-lesson-content .summary-box {
+                margin-top: 1.5rem;
+                padding: 1.25rem 1.5rem;
+                border-radius: 0.75rem;
+              }
+              .curriculum-lesson-content .key-points-box {
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+                border: 1px solid #93c5fd;
+                box-shadow: 0 3px 10px rgba(59,130,246,0.1);
+              }
+              .curriculum-lesson-content .key-points-box h3,
+              .curriculum-lesson-content .summary-box h3 {
+                font-size: 1rem;
+                font-weight: 800;
+                color: #1e293b;
+                margin: 0 0 0.75rem 0;
+              }
+              .curriculum-lesson-content .key-points-list {
+                margin: 0;
+                padding-left: 1.25rem;
+                color: #1e3a5f;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+              }
+              .curriculum-lesson-content .summary-box {
+                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+                border: 1px solid #86efac;
+                box-shadow: 0 3px 10px rgba(34,197,94,0.1);
+              }
+              .curriculum-lesson-content .summary-box p {
+                margin: 0;
+                font-size: 0.9375rem;
+                line-height: 1.7;
+                color: #166534;
+              }
+
+              /* ===== KEY TERMS ===== */
+              .curriculum-lesson-content .key-terms-box {
+                margin-top: 1.5rem;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                border-radius: 0.75rem;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+              }
+              .curriculum-lesson-content .key-terms-box h3 {
+                font-size: 0.9375rem;
+                font-weight: 800;
+                color: #475569;
+                margin: 0 0 0.75rem 0;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+              }
+              .curriculum-lesson-content .term {
+                display: inline-block;
+                padding: 0.2rem 0.6rem;
+                margin: 0.2rem 0.25rem 0.2rem 0;
+                background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+                color: #3730a3;
+                border-radius: 0.375rem;
+                font-size: 0.8125rem;
+                font-weight: 600;
+                border: 1px solid #a5b4fc;
+              }
+
+              /* ===== LESSON INTRO / STEPS ===== */
               .curriculum-lesson-content .lesson-intro {
-                margin-bottom: 1.75rem;
+                margin-bottom: 2rem;
                 padding-bottom: 1.5rem;
-                border-bottom: 1px solid var(--tw-prose-body, #e2e8f0);
+                border-bottom: 3px solid #e2e8f0;
               }
               .curriculum-lesson-content .lesson-intro p {
                 font-size: 1.0625rem;
-                line-height: 1.7;
+                line-height: 1.8;
                 color: #334155;
               }
               .curriculum-lesson-content .lesson-steps {
                 margin-top: 1.5rem;
-                margin-bottom: 1.75rem;
+                margin-bottom: 2rem;
               }
               .curriculum-lesson-content .step-list {
                 list-style: none;
@@ -1471,32 +1873,32 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                 counter-increment: step;
                 margin-bottom: 1.5rem;
                 padding: 1.25rem 1.5rem;
-                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
                 border-radius: 0.75rem;
-                border-left: 4px solid #3b82f6;
+                border-left: 5px solid #3b82f6;
                 position: relative;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8);
               }
               .curriculum-lesson-content .step::before {
                 content: counter(step);
                 position: absolute;
-                left: -0.6rem;
+                left: -0.75rem;
                 top: 1.25rem;
-                width: 1.75rem;
-                height: 1.75rem;
-                background: #3b82f6;
+                width: 2rem;
+                height: 2rem;
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
                 color: white;
                 border-radius: 50%;
                 font-size: 0.875rem;
-                font-weight: 700;
+                font-weight: 800;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                line-height: 1.75rem;
-                text-align: center;
+                box-shadow: 0 3px 8px rgba(37,99,235,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
               }
               .curriculum-lesson-content .step-title {
                 font-size: 1.0625rem;
-                font-weight: 600;
+                font-weight: 700;
                 color: #1e293b;
                 margin: 0 0 0.5rem 0;
                 padding-left: 0.5rem;
@@ -1507,85 +1909,33 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
               .curriculum-lesson-content .step-body p {
                 margin: 0.25rem 0 0 0;
                 font-size: 0.9375rem;
-                line-height: 1.65;
+                line-height: 1.7;
                 color: #475569;
               }
-              .curriculum-lesson-content .key-points-box,
-              .curriculum-lesson-content .summary-box {
-                margin-top: 1.5rem;
-                padding: 1.25rem 1.5rem;
-                border-radius: 0.75rem;
-              }
-              .curriculum-lesson-content .key-points-box {
-                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-                border: 1px solid #bfdbfe;
-              }
-              .curriculum-lesson-content .key-points-box h3,
-              .curriculum-lesson-content .summary-box h3 {
-                font-size: 1rem;
-                font-weight: 600;
-                color: #1e293b;
-                margin: 0 0 0.75rem 0;
-              }
-              .curriculum-lesson-content .key-points-list {
-                margin: 0;
-                padding-left: 1.25rem;
-                color: #334155;
-                font-size: 0.9375rem;
-                line-height: 1.6;
-              }
-              .curriculum-lesson-content .summary-box {
-                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-                border: 1px solid #bbf7d0;
-              }
-              .curriculum-lesson-content .summary-box p {
-                margin: 0;
-                font-size: 0.9375rem;
-                line-height: 1.65;
-                color: #166534;
-              }
-              .curriculum-lesson-content .key-terms-box {
-                margin-top: 1.25rem;
-                padding: 1rem 1.25rem;
-                background: #f8fafc;
-                border-radius: 0.5rem;
-                border: 1px solid #e2e8f0;
-              }
-              .curriculum-lesson-content .key-terms-box h3 {
-                font-size: 0.9375rem;
-                font-weight: 600;
-                color: #475569;
-                margin: 0 0 0.5rem 0;
-              }
-              .curriculum-lesson-content .term {
-                display: inline-block;
-                padding: 0.125rem 0.5rem;
-                margin: 0.125rem 0.125rem 0.125rem 0;
-                background: #e2e8f0;
-                color: #334155;
-                border-radius: 0.375rem;
-                font-size: 0.8125rem;
-                font-weight: 500;
-              }
-              .curriculum-lesson-content .lesson-step-section {
-                margin-bottom: 1.25rem;
-              }
+
+              /* ===== IMAGES ===== */
               .curriculum-lesson-content .lesson-generated-image {
                 width: 100%;
                 max-width: 100%;
                 height: auto;
                 border-radius: 0.75rem;
-                margin: 0.75rem 0;
+                margin: 1rem 0;
                 display: block;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
               }
-              .curriculum-lesson-content figure.lesson-image {
-                margin: 0.75rem 0;
-                padding: 1rem 1.25rem;
-                background: #f1f5f9;
-                border-radius: 0.5rem;
+              .curriculum-lesson-content .lesson-image {
+                margin: 1rem 0;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                border-radius: 0.75rem;
                 font-size: 0.8125rem;
                 color: #64748b;
+                border: 1px solid #cbd5e1;
+              }
+
+              /* ===== LESSON STEP SECTION ===== */
+              .curriculum-lesson-content .lesson-step-section {
+                margin-bottom: 1.5rem;
               }
             `}</style>
           </div>

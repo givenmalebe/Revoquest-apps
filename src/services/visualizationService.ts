@@ -1,6 +1,6 @@
-import { getOpenRouterApiKey, openRouterGenerateText } from '@/services/openRouterClient';
+import { nvidiaGenerateText, hasNvidiaConfigured } from '@/services/nvidiaClient';
 
-const hasKey = !!getOpenRouterApiKey();
+const hasKey = !!hasNvidiaConfigured();
 
 export interface VisualizationData {
   type: 'bar' | 'pie' | 'line' | 'network' | 'flowchart' | 'timeline' | 'comparison' | 'infographic';
@@ -25,7 +25,7 @@ export class VisualizationService {
   ): Promise<VisualizationData | null> {
     // Check if API key is available
     if (!hasKey) {
-      console.warn('OpenRouter API key not found. Using fallback visualization.');
+      console.warn('NVIDIA API key not found. Using fallback visualization.');
       return this.getFallbackVisualization(topic, slideType);
     }
 
@@ -64,7 +64,7 @@ Return a JSON object with this structure:
 
 Make the data relevant to the topic and content. Use professional, educational language.`;
 
-      const text = await openRouterGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
+      const text = await nvidiaGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
       
       // Extract JSON from the response
       const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -134,7 +134,7 @@ Return a JSON object with this structure:
 
 Create a logical flow with 4-6 steps that represents the process.`;
 
-      const text = await openRouterGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
+      const text = await nvidiaGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
       
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -183,7 +183,7 @@ Return a JSON object with this structure:
 
 Generate 3-4 key points for each side that highlight the differences.`;
 
-      const text = await openRouterGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
+      const text = await nvidiaGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
       
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -227,7 +227,7 @@ Return a JSON object with this structure:
 
 Create 4-6 timeline events with appropriate years, titles, and descriptions.`;
 
-      const text = await openRouterGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
+      const text = await nvidiaGenerateText({ user: prompt, temperature: 0.7, max_tokens: 4096 });
       
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {

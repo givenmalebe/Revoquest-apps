@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, FileText, BookOpen, Play, Pause, Loader2, Download, ChevronLeft, ChevronRight, MessageCircle, Target, CheckCircle, ClipboardList, Mic, SkipForward } from 'lucide-react';
@@ -330,7 +330,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
               <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               {learningResult?.generatedByAI ? 'Topics' : 'Lessons'}
               <span className="ml-auto flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-medium">
-                {lessons.length || '—'}
+                {lessons.length || 'â€”'}
               </span>
             </h3>
             {lessons.length > 0 ? (
@@ -375,7 +375,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                                       ) : (
                                         <ClipboardList className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
                                       )}
-                                      <span>{quizGenLoading[l.id] ? 'Quiz…' : 'Quiz ready'}</span>
+                                      <span>{quizGenLoading[l.id] ? 'Quizâ€¦' : 'Quiz ready'}</span>
                                     </div>
                                   )}
                                 </button>
@@ -414,7 +414,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                               ) : (
                                 <ClipboardList className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
                               )}
-                              <span>{quizGenLoading[l.id] ? 'Quiz…' : 'Quiz ready'}</span>
+                              <span>{quizGenLoading[l.id] ? 'Quizâ€¦' : 'Quiz ready'}</span>
                             </div>
                           )}
                         </button>
@@ -498,13 +498,13 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                 )}
                 {!generationError && learningResult?.fallbackReason === 'no_api_key' && (
                   <div className="mb-4 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 px-4 py-3 text-sm text-blue-800 dark:text-blue-200">
-                    <strong>AI lessons are off</strong> — no API key. Add <code className="rounded bg-blue-100 dark:bg-blue-900/50 px-1">VITE_OPENROUTER_API_KEY</code> to your <code className="rounded bg-blue-100 dark:bg-blue-900/50 px-1">.env</code> file (get a key at <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="underline">OpenRouter</a>), then restart the dev server. You’ll get full AI-generated lessons instead of the document outline.
+                    <strong>AI lessons are off</strong> — no API key configured. NVIDIA API is used for AI generation via Firebase Cloud Functions.
                   </div>
                 )}
                 {isGenerating ? (
                   <div className="flex flex-col items-center justify-center py-20 gap-4">
                     <Loader2 className="w-12 h-12 animate-spin text-orange-500" />
-                    <p className="text-slate-600 dark:text-slate-400">Building slides and text presentation…</p>
+                    <p className="text-slate-600 dark:text-slate-400">Building slides and text presentationâ€¦</p>
                   </div>
                 ) : currentLesson ? (
                   <div className="max-w-3xl mx-auto">
@@ -554,7 +554,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                         {slideContentByIndex[textSectionIndex]?.loading ? (
                           <div className="flex flex-col items-center justify-center py-24 gap-3 bg-white border border-slate-200 text-slate-600">
                             <Loader2 className="w-10 h-10 animate-spin text-blue-700" />
-                            <p className="text-sm">Preparing this lesson…</p>
+                            <p className="text-sm">Preparing this lessonâ€¦</p>
                           </div>
                         ) : slideContentByIndex[textSectionIndex]?.error ? (
                           <div className="p-6 bg-amber-950/50 text-amber-200 text-sm">
@@ -569,7 +569,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                         ) : (
                           <div className="flex flex-col items-center justify-center py-20 gap-3 bg-white border border-slate-200 text-slate-500">
                             <Loader2 className="w-8 h-8 animate-spin text-blue-700" />
-                            <p className="text-sm">Preparing this topic…</p>
+                            <p className="text-sm">Preparing this topicâ€¦</p>
                           </div>
                         )}
                       </div>
@@ -586,7 +586,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                       </article>
                     )}
 
-                    {/* Quiz — auto-generated per slide after content loads */}
+                    {/* Quiz â€” auto-generated per slide after content loads */}
                     <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
                       {lessonQuizzes[currentLesson.id] ? (
                         (() => {
@@ -653,7 +653,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                           <Loader2 className="w-6 h-6 animate-spin text-blue-600 shrink-0" />
                           <div>
                             <p className="font-medium text-slate-800 dark:text-slate-100">Creating your quiz</p>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">Questions are based only on this topic’s content.</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">Questions are based only on this topicâ€™s content.</p>
                           </div>
                         </div>
                       ) : learningResult?.generatedByAI ? (
@@ -718,12 +718,12 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                 {isGenerating ? (
                   <div className="flex flex-col items-center justify-center py-20 gap-4">
                     <Loader2 className="w-12 h-12 animate-spin text-indigo-500" />
-                    <p className="text-slate-600 dark:text-slate-400">Building slides…</p>
+                    <p className="text-slate-600 dark:text-slate-400">Building slidesâ€¦</p>
                   </div>
                 ) : currentSlide ? (
                   <div className="max-w-4xl mx-auto px-2 pb-4">
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                      <p className="slideshow-badge mb-0">Slides presentation · AI narration</p>
+                      <p className="slideshow-badge mb-0">Slides presentation Â· AI narration</p>
                       <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" asChild>
                         <a href={pdfFileObj?.url} download={pdfFile.name} target="_blank" rel="noreferrer" className="gap-2">
                           <Download className="w-4 h-4" /> PDF
@@ -735,7 +735,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                         {slideContentByIndex[slideIndex]?.loading ? (
                           <div className="flex flex-col items-center gap-4 py-16 text-indigo-200">
                             <Loader2 className="w-14 h-14 animate-spin" />
-                            <p className="text-sm">Generating slide steps and lesson content…</p>
+                            <p className="text-sm">Generating slide steps and lesson contentâ€¦</p>
                             <p className="text-xs text-slate-400 max-w-xs text-center">{currentSlide.title}</p>
                           </div>
                         ) : slideContentByIndex[slideIndex]?.error ? (
@@ -754,7 +754,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                               )}
                               <h2 className="ss-title text-center sm:text-left border-0 pb-0 mb-2">{currentSlide.title}</h2>
                               <p className="text-[11px] text-slate-500 mb-2 text-center sm:text-left">
-                                One step at a time — use <strong>Next step</strong> when you’re ready.
+                                One step at a time â€” use <strong>Next step</strong> when youâ€™re ready.
                               </p>
                               <div className="slideshow-step-dots" role="tablist" aria-label="Steps on this slide">
                                 {getSlidePanels(slideIndex).map((_, pi) => (
@@ -790,7 +790,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                                         <img src={panel.imageDataUrl} alt="" className="ss-panel-img" />
                                       ) : (
                                         <div className="ss-image-placeholder ss-panel-placeholder">
-                                          <span aria-hidden>🍌</span>
+                                          <span aria-hidden>ðŸŒ</span>
                                           <span className="text-[10px] opacity-80">Image</span>
                                         </div>
                                       )}
@@ -832,7 +832,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                           <div className="flex flex-col gap-1 min-w-0 flex-1">
                             <p className="text-xs text-slate-300 leading-snug line-clamp-2">
                               {narrationPlaying
-                                ? 'Speaking with fluent phrasing…'
+                                ? 'Speaking with fluent phrasingâ€¦'
                                 : 'Reads this step only. Auto-advance moves to the next step, then the next slide.'}
                             </p>
                             <label className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer select-none">
@@ -918,7 +918,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                           </Button>
                         </div>
                         <span className="text-xs text-slate-400 tabular-nums">
-                          Slide {slideIndex + 1}/{slides.length} · Step {panelIndex + 1}/{getSlidePanels(slideIndex).length}
+                          Slide {slideIndex + 1}/{slides.length} Â· Step {panelIndex + 1}/{getSlidePanels(slideIndex).length}
                         </span>
                       </div>
                     </div>

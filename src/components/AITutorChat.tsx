@@ -38,13 +38,12 @@ import { generatePDFLearningContent, getFallbackLearningResult, type PDFLearning
 import PDFLearningView from '@/components/PDFLearningView';
 import PDFDocumentPanel from '@/components/PDFDocumentPanel';
 import {
-  getOpenRouterApiKey,
-  getOpenRouterModel,
-  openRouterChatCompletion,
-  openRouterGenerateText,
-  type OpenRouterChatMessage,
-  type OpenRouterTool,
-} from '@/services/openRouterClient';
+  hasNvidiaConfigured,
+  DEFAULT_NVIDIA_MODEL,
+  nvidiaGenerateText,
+  nvidiaChatCompletion,
+  type NvidiaChatMessage,
+} from '@/services/nvidiaClient';
 interface Message {
   id: string;
   content: string;
@@ -200,7 +199,7 @@ const TUTOR_TOOL_DECLARATIONS = {
   ],
 };
 
-const OPENROUTER_TUTOR_TOOLS: OpenRouterTool[] = TUTOR_TOOL_DECLARATIONS.functionDeclarations.map((fd) => ({
+const TUTOR_TOOLS: any[] = TUTOR_TOOL_DECLARATIONS.functionDeclarations.map((fd) => ({
   type: 'function',
   function: {
     name: fd.name,
@@ -209,33 +208,27 @@ const OPENROUTER_TUTOR_TOOLS: OpenRouterTool[] = TUTOR_TOOL_DECLARATIONS.functio
   },
 }));
 
-async function generateOpenRouterChatResponse(
+async function generateAIChatResponse(
   messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
   options?: { useTools?: boolean; maxTokens?: number }
 ): Promise<{ text: string; functionCalls?: Array<{ name: string; args: Record<string, unknown> }> }> {
-  if (!getOpenRouterApiKey()) {
-    throw new Error('AI not configured. Set OPENROUTER_API_KEY in firebase-functions/.env and deploy functions.');
+  if (!hasNvidiaConfigured()) {
+    throw new Error('AI not configured. NVIDIA API key not available.');
   }
 
-  const chatMessages: OpenRouterChatMessage[] = messages.map((m) => ({
+  const chatMessages: NvidiaChatMessage[] = messages.map((m) => ({
     role: m.role,
     content: m.content,
   }));
 
-  const { content, tool_calls } = await openRouterChatCompletion(chatMessages, {
+  const result = await nvidiaChatCompletion(chatMessages, {
     temperature: 0.7,
     max_tokens: options?.maxTokens ?? TUTOR_CHAT_MAX_TOKENS,
-    tools: options?.useTools ? OPENROUTER_TUTOR_TOOLS : undefined,
   });
 
-  const functionCalls = tool_calls?.map((tc) => ({
-    name: tc.name,
-    args: tc.arguments,
-  }));
-
   return {
-    text: content.trim(),
-    functionCalls: functionCalls?.length ? functionCalls : undefined,
+    text: result.content.trim(),
+    functionCalls: undefined,
   };
 }
 
@@ -737,14 +730,14 @@ const translateToLanguage = async (text: string, language: TutorLanguage) => {
     return text;
   }
 
-  const apiKey = getOpenRouterApiKey();
+  const apiKey = hasNvidiaConfigured();
   if (!apiKey) {
-    console.warn('OpenRouter API key is not configured for translation.');
+    console.warn('NVIDIA API is not configured for translation.');
     return text;
   }
 
   try {
-    const translated = await openRouterGenerateText({
+    const translated = await nvidiaGenerateText({
       system: `You are a professional translator. Translate the following into ${language.translationName}. Preserve meaning, tone, lists, and formatting. Do not add commentary. Do not wrap words in asterisks or Markdown emphasis. Output only the translation.`,
       user: text,
       temperature: 0.2,
@@ -906,7 +899,7 @@ export const AITutorPage = () => {
         ? `The learner ${userName} opened chat from the final exam. Greet them by name. Using the exam analysis, say clearly if they passed, failed (and attempts left), or have not started. Summarize what happened on their last attempt and give a short revision plan.`
         : `The learner ${userName} just opened the chat again. Greet them by name (use "${userName}"). Briefly pick up from the most recent messages above (if there were any) so it feels like a continuation, not a new chat. Summarize where they are in their learning and what might be a good next step (from the progress data). Offer to help with a concrete next action (review a topic, plan study time, or schedule a one-on-one in their calendar). Keep it conversational, warm, and short (2–4 short paragraphs). No bullet lists. Make it feel like a real tutor checking in who remembers the last conversation.`;
       try {
-        const { text } = await generateOpenRouterChatResponse(
+        const { text } = await generateAIChatResponse(
           [{ role: 'system', content: systemContent }, { role: 'user', content: userContent }],
           { useTools: false, maxTokens: TUTOR_GREETING_MAX_TOKENS }
         );
@@ -1091,7 +1084,7 @@ export const AITutorPage = () => {
       const userMessageContent = `Conversation history (you remember this):\n${conversationHistory}\n\nStudent (${userName}) request: ${request}`;
 
       const useTools = messageNeedsTools(request);
-      let aiResponse = await generateOpenRouterChatResponse(
+      let aiResponse = await generateAIChatResponse(
         [
           { role: 'system', content: systemInstructions },
           { role: 'user', content: userMessageContent },
@@ -1148,23 +1141,31 @@ export const AITutorPage = () => {
 
       setMessages(prev => [...prev, aiMessage]);
       // Voice/TTS disabled for now – can be re-enabled later
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating AI response:', error);
-      const message = error instanceof Error ? error.message : 'Unknown OpenRouter error';
+      // Firebase HttpsError puts the real message in error.message or error.details
+      const rawMsg = error?.message || error?.details || String(error) || 'Unknown AI error';
+      // Firebase Functions v2 may also wrap in a "FirebaseError" with .code
+      const message = error?.code ? `${error.code}: ${rawMsg}` : rawMsg;
+      console.error('AI error detail:', message);
       let fallbackMessage = 'I ran into a problem generating a reply.';
-      if (message.includes('403')) {
+      if (message.includes('403') || message.includes('permission')) {
         fallbackMessage = 'The AI provider rejected the request (403). Your API key may be invalid or restricted.';
-      } else if (message.includes('429')) {
+      } else if (message.includes('429') || message.includes('rate')) {
         fallbackMessage = 'Rate limit was reached (429). Please wait a bit, then try again.';
       } else if (message.includes('404') || message.includes('not found')) {
-        fallbackMessage = `The configured model was unavailable (${getOpenRouterModel()}). Check the model id on OpenRouter.`;
+        fallbackMessage = `The configured model was unavailable (${DEFAULT_NVIDIA_MODEL}). Check the NVIDIA API configuration.`;
       } else if (message.includes('400')) {
         fallbackMessage = 'The AI provider rejected the request (400). Check model compatibility and your account.';
+      } else if (message.includes('unauthenticated')) {
+        fallbackMessage = 'You need to be logged in to use the AI tutor. Please refresh and try again.';
+      } else if (message.includes('failed-precondition') || message.includes('not configured')) {
+        fallbackMessage = 'The AI service is not configured properly. Please contact support.';
+      } else if (message.includes('NVIDIA') || message.includes('nvidia')) {
+        fallbackMessage = `NVIDIA API error: ${message.slice(0, 200)}`;
       }
       fallbackMessage += `\n\nTechnical details: ${message.slice(0, 280)}`;
-      if (activeLanguage.id !== 'en') {
-        fallbackMessage = await translateToLanguage(fallbackMessage, activeLanguage);
-      }
+      // Skip translation on error — the AI backend is already down
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: fallbackMessage,

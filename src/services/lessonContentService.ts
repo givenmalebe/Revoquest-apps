@@ -1,4 +1,4 @@
-import { openRouterGenerateText } from '@/services/openRouterClient';
+import { nvidiaGenerateText } from '@/services/nvidiaClient';
 
 
 export interface QuizQuestion {
@@ -514,9 +514,10 @@ Format your response as JSON:
   ]
 }`;
 
-      const text = await openRouterGenerateText({
+      const text = await nvidiaGenerateText({
         user: prompt,
-        temperature: 0.6
+        temperature: 0.6,
+        max_tokens: 4096
       });
       
       // Clean the response text to extract JSON
@@ -592,9 +593,10 @@ Format your response as JSON:
   ]
 }`;
 
-      const text = await openRouterGenerateText({
+      const text = await nvidiaGenerateText({
         user: prompt,
-        temperature: 0.7
+        temperature: 0.7,
+        max_tokens: 4096
       });
       
       // Clean the response text to extract JSON
@@ -679,98 +681,133 @@ Format your response as JSON:
     title: string,
     description: string,
     topic: string,
-    duration: number
+    duration: number,
+    existingContent?: string
   ): Promise<{ richTextContent: string; objectives: string[]; resources: string[]; content: string }> {
     const objectives = this.generateObjectives(title, topic);
     const resources = this.generateResources(topic);
     try {
-      const prompt = `You are an expert curriculum designer. Create ONE rich, structured lesson as HTML that looks like a premium textbook: clear sections, numbered steps, formula boxes, tips, key takeaways grid, practice, and explicit TIME + QUIZ elements so the lesson is monitored by time and quizzes. Use plenty of CSS-friendly class names for the best lesson appearance.
+      const existingPlain = existingContent?.trim()
+        ? existingContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 4000)
+        : '';
+      const existingSection = existingPlain
+        ? `\nEXISTING LESSON CONTENT (read this first, then EXPAND and ENHANCE it — do NOT discard it):\n<existing>\n${existingPlain}\n</existing>\n\n`
+        : '';
 
-Lesson title: ${title}
-Context/topic: ${topic}
-Brief description: ${description}
+      const prompt = `You are an expert curriculum designer creating a premium textbook-quality lesson. Output ONLY valid HTML — no markdown, no code fences.
+
+LESSON DETAILS:
+Title: ${title}
+Topic: ${topic}
+Description: ${description}
 Duration: ${duration} minutes
+${existingSection}
+INSTRUCTIONS:${existingContent?.trim() ? `
+This lesson already has content. Your job is to EXPAND it:
+1. Keep ALL existing sections and their content — do NOT remove or shorten anything
+2. DEEPEN existing sections by adding more paragraphs, examples, and explanations
+3. ADD 2-3 NEW content blocks with fresh topics, definitions, examples, and real-world applications
+4. Add more definition-box, callout-box, deep-dive, real-world-box, and common-mistake-box elements
+5. Add more worked examples with step-by-step solutions
+6. The final lesson should be significantly longer and richer than the original
+7. Output the COMPLETE lesson — existing content + all your additions merged together` : `
+Create a brand new lesson from scratch:
+`}
 
-Output ONLY valid HTML. No markdown, no code fences. Use these EXACT class names and structure:
+CRITICAL REQUIREMENTS:
+- Write 3000+ words of actual teaching content across 5-6 content blocks
+- Each content block MUST have 3-4 detailed paragraphs (150-200 words each)
+- Use ALL the CSS classes provided below — do not skip any
+- Every section must include real examples, analogies, and step-by-step reasoning
+- Write like a university lecturer, not a textbook summary
 
-1. Wrap everything in <article class="curriculum-lesson">
+OUTPUT ONLY valid HTML. Start with <article class="curriculum-lesson">. Do NOT include <html>, <head>, or <body>.
 
-2. LESSON TIME ESTIMATE (required): So the lesson is monitored by time, add this right after the opening <article>.
+STRUCTURE (use these exact CSS class names):
+
+1. <article class="curriculum-lesson">
+
+2. LESSON TIME (required, right after <article>):
    <div class="lesson-time-estimate">
      <span class="time-badge">Estimated time: ${duration} min</span>
      <span class="time-hint">Complete at your own pace; the platform will track your progress.</span>
    </div>
 
-3. UNIT CONTEXT (optional): <p class="unit-context">Unit: [topic] — [lesson title]</p>
+3. UNIT CONTEXT: <p class="unit-context">Unit: [topic] — [lesson title]</p>
 
-4. LEARNING OBJECTIVES: A distinct box with blue accent.
+4. LEARNING OBJECTIVES (4-5 items):
    <section class="lesson-objectives">
      <h2 class="objectives-heading">Learning Objectives</h2>
      <hr class="section-rule" />
      <p class="objectives-intro">By the end of this lesson, you will be able to:</p>
      <ul class="objectives-list">
-       <li class="objective-item"><strong>Define</strong> [concept] and identify its core components.</li>
-       <li class="objective-item"><strong>Explain</strong> [key shift or principle].</li>
-       <li class="objective-item"><strong>Analyze</strong> [how X contributes to Y].</li>
-       <li class="objective-item"><strong>Evaluate</strong> [benefits and risks of Z].</li>
-       <li class="objective-item">[Fifth objective if needed].</li>
+       <li class="objective-item"><strong>Define</strong> [concept]...</li>
+       <li class="objective-item"><strong>Explain</strong> [principle]...</li>
+       <li class="objective-item"><strong>Analyze</strong> [relationship]...</li>
+       <li class="objective-item"><strong>Evaluate</strong> [impact]...</li>
      </ul>
    </section>
-   Use 4-5 objectives. Each <li> must have class="objective-item". Bold the first verb in <strong>. Use proper notation for math (e.g. ax<sup>2</sup> + bx + c = 0).
+   Bold the first verb in each <li>. Use class="objective-item" on every <li>.
 
-5. MAIN CONTENT: Numbered sections (1. 2. 3. ...). For each section include an image placeholder and optional formula/example boxes. Use class="content-block" for each block and add class="section-badge" to optional labels if you want (e.g. <span class="section-badge">Section 1</span>).
-   <section class="main-content">
-     <h2 class="section-heading">Main Content</h2>
-     <hr class="section-rule" />
-     <div class="content-block">
-       <h3 class="content-subheading">1. [First topic, e.g. Understanding the Core Concept]</h3>
-       <figure class="lesson-image" data-prompt="[Short prompt for educational image for this section]"></figure>
-       <p>...</p>
-       <div class="formula-box"><p>[Key formula or definition, e.g. ax<sup>2</sup> + bx + c = 0]</p></div>
-       <p>...</p>
-       <div class="example-block">
-         <h4 class="example-title">Example 1: [Name]</h4>
-         <p><strong>Solve / Problem:</strong> [Statement]</p>
-         <ol class="solution-steps">
-           <li><strong>Step 1:</strong> ...</li>
-           <li><strong>Step 2:</strong> ...</li>
-         </ol>
-       </div>
-       <div class="exam-tip-box"><strong>Exam Tip: [Topic]</strong><p>...</p></div>
-     </div>
-     ... (3-5 numbered content blocks total; use formula-box, example-block, exam-tip-box, key-rule-box where they fit)
-   </section>
-   - formula-box, key-rule-box, example-block, exam-tip-box, lesson-image data-prompt: as before.
+5. MAIN CONTENT — 5-6 numbered content blocks. Each block MUST contain:
+   - A heading, 3-4 paragraphs of teaching content, and at least ONE special element
+   - Use class="content-block" on each block wrapper
+   - Use class="section-badge" for section labels
+   - Use class="content-subheading" for h3 headings
 
-6. QUIZ PREP CALLOUT (required): So the lesson is monitored by quizzes, add this section before Key Takeaways. It prepares the learner for the quiz that follows.
+   SPECIAL ELEMENTS (use ALL of these at least once across the lesson):
+   a) <div class="formula-box"><p>[Formula or key definition]</p></div>
+   b) <div class="key-rule-box"><h4>Key Rule: [Name]</h4><p>...</p></div>
+   c) <div class="example-block"><h4 class="example-title">Example: [Name]</h4><p><strong>Problem:</strong>...</p><ol class="solution-steps"><li><strong>Step 1:</strong>...</li><li><strong>Step 2:</strong>...</li></ol></div>
+   d) <div class="exam-tip-box"><strong>Exam Tip:</strong>...</div>
+   e) <div class="definition-box"><h4>Definition: [Term]</h4><p>...</p></div>
+   f) <div class="callout-box"><strong>Key Insight:</strong><p>...</p></div>
+   g) <div class="highlight-box"><h4>Important: [Concept]</h4><p>...</p></div>
+   h) <div class="info-box"><h4>Did you know?</h4><p>...</p></div>
+   i) <div class="warning-box"><h4>Common Mistake:</h4><p>...</p></div>
+   j) <div class="quote-box"><p>"[Quote or citation]"</p><cite>— [Source]</cite></div>
+   k) <div class="deep-dive"><h4>Deep Dive: [Topic]</h4><p>...</p><p>...</p></div>
+   l) <div class="real-world-box"><h4>Real-World Application</h4><p>...</p></div>
+   m) <div class="common-mistake-box"><h4>Common Mistake to Avoid:</h4><p>...</p></div>
+   n) <hr class="content-divider" /> (use between major sections)
+   o) <span class="section-number">1</span> (before subheadings for numbered sections)
+   p) <figure class="lesson-image" data-prompt="[Image description]"></figure> (image placeholders)
+
+6. QUIZ PREP (required before Key Takeaways):
    <section class="quiz-prep-box">
      <h3 class="quiz-prep-heading">Ready for the quiz?</h3>
-     <p class="quiz-prep-text">After reviewing the key takeaways below, you will take a short quiz to check your understanding. Use it to see what you've mastered and what to review.</p>
+     <p class="quiz-prep-text">After reviewing the key takeaways below, you will take a short quiz to check your understanding.</p>
    </section>
 
-7. KEY TAKEAWAYS: 2x2 grid of cards.
+7. KEY TAKEAWAYS (2x2 grid):
    <section class="key-takeaways">
      <h2 class="section-heading">Key Takeaways</h2>
      <hr class="section-rule" />
      <div class="takeaways-grid">
-       <div class="takeaway-card"><h4 class="takeaway-title">[Title 1]</h4><p>...</p></div>
-       <div class="takeaway-card"><h4 class="takeaway-title">[Title 2]</h4><p>...</p></div>
-       <div class="takeaway-card"><h4 class="takeaway-title">[Title 3]</h4><p>...</p></div>
-       <div class="takeaway-card"><h4 class="takeaway-title">[Title 4]</h4><p>...</p></div>
+       <div class="takeaway-card"><h4 class="takeaway-title">[Title]</h4><p>...</p></div>
+       <div class="takeaway-card"><h4 class="takeaway-title">[Title]</h4><p>...</p></div>
+       <div class="takeaway-card"><h4 class="takeaway-title">[Title]</h4><p>...</p></div>
+       <div class="takeaway-card"><h4 class="takeaway-title">[Title]</h4><p>...</p></div>
      </div>
    </section>
 
-8. PRACTICE OPPORTUNITIES (optional): <section class="practice-opportunities">...</section> with challenge-set, practice-list, solutions-link.
+8. PRACTICE (optional):
+   <section class="practice-opportunities">
+     <div class="challenge-set"><h4>Challenge Problems</h4><ol class="practice-list"><li>...</li></ol></div>
+   </section>
 
-9. If the lesson suits a comparison table, use: <div class="comparison-table"><table>...</table></div>
+9. COMPARISON TABLE (if applicable):
+   <div class="comparison-table"><table><thead><tr><th>...</th></tr></thead><tbody><tr><td>...</td></tr></tbody></table></div>
 
-10. KEY TERMS (optional): <div class="key-terms-box"><h3>Key terms</h3><p><span class="term">[term1]</span> <span class="term">[term2]</span> ...</p></div>
+10. KEY TERMS:
+    <div class="key-terms-box"><h3>Key Terms</h3><p><span class="term">[term1]</span> <span class="term">[term2]</span> ...</p></div>
 
-Use <sup> for superscripts. Bold key terms. Use class="key-term-badge" for inline key terms in paragraphs if you want them to stand out (e.g. <strong class="key-term-badge">variable</strong>). Do not include <html>, <head>, or <body>. Start with <article class="curriculum-lesson">.`;
+Use <sup> for superscripts. Bold key terms with class="key-term-badge". Write substantial content — this is a full lesson, not an outline.`;
 
-      const htmlText = await openRouterGenerateText({
+      const htmlText = await nvidiaGenerateText({
         user: prompt,
-        temperature: 0.65
+        temperature: 0.65,
+        max_tokens: 8192
       });
       let html = htmlText.trim();
 
@@ -836,9 +873,10 @@ Respond with ONLY a JSON object (no markdown, no explanation):
   ]
 }`;
 
-      const jsonTextRaw = await openRouterGenerateText({
+      const jsonTextRaw = await nvidiaGenerateText({
         user: prompt,
-        temperature: 0.6
+        temperature: 0.6,
+        max_tokens: 4096
       });
       let jsonText = jsonTextRaw.trim();
       if (jsonText.startsWith('```')) {
@@ -1004,7 +1042,7 @@ Return ONLY valid JSON in this shape:
 Items to grade:
 ${JSON.stringify(gradingItems)}`;
 
-    const response = await openRouterGenerateText({
+    const response = await nvidiaGenerateText({
       user: prompt,
       temperature: 0.1,
       max_tokens: 5000,

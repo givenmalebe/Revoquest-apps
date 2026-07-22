@@ -20,7 +20,7 @@ import { useDataSync } from "@/contexts/DataSyncContext";
 import { handleConnectionError, functions, auth } from "@/firebase/config";
 import { httpsCallable } from "firebase/functions";
 import firebaseApi from "@/services/firebaseApi";
-import { getOpenRouterApiKey, getOpenRouterModel, openRouterGenerateText } from "@/services/openRouterClient";
+import { hasNvidiaConfigured, DEFAULT_NVIDIA_MODEL, nvidiaGenerateText } from "@/services/nvidiaClient";
 import { 
   Users, 
   BookOpen, 
@@ -3749,20 +3749,20 @@ const BlogsTab = React.memo(() => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
-  const apiKey = getOpenRouterApiKey();
+      const apiKey = hasNvidiaConfigured();
   const hasKey = !!apiKey;
 
   const generateBlog = async () => {
     if (!topic.trim()) return;
     if (!hasKey) {
-      setError('Set OPENROUTER_API_KEY in firebase-functions/.env to generate blogs with AI.');
+      setError('AI not configured. Please check that the NVIDIA API key is set in Firebase secrets.');
       return;
     }
     setIsGenerating(true);
     setError(null);
     setPublishedSlug(null);
     try {
-      const text = await openRouterGenerateText({
+      const text = await nvidiaGenerateText({
         user: `You are a professional blog writer for an education and training institute (RevoQuest). Write a full, engaging blog post that could be published on the website.
 
 Topic: ${topic.trim()}
@@ -3834,7 +3834,7 @@ Respond with ONLY a valid JSON object (no markdown, no code fences, no text befo
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-500" />
-            Generate full-page blog with AI ({getOpenRouterModel()})
+            Generate full-page blog with AI ({DEFAULT_NVIDIA_MODEL})
           </CardTitle>
           <CardDescription>
             Enter a topic; the AI will generate a full blog post. Edit title, excerpt, and content if needed, then publish to make it live on the blog page.

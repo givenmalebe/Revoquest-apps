@@ -1,4 +1,4 @@
-import { getOpenRouterApiKey, openRouterGenerateText } from '@/services/openRouterClient';
+import { nvidiaGenerateText } from '@/services/nvidiaClient';
 
 export interface TodoItem {
   id: string;
@@ -50,7 +50,7 @@ class AITodoService {
     try {
       const prompt = this.buildTodoGenerationPrompt(request);
       
-      const text = await openRouterGenerateText({ user: prompt, temperature: 0.8, max_tokens: 8192 });
+      const text = await nvidiaGenerateText({ user: prompt, temperature: 0.8, max_tokens: 8192 });
       
       // Parse the JSON response
       const parsed = JSON.parse(text);
