@@ -9,6 +9,7 @@ import { LearnerDashboard } from '@/components/LearnerDashboard';
 import { InstructorDashboard } from '@/components/InstructorDashboard';
 import { AdminDashboard } from '@/components/AdminDashboard';
 import { BookOpen } from 'lucide-react';
+import { funnelPath } from '@/utils/funnelPath';
 
 export default function FunnelDashboard() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function FunnelDashboard() {
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       const paid = searchParams.get('paid');
-      navigate(paid === '1' ? '/funnel/login?paid=1' : '/funnel/login', { replace: true });
+      navigate(paid === '1' ? `${funnelPath('/login')}?paid=1` : funnelPath('/login'), { replace: true });
     }
   }, [isAuthenticated, isLoading, navigate, searchParams]);
 

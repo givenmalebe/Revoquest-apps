@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { funnelPath } from "@/utils/funnelPath";
 import { 
   Users, 
   Award, 
@@ -56,7 +57,7 @@ export const AboutUs = ({ skipHeader, skipFooter, revoLearn }: AboutUsProps = {}
             </p>
             <div className="mt-8">
               <Button asChild className="bg-orange-500 hover:bg-orange-600 text-white">
-                <a href="/funnel#courses">
+                <a href={`${funnelPath('')}#courses`}>
                   Explore Courses
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>

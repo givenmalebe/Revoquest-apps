@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { FunnelHeader } from "@/components/funnel/FunnelHeader";
 import { LoginPage } from "@/components/LoginPage";
+import { funnelPath } from "@/utils/funnelPath";
 
 const funnelLogo = "/revoquest%20logo.png";
 
@@ -14,7 +15,7 @@ export default function FunnelLogin() {
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       const paid = searchParams.get("paid");
-      navigate(paid === "1" ? "/funnel/dashboard?paid=1" : "/funnel/dashboard", { replace: true });
+      navigate(paid === "1" ? `${funnelPath('/dashboard')}?paid=1` : funnelPath("/dashboard"), { replace: true });
     }
   }, [isAuthenticated, isLoading, navigate, searchParams]);
 
@@ -35,10 +36,10 @@ export default function FunnelLogin() {
       <FunnelHeader />
       <main className="flex-1">
         <LoginPage
-          backHref="/funnel"
+          backHref={funnelPath("")}
           backLabel="Back to Revo Learn"
           logoSrc={funnelLogo}
-          successRedirect="/funnel/dashboard"
+          successRedirect={funnelPath("/dashboard")}
           description="Sign in to access your courses and learner dashboard"
           hideFooterLine
         />

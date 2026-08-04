@@ -34,17 +34,12 @@ import FunnelLogin from "./pages/funnel/FunnelLogin";
 import FunnelDashboard from "./pages/funnel/FunnelDashboard";
 import SetPassword from "./pages/SetPassword";
 import LMSCheckout from "./pages/LMSCheckout";
+import { isRevolearnDomain } from "./utils/funnelPath";
 
 const queryClient = new QueryClient();
 
 // Setup global error handling to suppress AbortErrors
 setupGlobalErrorHandling();
-
-/** True when served from the revolearn.co.za domain (funnel-only brand site). */
-const isRevolearnDomain =
-  typeof window !== 'undefined' &&
-  (window.location.hostname === 'revolearn.co.za' ||
-    window.location.hostname.endsWith('.revolearn.co.za'));
 
 /** Funnel pages at their canonical /funnel/* paths (used on every domain). */
 const FunnelRoutes = (

@@ -4,6 +4,7 @@ import { FunnelHeader } from '@/components/funnel/FunnelHeader';
 import { Footer } from '@/components/Footer';
 import { getBlogBySlug, type BlogPost } from '@/services/blogService';
 import { Loader2, Calendar, User, ArrowLeft, Clock, Share2 } from 'lucide-react';
+import { funnelPath } from '@/utils/funnelPath';
 
 export default function FunnelBlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -36,7 +37,7 @@ export default function FunnelBlogPost() {
       <main className="flex-grow container mx-auto max-w-4xl px-4 py-12">
         <div className="mb-10">
           <Link 
-            to="/funnel/blog" 
+            to={funnelPath('/blog')} 
             className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -52,7 +53,7 @@ export default function FunnelBlogPost() {
         ) : error ? (
           <div className="rounded-xl border border-red-800/50 bg-red-950/30 p-8 text-center">
             <p className="text-red-200 mb-4">{error}</p>
-            <Link to="/funnel/blog" className="px-6 py-2 bg-red-800 hover:bg-red-700 rounded-lg transition-colors text-white font-medium">
+            <Link to={funnelPath('/blog')} className="px-6 py-2 bg-red-800 hover:bg-red-700 rounded-lg transition-colors text-white font-medium">
               Return to Blog
             </Link>
           </div>
@@ -60,7 +61,7 @@ export default function FunnelBlogPost() {
           <div className="text-center py-24 border border-dashed border-slate-800 rounded-2xl bg-slate-900/50">
             <h2 className="text-2xl font-bold text-white mb-4">Article Not Found</h2>
             <p className="text-slate-400 mb-8">The blog post you're looking for doesn't exist or has been moved.</p>
-            <Link to="/funnel/blog" className="px-6 py-2 bg-orange-600 hover:bg-orange-500 rounded-lg transition-colors text-white font-medium">
+            <Link to={funnelPath('/blog')} className="px-6 py-2 bg-orange-600 hover:bg-orange-500 rounded-lg transition-colors text-white font-medium">
               Browse All Articles
             </Link>
           </div>
@@ -121,7 +122,7 @@ export default function FunnelBlogPost() {
                   <p className="text-slate-400">Explore our short courses and take the next step in your career.</p>
                 </div>
                 <Link 
-                  to="/funnel#courses" 
+                  to={`${funnelPath('')}#courses`} 
                   className="px-8 py-3 bg-orange-600 hover:bg-orange-500 rounded-xl transition-all font-bold text-white shadow-lg shadow-orange-600/20 hover:scale-105"
                 >
                   Browse Courses

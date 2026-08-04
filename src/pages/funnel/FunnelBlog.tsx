@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FunnelHeader } from '@/components/funnel/FunnelHeader';
 import { getPublishedBlogs, type BlogPost } from '@/services/blogService';
 import { Loader2, Calendar, User, ArrowRight } from 'lucide-react';
+import { funnelPath } from '@/utils/funnelPath';
 
 export default function FunnelBlog() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -79,7 +80,7 @@ export default function FunnelBlog() {
                   </div>
                   
                   <h2 className="text-xl font-bold text-white mb-3 group-hover:text-orange-400 transition-colors">
-                    <Link to={`/funnel/blog/${blog.slug}`}>
+                    <Link to={funnelPath(`/blog/${blog.slug}`)}>
                       {blog.title}
                     </Link>
                   </h2>
@@ -89,7 +90,7 @@ export default function FunnelBlog() {
                   </p>
                   
                   <Link 
-                    to={`/funnel/blog/${blog.slug}`}
+                    to={funnelPath(`/blog/${blog.slug}`)}
                     className="inline-flex items-center gap-2 text-sm font-semibold text-orange-400 hover:text-orange-300 transition-colors"
                   >
                     Read Article

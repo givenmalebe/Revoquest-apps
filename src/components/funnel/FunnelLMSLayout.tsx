@@ -5,6 +5,7 @@ import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/UserAvatar';
 import UserProfile from '@/components/UserProfile';
+import { funnelPath } from '@/utils/funnelPath';
 
 const funnelLogo = '/revoquest%20logo.png';
 
@@ -20,7 +21,7 @@ export function FunnelLMSLayout({ children }: FunnelLMSLayoutProps) {
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to log out?')) {
-      logout('/funnel/login');
+      logout(funnelPath('/login'));
     }
   };
 
@@ -29,7 +30,7 @@ export function FunnelLMSLayout({ children }: FunnelLMSLayoutProps) {
       <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-sm">
         <div className="container mx-auto max-w-7xl px-4 py-3">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link to="/funnel" className="flex items-center gap-3">
+            <Link to={funnelPath('')} className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 sm:h-12 sm:w-12">
                 <img src={funnelLogo} alt="Revo Learn" className="h-full w-full object-contain" />
               </span>

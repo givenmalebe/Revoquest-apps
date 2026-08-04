@@ -5,6 +5,7 @@ import type { Course } from '@/firebase/database';
 import { createYocoCheckout, checkFunnelEmailRegistered } from '@/services/yocoFunnelService';
 import { BookOpen, Loader2, ArrowLeft, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { funnelPath } from '@/utils/funnelPath';
 const funnelLogo = '/revoquest%20logo.png';
 
 export default function FunnelCheckout() {
@@ -38,8 +39,8 @@ export default function FunnelCheckout() {
   }, [courseId]);
 
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  const successUrl = `${baseUrl}/funnel/dashboard?paid=1`;
-  const cancelUrl = `${baseUrl}/funnel/cancel`;
+  const successUrl = `${baseUrl}${funnelPath('/dashboard?paid=1')}`;
+  const cancelUrl = `${baseUrl}${funnelPath('/cancel')}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +108,7 @@ export default function FunnelCheckout() {
     return (
       <div className="min-h-screen bg-slate-950 px-4 py-12 text-center text-slate-300">
         <p>Course not found.</p>
-        <Link to="/funnel" className="mt-4 inline-block text-orange-500 hover:underline">
+        <Link to={funnelPath('')} className="mt-4 inline-block text-orange-500 hover:underline">
           Back to courses
         </Link>
       </div>
@@ -119,7 +120,7 @@ export default function FunnelCheckout() {
       <header className="border-b border-slate-800">
         <div className="container mx-auto max-w-2xl px-4 py-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link to="/funnel" className="flex items-center gap-3">
+            <Link to={funnelPath('')} className="flex items-center gap-3">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white p-2">
                 <img
                   src={funnelLogo}
@@ -130,11 +131,11 @@ export default function FunnelCheckout() {
               <span className="text-lg font-bold text-white">Revo Learn</span>
             </Link>
             <nav className="flex flex-wrap items-center gap-3 sm:gap-4">
-              <Link to="/funnel" className="text-sm text-slate-400 hover:text-orange-400 transition-colors">Home</Link>
-              <Link to="/funnel/about" className="text-sm text-slate-400 hover:text-orange-400 transition-colors">About</Link>
-              <Link to="/funnel/contact" className="text-sm text-slate-400 hover:text-orange-400 transition-colors">Contact Us</Link>
-              <Link to="/funnel/login" className="text-sm text-orange-400 hover:text-white transition-colors">Login</Link>
-              <Link to="/funnel" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white">
+              <Link to={funnelPath('')} className="text-sm text-slate-400 hover:text-orange-400 transition-colors">Home</Link>
+              <Link to={funnelPath('/about')} className="text-sm text-slate-400 hover:text-orange-400 transition-colors">About</Link>
+              <Link to={funnelPath('/contact')} className="text-sm text-slate-400 hover:text-orange-400 transition-colors">Contact Us</Link>
+              <Link to={funnelPath('/login')} className="text-sm text-orange-400 hover:text-white transition-colors">Login</Link>
+              <Link to={funnelPath('')} className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white">
                 <ArrowLeft className="h-4 w-4" /> Back to courses
               </Link>
             </nav>
@@ -171,7 +172,7 @@ export default function FunnelCheckout() {
                 {error}
                 {error.includes('already registered') && (
                   <p className="mt-2">
-                    <Link to="/funnel/login" className="underline font-medium text-orange-300 hover:text-orange-200">
+                    <Link to={funnelPath('/login')} className="underline font-medium text-orange-300 hover:text-orange-200">
                       Log in here
                     </Link>
                   </p>

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, FileText, BookOpen, Play, Pause, Loader2, Download, ChevronLeft, ChevronRight, MessageCircle, Target, CheckCircle, ClipboardList, Mic, SkipForward } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { funnelPath } from '@/utils/funnelPath';
 import SimplePDFView from './SimplePDFView';
 import CourseContentRenderer from './CourseContentRenderer';
 import CreativeCourseHTML from './CreativeCourseHTML';
@@ -438,7 +439,7 @@ export const PDFLearningView: React.FC<PDFLearningViewProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => navigate('/funnel/dashboard')}
+                    onClick={() => navigate(funnelPath('/dashboard'))}
                     className="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
                     title="Back to Revo Learn"
                   >

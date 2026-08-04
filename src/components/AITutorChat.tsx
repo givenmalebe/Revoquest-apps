@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { funnelPath } from '@/utils/funnelPath';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -1456,7 +1457,7 @@ export const AITutorPage = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/funnel/dashboard')}
+                onClick={() => navigate(funnelPath('/dashboard'))}
                 className="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
                 title="Back to Revo Learn"
               >
