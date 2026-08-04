@@ -40,6 +40,44 @@ const queryClient = new QueryClient();
 // Setup global error handling to suppress AbortErrors
 setupGlobalErrorHandling();
 
+/** True when served from the revolearn.co.za domain (funnel-only brand site). */
+const isRevolearnDomain =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'revolearn.co.za' ||
+    window.location.hostname.endsWith('.revolearn.co.za'));
+
+/** Funnel pages at their canonical /funnel/* paths (used on every domain). */
+const FunnelRoutes = (
+  <>
+    <Route path="/funnel" element={<FunnelLanding />} />
+    <Route path="/funnel/about" element={<FunnelAbout />} />
+    <Route path="/funnel/contact" element={<FunnelContact />} />
+    <Route path="/funnel/blog" element={<FunnelBlog />} />
+    <Route path="/funnel/blog/:slug" element={<FunnelBlogPost />} />
+    <Route path="/funnel/login" element={<FunnelLogin />} />
+    <Route path="/funnel/dashboard" element={<FunnelDashboard />} />
+    <Route path="/funnel/checkout/:courseId" element={<FunnelCheckout />} />
+    <Route path="/funnel/success" element={<FunnelSuccess />} />
+    <Route path="/funnel/cancel" element={<FunnelCancel />} />
+  </>
+);
+
+/** Root-level aliases so revolearn.co.za serves the funnel at its own URL. */
+const RevolearnRootRoutes = (
+  <>
+    <Route path="/" element={<FunnelLanding />} />
+    <Route path="/about" element={<FunnelAbout />} />
+    <Route path="/contact" element={<FunnelContact />} />
+    <Route path="/blog" element={<FunnelBlog />} />
+    <Route path="/blog/:slug" element={<FunnelBlogPost />} />
+    <Route path="/login" element={<FunnelLogin />} />
+    <Route path="/dashboard" element={<FunnelDashboard />} />
+    <Route path="/checkout/:courseId" element={<FunnelCheckout />} />
+    <Route path="/success" element={<FunnelSuccess />} />
+    <Route path="/cancel" element={<FunnelCancel />} />
+  </>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -50,6 +88,15 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <Routes>
+                {isRevolearnDomain ? (
+                  <>
+                    {RevolearnRootRoutes}
+                    {FunnelRoutes}
+                    <Route path="/set-password" element={<SetPassword />} />
+                    <Route path="*" element={<FunnelLanding />} />
+                  </>
+                ) : (
+                  <>
                     <Route path="/" element={<Index />} />
                     <Route path="/lms" element={<LMSPage />} />
                     <Route path="/lms/checkout/:courseId" element={<LMSCheckout />} />
@@ -65,21 +112,14 @@ const App = () => (
                     <Route path="/assessment-centre" element={<AssessmentCentre />} />
                     <Route path="/careers" element={<Careers />} />
                     <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/funnel" element={<FunnelLanding />} />
-                    <Route path="/funnel/about" element={<FunnelAbout />} />
-                    <Route path="/funnel/contact" element={<FunnelContact />} />
-                    <Route path="/funnel/blog" element={<FunnelBlog />} />
-                    <Route path="/funnel/blog/:slug" element={<FunnelBlogPost />} />
-                    <Route path="/funnel/login" element={<FunnelLogin />} />
-                    <Route path="/funnel/dashboard" element={<FunnelDashboard />} />
-                    <Route path="/funnel/checkout/:courseId" element={<FunnelCheckout />} />
-                    <Route path="/funnel/success" element={<FunnelSuccess />} />
-                    <Route path="/funnel/cancel" element={<FunnelCancel />} />
+                    {FunnelRoutes}
                     <Route path="/set-password" element={<SetPassword />} />
-                <Route path="/delete-courses" element={<CourseDeleter />} />
-                <Route path="/test-next-button" element={<NextButtonTest />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
+                    <Route path="/delete-courses" element={<CourseDeleter />} />
+                    <Route path="/test-next-button" element={<NextButtonTest />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </>
+                )}
               </Routes>
             </BrowserRouter>
           </DataSyncProvider>
