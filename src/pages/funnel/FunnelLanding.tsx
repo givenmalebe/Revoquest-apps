@@ -1,22 +1,28 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { DatabaseService } from '@/firebase/database';
 import type { Course } from '@/firebase/database';
-import { BookOpen, Clock, ArrowRight, Loader2, GraduationCap, Shield, Zap, Sparkles, X, Search } from 'lucide-react';
+import { BookOpen, Clock, ArrowRight, Loader2, GraduationCap, Shield, Zap, Search, X, Users, BarChart3, CheckCircle2, Star } from 'lucide-react';
 import { funnelPath } from '@/utils/funnelPath';
-const funnelLogo = '/revoquest%20logo.png';
-
-const WELCOME_VIDEO_SRC = '/choose_your_short_202603271307.mp4';
 
 export default function FunnelLanding() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
-  const [hasStartedVideo, setHasStartedVideo] = useState(false);
   const [courseSearch, setCourseSearch] = useState('');
   const [courseCategoryFilter, setCourseCategoryFilter] = useState('all');
-  const welcomeVideoRef = useRef<HTMLVideoElement>(null);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+
+  const closeModal = useCallback(() => setSelectedCourse(null), []);
+
+  useEffect(() => {
+    if (selectedCourse) {
+      document.body.style.overflow = 'hidden';
+      const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') closeModal(); };
+      window.addEventListener('keydown', handleEsc);
+      return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', handleEsc); };
+    }
+  }, [selectedCourse, closeModal]);
 
   useEffect(() => {
     let mounted = true;
@@ -33,13 +39,6 @@ export default function FunnelLanding() {
     return () => { mounted = false; };
   }, []);
 
-  // Show video popup after 5 seconds on landing
-  useEffect(() => {
-    const t = setTimeout(() => setShowWelcomeVideo(true), 5000);
-    return () => clearTimeout(t);
-  }, []);
-
-  // Scroll to courses section when landing with #courses hash (e.g. from other funnel pages)
   useEffect(() => {
     if (window.location.hash === '#courses') {
       const el = document.getElementById('courses');
@@ -82,67 +81,6 @@ export default function FunnelLanding() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Welcome video popup - appears after 5s; one click starts video with sound */}
-      {showWelcomeVideo && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-          <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col animate-in zoom-in-95 duration-300">
-            {/* Logo bar at top */}
-            <div className="flex-shrink-0 flex items-center justify-center py-4 px-6 bg-slate-900/95 border-b border-slate-700/50">
-              <img
-                src={funnelLogo}
-                alt="Revo Learn"
-                className="h-12 w-auto object-contain sm:h-14"
-              />
-            </div>
-            {/* Video - click overlay starts playback with sound (browser allows sound after user click) */}
-            <div className="relative flex-1 min-h-0 aspect-video">
-              {!hasStartedVideo && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setHasStartedVideo(true);
-                    const v = welcomeVideoRef.current;
-                    if (v) {
-                      v.muted = false;
-                      v.play().catch(() => {});
-                    }
-                  }}
-                  className="absolute inset-0 z-20 flex items-center justify-center w-full h-full bg-black/70 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-900"
-                  aria-label="Play video with sound"
-                >
-                  <span className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white px-8 py-4 rounded-xl bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg">
-                    Click to play
-                  </span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setShowWelcomeVideo(false)}
-                className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-                aria-label="Close"
-              >
-                <X className="h-6 w-6" />
-              </button>
-              <video
-                ref={welcomeVideoRef}
-                className="w-full h-full object-contain"
-                src={WELCOME_VIDEO_SRC}
-                muted={false}
-                playsInline
-                onEnded={() => setShowWelcomeVideo(false)}
-                controls
-              />
-              {/* Blur strip at bottom to hide watermark/branding */}
-              <div
-                className="absolute bottom-0 left-0 right-0 h-10 sm:h-12 pointer-events-none bg-gradient-to-t from-slate-900/95 via-slate-900/70 to-transparent backdrop-blur-md"
-                aria-hidden
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Background accents */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl" />
@@ -155,7 +93,7 @@ export default function FunnelLanding() {
             <Link to={funnelPath('')} className="flex items-center gap-3 group">
               <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white p-2 sm:h-16 sm:w-16">
                 <img
-                  src={funnelLogo}
+                  src="/revoquest%20logo.png"
                   alt="Revo Learn"
                   className="h-full w-full object-contain object-center"
                 />
@@ -177,9 +115,6 @@ export default function FunnelLanding() {
               <a href="#courses" className="text-sm font-medium text-slate-400 hover:text-orange-400 transition-colors">
                 Courses
               </a>
-              <Link to={funnelPath('/blog')} className="text-sm font-medium text-slate-400 hover:text-orange-400 transition-colors">
-                Blog
-              </Link>
               <Link to={funnelPath('/login')} className="text-sm font-medium text-orange-400 hover:text-white transition-colors">
                 Login
               </Link>
@@ -188,27 +123,24 @@ export default function FunnelLanding() {
         </div>
       </header>
 
-      {/* Hero with video background */}
+      {/* Hero section */}
       <section className="relative z-10 min-h-[85vh] flex items-center justify-center overflow-hidden">
-        {/* Video background */}
-        <div className="absolute inset-0">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/The_class_must_be_busy_099ffbf5e4.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/75 to-slate-950" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(249,115,22,0.12),transparent)]" />
-        </div>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover -z-20"
+        >
+          <source src="/The_class_must_be_busy_099ffbf5e4.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/75 to-slate-950" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(249,115,22,0.12),transparent)]" />
 
         <div className="relative z-10 container mx-auto max-w-5xl px-4 py-20 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/15 px-4 py-2 text-sm font-medium text-orange-300 mb-8 shadow-lg shadow-orange-500/10">
-            <Sparkles className="h-4 w-4" />
-            <span>Smart learning · AI-powered · Accredited qualifications</span>
+            <Shield className="h-4 w-4" />
+            <span>Accredited qualifications | Secure payment | Instant access</span>
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl max-w-4xl mx-auto leading-tight">
             Start your journey with{' '}
@@ -217,15 +149,11 @@ export default function FunnelLanding() {
             </span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Learn with our smart AI, earn accredited qualifications, and advance your career—at your own pace. Choose from the courses below, pay securely, and get instant access to your learner dashboard.
+            Earn accredited qualifications from industry experts, advance your career, and get instant access to your learner dashboard. Choose from our courses below and pay securely.
           </p>
 
           {/* Trust row */}
           <div className="mt-12 flex flex-wrap justify-center gap-8 sm:gap-12 text-slate-400">
-            <span className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-orange-500/90" />
-              <span className="text-sm font-medium">Smart AI learning</span>
-            </span>
             <span className="flex items-center gap-2">
               <GraduationCap className="h-5 w-5 text-orange-500/90" />
               <span className="text-sm font-medium">Accredited qualifications</span>
@@ -322,7 +250,8 @@ export default function FunnelLanding() {
                 {filteredCourses.map((course) => (
                   <article
                     key={course.id}
-                    className="group flex flex-col rounded-2xl border border-slate-700/80 bg-slate-900/60 backdrop-blur-sm p-6 transition-all duration-300 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/5"
+                    onClick={() => setSelectedCourse(course)}
+                    className="group flex flex-col rounded-2xl border border-slate-700/80 bg-slate-900/60 backdrop-blur-sm p-6 transition-all duration-300 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/5 cursor-pointer"
                   >
                     <div className="relative overflow-hidden rounded-xl mb-5">
                       {course.thumbnail ? (
@@ -373,6 +302,7 @@ export default function FunnelLanding() {
                       </p>
                       <Link
                         to={funnelPath(`/checkout/${course.id}`)}
+                        onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white shadow-lg shadow-orange-500/20 transition hover:bg-orange-600 hover:shadow-orange-500/30"
                       >
                         Enroll in this course
@@ -423,6 +353,179 @@ export default function FunnelLanding() {
         )}
       </main>
 
+      {/* Course Detail Modal */}
+      {selectedCourse && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={closeModal}
+        >
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+          <div
+            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700/80 bg-slate-900 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Thumbnail */}
+            {selectedCourse.thumbnail ? (
+              <img
+                src={selectedCourse.thumbnail}
+                alt=""
+                className="h-56 w-full object-cover rounded-t-2xl"
+              />
+            ) : (
+              <div className="flex h-56 items-center justify-center rounded-t-2xl bg-gradient-to-br from-slate-800 to-slate-800/80">
+                <BookOpen className="h-16 w-16 text-slate-600" />
+              </div>
+            )}
+
+            <div className="p-6 sm:p-8">
+              {/* Category & Level */}
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                {selectedCourse.category && (
+                  <span className="rounded-md bg-orange-500/15 border border-orange-500/30 px-2.5 py-1 text-xs font-medium text-orange-300">
+                    {selectedCourse.category}
+                  </span>
+                )}
+                {selectedCourse.level && (
+                  <span className="rounded-md bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-400">
+                    {selectedCourse.level}
+                  </span>
+                )}
+                {selectedCourse.complianceStatus && (
+                  <span className={`rounded-md px-2.5 py-1 text-xs font-medium ${
+                    selectedCourse.complianceStatus === 'Compliant'
+                      ? 'bg-green-500/15 border border-green-500/30 text-green-300'
+                      : 'bg-yellow-500/15 border border-yellow-500/30 text-yellow-300'
+                  }`}>
+                    {selectedCourse.complianceStatus}
+                  </span>
+                )}
+              </div>
+
+              <h2 className="text-2xl font-bold text-white">{selectedCourse.title}</h2>
+              <p className="mt-3 text-slate-300 leading-relaxed">{selectedCourse.description}</p>
+              {selectedCourse.shortDescription && selectedCourse.shortDescription !== selectedCourse.description && (
+                <p className="mt-2 text-sm text-slate-400 italic">{selectedCourse.shortDescription}</p>
+              )}
+
+              {/* Stats row */}
+              <div className="mt-6 flex flex-wrap items-center gap-5 text-sm text-slate-400">
+                {selectedCourse.duration && (
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-4 w-4 text-slate-500" />
+                    {selectedCourse.duration}
+                  </span>
+                )}
+                {(selectedCourse.lessons > 0) && (
+                  <span className="flex items-center gap-1.5">
+                    <BookOpen className="h-4 w-4 text-slate-500" />
+                    {selectedCourse.lessons} lessons
+                  </span>
+                )}
+                {((selectedCourse.enrolledLearners ?? 0) > 0 || (selectedCourse.enrolledStudents ?? 0) > 0) && (
+                  <span className="flex items-center gap-1.5">
+                    <Users className="h-4 w-4 text-slate-500" />
+                    {(selectedCourse.enrolledLearners || selectedCourse.enrolledStudents || 0).toLocaleString()} enrolled
+                  </span>
+                )}
+                {selectedCourse.rating > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <Star className="h-4 w-4 text-amber-500" />
+                    {selectedCourse.rating.toFixed(1)}
+                  </span>
+                )}
+                {selectedCourse.language && (
+                  <span className="flex items-center gap-1.5">
+                    <BarChart3 className="h-4 w-4 text-slate-500" />
+                    {selectedCourse.language}
+                  </span>
+                )}
+              </div>
+
+              {/* SAQA / SETA info */}
+              {selectedCourse.saqaId && (
+                <p className="mt-4 text-sm text-slate-400">
+                  <span className="font-medium text-slate-300">SAQA ID:</span> {selectedCourse.saqaId}
+                </p>
+              )}
+
+              {/* Requirements */}
+              {selectedCourse.requirements && selectedCourse.requirements.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-2">Requirements</h3>
+                  <ul className="space-y-1.5">
+                    {selectedCourse.requirements.map((req, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-slate-400">
+                        <CheckCircle2 className="h-4 w-4 text-orange-500/70 mt-0.5 shrink-0" />
+                        {req}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Learning Outcomes */}
+              {selectedCourse.learningOutcomes && selectedCourse.learningOutcomes.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-2">What you'll learn</h3>
+                  <ul className="grid gap-1.5 sm:grid-cols-2">
+                    {selectedCourse.learningOutcomes.map((outcome, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-slate-400">
+                        <CheckCircle2 className="h-4 w-4 text-green-500/70 mt-0.5 shrink-0" />
+                        {outcome}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Modules / Units overview */}
+              {(selectedCourse.modules ?? selectedCourse.units ?? []).length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-2">Course content</h3>
+                  <div className="space-y-2">
+                    {(selectedCourse.modules ?? selectedCourse.units ?? []).map((mod, i) => (
+                      <div key={mod.id ?? i} className="rounded-lg border border-slate-700/60 bg-slate-800/40 px-4 py-3">
+                        <p className="text-sm font-medium text-slate-200">{mod.title}</p>
+                        {mod.description && (
+                          <p className="mt-1 text-xs text-slate-500">{mod.description}</p>
+                        )}
+                        {mod.lessons?.length > 0 && (
+                          <p className="mt-1 text-xs text-slate-500">{mod.lessons.length} lessons</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Price & Enroll */}
+              <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-slate-700/80">
+                <p className="text-3xl font-bold text-orange-400">
+                  {formatPrice(selectedCourse.price ?? 0)}
+                  {(selectedCourse.price ?? 0) > 0 && (
+                    <span className="text-sm font-normal text-slate-500 ml-1">one-time</span>
+                  )}
+                </p>
+                <Link
+                  to={funnelPath(`/checkout/${selectedCourse.id}`)}
+                  onClick={closeModal}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-orange-500/20 transition hover:bg-orange-600 hover:shadow-orange-500/30 text-lg"
+                >
+                  Enroll Now
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

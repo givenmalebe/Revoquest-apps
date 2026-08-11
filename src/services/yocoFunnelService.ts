@@ -98,6 +98,35 @@ export async function createYocoCheckoutForLearner(params: {
   return data;
 }
 
+/** Check if an identity number is already used by an existing user */
+export async function checkIdentityNumberUsed(identityNumber: string): Promise<{ used: boolean }> {
+  const functions = getFunctions();
+  const fn = httpsCallable<{ identityNumber: string }, { used: boolean }>(
+    functions,
+    'checkIdentityNumberUsed'
+  );
+  const result = await fn({ identityNumber: identityNumber.trim() });
+  return { used: (result.data as { used: boolean }).used };
+}
+
+/** Enroll a first-time user for free (verified by identity number) */
+export async function freeFirstCourseEnrollment(params: {
+  courseId: string;
+  customerEmail: string;
+  firstName: string;
+  lastName: string;
+  password?: string;
+  identityNumber: string;
+}): Promise<{ success: boolean; message?: string; error?: string }> {
+  const functions = getFunctions();
+  const fn = httpsCallable<typeof params, { success: boolean; message?: string; error?: string }>(
+    functions,
+    'freeFirstCourseEnrollment'
+  );
+  const result = await fn(params);
+  return result.data as { success: boolean; message?: string; error?: string };
+}
+
 /** Admin-only: grant course access to a learner by email (e.g. after purchase if webhook didn't run). */
 export interface GrantCourseAccessResult {
   success: boolean;

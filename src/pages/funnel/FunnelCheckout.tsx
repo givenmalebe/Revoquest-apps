@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { DatabaseService } from '@/firebase/database';
 import type { Course } from '@/firebase/database';
-import { createYocoCheckout, checkFunnelEmailRegistered } from '@/services/yocoFunnelService';
-import { BookOpen, Loader2, ArrowLeft, CreditCard } from 'lucide-react';
+import { createYocoCheckout, checkFunnelEmailRegistered, checkIdentityNumberUsed, freeFirstCourseEnrollment } from '@/services/yocoFunnelService';
+import { BookOpen, Loader2, ArrowLeft, CreditCard, Gift, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { funnelPath } from '@/utils/funnelPath';
 const funnelLogo = '/revoquest%20logo.png';
@@ -21,6 +21,9 @@ export default function FunnelCheckout() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [identityNumber, setIdentityNumber] = useState('');
+  const [isFirstTimeUser, setIsFirstTimeUser] = useState<boolean | null>(null);
+  const [checkingId, setCheckingId] = useState(false);
+  const [freeEnrollSuccess, setFreeEnrollSuccess] = useState(false);
 
   useEffect(() => {
     if (!courseId) return;
@@ -42,6 +45,24 @@ export default function FunnelCheckout() {
   const successUrl = `${baseUrl}${funnelPath('/dashboard?paid=1')}`;
   const cancelUrl = `${baseUrl}${funnelPath('/cancel')}`;
 
+  const handleIdCheck = async () => {
+    const id = identityNumber.trim();
+    if (!id) {
+      setIsFirstTimeUser(null);
+      return;
+    }
+    setCheckingId(true);
+    setError(null);
+    try {
+      const { used } = await checkIdentityNumberUsed(id);
+      setIsFirstTimeUser(!used);
+    } catch {
+      setIsFirstTimeUser(null);
+    } finally {
+      setCheckingId(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!course || !courseId) return;
@@ -62,6 +83,26 @@ export default function FunnelCheckout() {
         setSubmitting(false);
         return;
       }
+
+      // Free first course for new users with a valid identity number
+      if (isFirstTimeUser && identityNumber.trim()) {
+        const result = await freeFirstCourseEnrollment({
+          courseId,
+          customerEmail: email.trim(),
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          password: password.trim(),
+          identityNumber: identityNumber.trim(),
+        });
+        if (result.success) {
+          setFreeEnrollSuccess(true);
+          return;
+        }
+        setError(result.error || 'Free enrollment failed. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+
       const amountCents = Math.round((course.price ?? 0) * 100);
       if (amountCents <= 0) {
         setError('This course has no price set. Please contact support.');
@@ -144,6 +185,21 @@ export default function FunnelCheckout() {
       </header>
 
       <main className="container mx-auto max-w-2xl px-4 py-10">
+        {freeEnrollSuccess ? (
+          <div className="rounded-xl border border-green-700/60 bg-green-900/20 p-8 text-center">
+            <CheckCircle2 className="mx-auto h-16 w-16 text-green-400" />
+            <h2 className="mt-4 text-2xl font-bold text-white">You're enrolled!</h2>
+            <p className="mt-2 text-slate-300">
+              Your first course is on us. We've sent a verification email — please check your inbox and verify your account, then log in to start learning.
+            </p>
+            <Link
+              to={funnelPath('/login')}
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600 transition"
+            >
+              Go to Login
+            </Link>
+          </div>
+        ) : (
         <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-6">
           <h1 className="text-2xl font-bold text-white">Checkout</h1>
           <div className="mt-4 flex gap-4">
@@ -202,17 +258,36 @@ export default function FunnelCheckout() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300">Identity Number (ID NO)</label>
+              <label className="block text-sm font-medium text-slate-300">Identity Number (ID NO) *</label>
               <input
                 type="text"
+                required
                 value={identityNumber}
-                onChange={(e) => setIdentityNumber(e.target.value)}
+                onChange={(e) => { setIdentityNumber(e.target.value); setIsFirstTimeUser(null); }}
+                onBlur={handleIdCheck}
                 className="mt-1 w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
-                placeholder="Your ID number (for the certificate)"
+                placeholder="Your ID number (required)"
               />
               <p className="mt-0.5 text-xs text-slate-500">
                 This will be stored on your learner profile and shown as <span className="font-semibold">ID NO</span> on your certificate.
               </p>
+              {checkingId && (
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <Loader2 className="h-3 w-3 animate-spin" /> Checking eligibility…
+                </p>
+              )}
+              {isFirstTimeUser === true && (
+                <div className="mt-2 rounded-lg border border-green-700/60 bg-green-900/30 p-3 flex items-start gap-2">
+                  <Gift className="h-5 w-5 text-green-400 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-green-300">First course free!</p>
+                    <p className="text-xs text-green-400/80">As a first-time user, this course is free. No payment required.</p>
+                  </div>
+                </div>
+              )}
+              {isFirstTimeUser === false && (
+                <p className="mt-1 text-xs text-slate-400">This ID is already registered — standard pricing applies.</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-300">Email *</label>
@@ -256,11 +331,20 @@ export default function FunnelCheckout() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 py-3 font-semibold text-white transition hover:bg-orange-600 disabled:opacity-60"
+              className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold text-white transition disabled:opacity-60 ${
+                isFirstTimeUser
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-orange-500 hover:bg-orange-600'
+              }`}
             >
               {submitting ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" /> Opening payment page…
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  {isFirstTimeUser ? 'Enrolling you for free…' : 'Opening payment page…'}
+                </>
+              ) : isFirstTimeUser ? (
+                <>
+                  <Gift className="h-5 w-5" /> Enroll for Free
                 </>
               ) : (
                 <>
@@ -270,6 +354,7 @@ export default function FunnelCheckout() {
             </button>
           </form>
         </div>
+        )}
       </main>
     </div>
   );

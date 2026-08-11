@@ -14,6 +14,7 @@ import * as nodemailer from "nodemailer";
 import {getFirestore, FieldValue} from "firebase-admin/firestore";
 import {initializeApp} from "firebase-admin/app";
 import {getAuth} from "firebase-admin/auth";
+import * as express from "express";
 
 // Helper to get Firebase Runtime Config (deprecated but still works)
 const getFunctionsConfig = (): Record<string, any> => {
@@ -38,15 +39,26 @@ const functionsConfig = getFunctionsConfig();
 const yocoConfig = functionsConfig.yoco ?? {};
 
 const nvidiaApiKey = defineSecret("NVIDIA_API_KEY_SECRET");
+const yocoSecretKey = defineSecret("YOCO_SECRET_KEY");
 
 const YOCO_ENVIRONMENT = process.env.YOCO_ENVIRONMENT || yocoConfig.environment || "test";
 const YOCO_TEST_SECRET_KEY = process.env.YOCO_TEST_SECRET_KEY || "";
 const YOCO_LIVE_SECRET_KEY = process.env.YOCO_LIVE_SECRET_KEY || "";
-const YOCO_SECRET_KEY =
-  process.env.YOCO_SECRET_KEY ||
-  yocoConfig.secret_key ||
-  (YOCO_ENVIRONMENT === "live" ? YOCO_LIVE_SECRET_KEY : YOCO_TEST_SECRET_KEY);
 const YOCO_CHECKOUT_URL = "https://payments.yoco.com/api/checkouts";
+
+/** Resolve the Yoco secret key. Prefers the bound Firebase secret (works on v2 runtime), then env/config fallbacks. */
+const getYocoSecretKey = (): string => {
+  try {
+    const fromSecret = yocoSecretKey.value();
+    if (fromSecret) return fromSecret;
+  } catch (_) {}
+  return (
+    process.env.YOCO_SECRET_KEY ||
+    yocoConfig.secret_key ||
+    (YOCO_ENVIRONMENT === "live" ? YOCO_LIVE_SECRET_KEY : YOCO_TEST_SECRET_KEY) ||
+    ""
+  );
+};
 
 // Email configuration
 const createTransporter = (user: string, pass: string) => {
@@ -801,12 +813,15 @@ export const requestPasswordResetEmail = onCall({ cors: true }, async (request) 
 });
 
 export const createYocoCheckout = onCall({
-  cors: true
+  cors: true,
+  secrets: [yocoSecretKey],
 }, async (request) => {
-  // STEP 1: Get Yoco secret key from environment
-  // In production, set YOCO_SECRET_KEY in Firebase Console to the live key
-  // In development, the .env file provides test key
-  const yocoSecretKey = YOCO_SECRET_KEY;
+  // STEP 1: Get Yoco secret key from the bound Firebase secret (v2 runtime does not expose functions.config())
+  const key = getYocoSecretKey();
+  if (!key || key.length < 5) {
+    logger.error("YOCO_SECRET_KEY not set.");
+    return { success: false, error: "Payment gateway configuration error (Key Missing)." };
+  }
   
   try {
     const {
@@ -880,7 +895,7 @@ export const createYocoCheckout = onCall({
     }
 
     // STEP 3: Determine if using live key and normalize URLs
-    const isLiveMode = yocoSecretKey.startsWith('sk_live_');
+    const isLiveMode = key.startsWith('sk_live_');
     logger.info(`Yoco mode: ${isLiveMode ? 'LIVE' : 'TEST'}`);
 
     // Yoco live API requires HTTPS callback URLs; test API allows HTTP for localhost
@@ -920,7 +935,7 @@ export const createYocoCheckout = onCall({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${yocoSecretKey}`,
+        "Authorization": `Bearer ${key}`,
       },
       body: JSON.stringify(body),
     });
@@ -972,7 +987,8 @@ export const createYocoCheckout = onCall({
 
 /** Create Yoco checkout for an existing logged-in learner. Requires auth. On payment success, webhook enrolls the user. */
 export const createYocoCheckoutForLearner = onCall({
-  cors: true
+  cors: true,
+  secrets: [yocoSecretKey],
 }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
@@ -980,27 +996,24 @@ export const createYocoCheckoutForLearner = onCall({
   }
   try {
     // Use the same key configuration as createYocoCheckout
-    const yocoSecretKey = YOCO_SECRET_KEY;
+    const key = getYocoSecretKey();
     const { courseId, successUrl, cancelUrl } = request.data as {
       courseId: string;
       successUrl: string;
       cancelUrl: string;
     };
 
-    const isLiveMode = yocoSecretKey.startsWith('sk_live_');
+    const isLiveMode = key.startsWith('sk_live_');
     logger.info(`Yoco mode (learner): ${isLiveMode ? 'LIVE' : 'TEST'}`, {
       uid,
       courseId,
-      hasKey: !!yocoSecretKey,
-      keyLength: yocoSecretKey.length
+      hasKey: !!key,
+      keyLength: key.length
     });
 
-    if (!yocoSecretKey || yocoSecretKey.length < 5) {
-      return { success: false, error: "Payment gateway configuration error (Key Missing)." };
-    }
-    if (!yocoSecretKey) {
+    if (!key || key.length < 5) {
       logger.error("YOCO_SECRET_KEY not set.");
-      return { success: false, error: "Payment gateway not configured" };
+      return { success: false, error: "Payment gateway configuration error (Key Missing)." };
     }
     if (!courseId || !successUrl || !cancelUrl) {
       return { success: false, error: "Missing courseId, successUrl, or cancelUrl" };
@@ -1069,7 +1082,7 @@ export const createYocoCheckoutForLearner = onCall({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${yocoSecretKey}`,
+        "Authorization": `Bearer ${key}`,
       },
       body: JSON.stringify(body),
     });
@@ -1376,13 +1389,41 @@ async function enrollExistingUserInCourse(
 
 // --- Yoco webhook: payment succeeded -> create user and enroll ---
 // Yoco sends: { type: "payment.succeeded", payload: { id, metadata: { checkoutId? }, ... } } or similar variants
+// Note: v2 onRequest does NOT parse JSON body automatically, so we parse it here.
+// Some runtimes (functions-framework) pre-parse req.body and consume the stream,
+// so we must prefer req.body when present to avoid hanging on the stream.
+const parseJsonBody = (req: express.Request): Promise<Record<string, unknown>> => {
+  return new Promise((resolve) => {
+    if (req.body && typeof req.body === "object" && Object.keys(req.body).length > 0) {
+      resolve(req.body as Record<string, unknown>);
+      return;
+    }
+    let bodyString = "";
+    req.setEncoding("utf8");
+    req.on("data", (chunk: string) => { bodyString += chunk; });
+    req.on("end", () => {
+      try {
+        const parsed = bodyString ? JSON.parse(bodyString) : {};
+        resolve(parsed as Record<string, unknown>);
+      } catch (e) {
+        resolve({});
+      }
+    });
+    req.on("error", () => resolve({}));
+  });
+};
 export const yocoWebhook = onRequest(async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).send("Method not allowed");
     return;
   }
   try {
-    const body = req.body as Record<string, unknown>;
+    let body: Record<string, unknown>;
+    try {
+      body = await parseJsonBody(req);
+    } catch {
+      body = {};
+    }
     const event = (body?.type as string) ?? (body?.event as string);
     logger.info("Webhook received", { bodyKeys: Object.keys(body || {}), event });
     const payload = body?.payload as Record<string, unknown> | undefined;
@@ -1621,6 +1662,73 @@ const CORS_ORIGINS = [
   "https://revoquest-9e217.web.app",
   "https://revoquest-9e217.firebaseapp.com",
 ];
+
+// --- Callable: register Yoco webhook to receive payment.succeeded events (admin only) ---
+// This registers the webhook so Yoco sends payment notifications to yocoWebhook.
+// The webhook URL is constructed from the function's deployment region/project.
+const YOCO_WEBHOOKS_URL = "https://payments.yoco.com/api/webhooks";
+export const registerYocoWebhook = onCall({ cors: CORS_ORIGINS, secrets: [yocoSecretKey] }, async (request) => {
+  const callerUid = request.auth?.uid;
+  if (!callerUid) {
+    return { success: false, error: "You must be logged in." };
+  }
+  try {
+    initializeApp();
+  } catch (_) {}
+  const db = getFirestore();
+  const callerSnap = await db.collection("users").doc(callerUid).get();
+  const callerRole = (callerSnap.data()?.role as string | undefined)?.toLowerCase?.();
+  if (callerRole !== "admin") {
+    return { success: false, error: "Only admins can register webhooks." };
+  }
+  const key = getYocoSecretKey();
+  if (!key || key.length < 5) {
+    return { success: false, error: "YOCO_SECRET_KEY not configured." };
+  }
+  const region = process.env.FUNCTION_REGION || "us-central1";
+  const projectId = process.env.GCLOUD_PROJECT || "revoquest-9e217";
+  const webhookUrl = `https://${region}-${projectId}.cloudfunctions.net/yocoWebhook`;
+  try {
+    const listRes = await fetch(`${YOCO_WEBHOOKS_URL}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${key}` },
+    });
+    const listData = (await listRes.json().catch(() => ({}))) as { subscriptions?: Array<{ id: string; url: string; name: string; mode: string }> };
+    const subscriptions = listData.subscriptions ?? [];
+    const existing = subscriptions.find((w) => w.url === webhookUrl);
+    if (existing) {
+      logger.info("registerYocoWebhook: already registered", { id: existing.id, url: webhookUrl });
+      return { success: true, webhookId: existing.id, url: webhookUrl, message: "Webhook already registered." };
+    }
+    const regRes = await fetch(`${YOCO_WEBHOOKS_URL}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ name: "revoquest-checkout-webhook", url: webhookUrl }),
+    });
+    const regData = (await regRes.json().catch(() => ({}))) as { id?: string; secret?: string; name?: string; url?: string; mode?: string; error?: string };
+    if (!regRes.ok) {
+      logger.error("registerYocoWebhook: failed", { status: regRes.status, body: regData });
+      return { success: false, error: `Failed to register webhook: ${regData.error || "Unknown error"}` };
+    }
+    const webhookId = regData.id || "";
+    const webhookSecret = regData.secret || "";
+    if (webhookId && webhookSecret) {
+      await db.collection("config").doc("yocoWebhook").set({
+        id: webhookId,
+        url: webhookUrl,
+        secret: webhookSecret,
+        registeredAt: new Date().toISOString(),
+        createdAt: (regData as any).createdAt ?? new Date().toISOString(),
+      }, { merge: true });
+      logger.info("registerYocoWebhook: stored secret", { webhookId });
+    }
+    logger.info("registerYocoWebhook: registered", { webhookId, url: webhookUrl });
+    return { success: true, webhookId, url: webhookUrl, message: "Webhook registered successfully." };
+  } catch (error) {
+    logger.error("registerYocoWebhook error", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to register webhook." };
+  }
+});
 
 /**
  * Delete a user from Firebase Auth and Firestore (users collection).
@@ -1956,6 +2064,115 @@ export const secureNvidiaChat = onCall({ cors: CORS_ORIGINS, secrets: [nvidiaApi
     if (error instanceof HttpsError) throw error;
     logger.error("secureNvidiaChat global catch:", { message: error.message, stack: error.stack });
     throw new HttpsError("internal", `NVIDIA proxy failed: ${error.message || "Unknown error"}`);
+  }
+});
+
+// --- Check if an identity number already exists in the users collection ---
+export const checkIdentityNumberUsed = onCall({ cors: true }, async (request) => {
+  const identityNumber = (request.data?.identityNumber as string)?.trim();
+  if (!identityNumber) {
+    return { used: false };
+  }
+  const db = getFirestore();
+  const snap = await db.collection("users")
+    .where("identityNumber", "==", identityNumber)
+    .limit(1)
+    .get();
+  return { used: !snap.empty };
+});
+
+// --- Free first-course enrollment for new users (verified by identity number) ---
+export const freeFirstCourseEnrollment = onCall({ cors: true }, async (request) => {
+  const { courseId, customerEmail, firstName, lastName, password, identityNumber } = request.data as {
+    courseId: string;
+    customerEmail: string;
+    firstName: string;
+    lastName: string;
+    password?: string;
+    identityNumber: string;
+  };
+
+  if (!courseId || !customerEmail || !firstName || !lastName || !identityNumber?.trim()) {
+    return { success: false, error: "All fields including Identity Number are required for free enrollment." };
+  }
+
+  const db = getFirestore();
+  const auth = getAuth();
+
+  // Double-check: identity number must not already be in the system
+  const idSnap = await db.collection("users")
+    .where("identityNumber", "==", identityNumber.trim())
+    .limit(1)
+    .get();
+  if (!idSnap.empty) {
+    return { success: false, error: "This Identity Number is already registered. Free first course is only for new users." };
+  }
+
+  // Check email not already registered
+  try {
+    await auth.getUserByEmail(customerEmail.trim());
+    return { success: false, error: "This email is already registered. Please log in." };
+  } catch {
+    // Good — email not taken
+  }
+
+  // Create a fake session doc so we can reuse runEnrollmentFromSession
+  const sessionData = {
+    courseId,
+    customerEmail: customerEmail.trim(),
+    firstName: firstName.trim(),
+    lastName: lastName.trim(),
+    password: typeof password === "string" && password.length >= 6 ? password : undefined,
+    identityNumber: identityNumber.trim(),
+    type: "free_first_course",
+    status: "completed",
+    createdAt: FieldValue.serverTimestamp(),
+  };
+  const sessionRef = await db.collection("funnelCheckoutSessions").add(sessionData);
+  const docRef = db.collection("funnelCheckoutSessions").doc(sessionRef.id);
+
+  try {
+    const result = await runEnrollmentFromSession(
+      sessionData,
+      docRef,
+      db,
+      auth
+    );
+
+    await docRef.update({ enrolled: true, enrolledAt: new Date().toISOString(), uid: result.uid });
+
+    // Send verification email link
+    try {
+      const verifyLink = await auth.generateEmailVerificationLink(customerEmail.trim());
+      const courseSnap = await db.collection("courses").doc(courseId).get();
+      const courseTitle = courseSnap.exists ? (courseSnap.data()?.title as string) || "your course" : "your course";
+      const { createTransport } = await import("nodemailer");
+      const emailUser = process.env.EMAIL_USER || "";
+      const emailPass = process.env.EMAIL_PASS || "";
+      if (emailUser && emailPass) {
+        const transporter = createTransport({
+          service: "gmail",
+          auth: { user: emailUser, pass: emailPass },
+        });
+        await transporter.sendMail({
+          from: `"Revo Learn" <${emailUser}>`,
+          to: customerEmail.trim(),
+          subject: `Welcome to Revo Learn – Free Enrollment: ${courseTitle}`,
+          html: `<p>Hi ${firstName},</p>
+<p>You've been enrolled in <strong>${courseTitle}</strong> for free as a first-time learner!</p>
+<p>Please verify your email to activate your account: <a href="${verifyLink}">Verify Email</a></p>
+<p>You can then log in at the Revo Learn dashboard with your email and password.</p>
+<p>Happy learning!<br/>Revo Learn Team</p>`,
+        });
+      }
+    } catch (emailErr) {
+      logger.warn("freeFirstCourseEnrollment: verification email failed", emailErr);
+    }
+
+    return { success: true, message: "You've been enrolled for free! Check your email to verify your account." };
+  } catch (err) {
+    logger.error("freeFirstCourseEnrollment error", err);
+    return { success: false, error: err instanceof Error ? err.message : "Enrollment failed." };
   }
 });
 
