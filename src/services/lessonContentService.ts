@@ -791,10 +791,32 @@ STRUCTURE (use these exact CSS class names):
      </div>
    </section>
 
-8. PRACTICE (optional):
+8. PRACTICE (required):
    <section class="practice-opportunities">
-     <div class="challenge-set"><h4>Challenge Problems</h4><ol class="practice-list"><li>...</li></ol></div>
+     <h2 class="section-heading">Practice Opportunities</h2>
+     <hr class="section-rule" />
+     <div class="challenge-set">
+       <h4>Challenge Set 1: Apply Your Knowledge</h4>
+       <p>[Short scenario]</p>
+       <ol class="practice-list">
+         <li><strong>Question 1:</strong> ...</li>
+         <li><strong>Question 2:</strong> ...</li>
+         <li><strong>Question 3:</strong> ...</li>
+       </ol>
+       <details class="practice-solutions">
+         <summary>View solutions (self-check)</summary>
+         <ol>
+           <li><strong>Question 1:</strong> [model answer]</li>
+           <li><strong>Question 2:</strong> [model answer]</li>
+           <li><strong>Question 3:</strong> [model answer]</li>
+         </ol>
+       </details>
+     </div>
    </section>
+   RULES FOR PRACTICE:
+   - Do NOT use <a href> or fake "View Solutions" links.
+   - Always include working <details class="practice-solutions"> with a <summary> and the answers inside.
+   - Answers must match the questions 1-for-1.
 
 9. COMPARISON TABLE (if applicable):
    <div class="comparison-table"><table><thead><tr><th>...</th></tr></thead><tbody><tr><td>...</td></tr></tbody></table></div>
@@ -819,6 +841,9 @@ Use <sup> for superscripts. Bold key terms with class="key-term-badge". Write su
       if (!html.includes('class="curriculum-lesson"') && !html.includes("class='curriculum-lesson'")) {
         html = `<article class="curriculum-lesson">${html}</article>`;
       }
+
+      const { sanitizePracticeHtml } = await import('@/utils/lessonHtml');
+      html = sanitizePracticeHtml(html);
 
       const content = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 2000);
       return { richTextContent: html, objectives, resources, content };
@@ -908,6 +933,178 @@ Respond with ONLY a JSON object (no markdown, no explanation):
       console.error('AI quiz-from-content generation failed:', error);
       throw error;
     }
+  }
+
+  /**
+   * Generate one quiz covering an entire unit (all lessons), for unit-level assessment.
+   */
+  async generateQuizFromUnitContent(
+    unitTitle: string,
+    unitDescription: string,
+    lessons: { title: string; description?: string; content?: string; richTextContent?: string; objectives?: string[] }[],
+    questionCount: number = 8
+  ): Promise<QuizContent> {
+    const lessonBlocks = lessons
+      .map((lesson, index) => {
+        const parts = [
+          `Lesson ${index + 1}: ${lesson.title}`,
+          lesson.description || '',
+          (lesson.objectives || []).length ? `Objectives: ${lesson.objectives.join('; ')}` : '',
+          (lesson.content || '').slice(0, 1200),
+          (lesson.richTextContent || '').replace(/<[^>]+>/g, ' ').slice(0, 1200),
+        ].filter(Boolean);
+        return parts.join('\n');
+      })
+      .join('\n\n---\n\n')
+      .slice(0, 12000);
+
+    const prompt = `You are an expert assessment designer for South African SETA/QCTO short courses.
+Create ONE unit quiz that covers the WHOLE unit (not individual lessons).
+
+Unit title: ${unitTitle}
+Unit description: ${unitDescription || 'N/A'}
+
+Unit lessons and content:
+${lessonBlocks || unitTitle}
+
+Create exactly ${Math.max(5, Math.min(15, questionCount))} multiple-choice questions that:
+- Assess understanding across the full unit (spread coverage across lessons)
+- Include a mix of knowledge, application, and scenario questions
+- Have 4 options each with exactly one correct answer
+- Are clear and unambiguous
+
+Respond with ONLY a JSON object (no markdown, no explanation):
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Question text here?",
+      "type": "multiple-choice",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": "Option A",
+      "explanation": "Brief explanation of why this is correct",
+      "points": 10
+    }
+  ]
+}`;
+
+    const jsonTextRaw = await nvidiaGenerateText({
+      user: prompt,
+      temperature: 0.55,
+      max_tokens: 4096,
+    });
+    let jsonText = jsonTextRaw.trim();
+    if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    }
+    const parsed = JSON.parse(jsonText.trim());
+    const questions: QuizQuestion[] = (parsed.questions || []).map((q: any, i: number) => ({
+      id: q.id || `uq${i + 1}`,
+      question: q.question || '',
+      type: 'multiple-choice' as const,
+      options: q.options || [],
+      correctAnswer: q.correctAnswer ?? (q.options ? q.options[0] : ''),
+      explanation: q.explanation,
+      points: typeof q.points === 'number' ? q.points : 10,
+    }));
+    if (questions.length === 0) {
+      throw new Error('AI returned no unit quiz questions');
+    }
+    const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
+    return {
+      questions,
+      passingScore: 70,
+      timeLimit: Math.max(20, questions.length * 2),
+      totalPoints,
+      instructions: `Complete this unit quiz to verify your understanding of "${unitTitle}".`,
+    };
+  }
+
+  /**
+   * Refine an existing unit quiz using admin feedback (keep structure, improve questions).
+   */
+  async refineQuizContent(
+    unitTitle: string,
+    existingQuiz: QuizContent,
+    refineInstructions: string
+  ): Promise<QuizContent> {
+    const existingJson = JSON.stringify(
+      {
+        questions: existingQuiz.questions.map((q) => ({
+          id: q.id,
+          question: q.question,
+          type: q.type,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
+          points: q.points,
+        })),
+      },
+      null,
+      2
+    ).slice(0, 8000);
+
+    const prompt = `You are refining a unit quiz for "${unitTitle}".
+
+Admin refinement instructions:
+${refineInstructions.trim() || 'Improve clarity, difficulty balance, and explanations while keeping coverage of the unit.'}
+
+Current quiz JSON:
+${existingJson}
+
+Return an improved quiz as ONLY a JSON object (no markdown):
+{
+  "questions": [
+    {
+      "id": "q1",
+      "question": "...",
+      "type": "multiple-choice",
+      "options": ["A", "B", "C", "D"],
+      "correctAnswer": "A",
+      "explanation": "...",
+      "points": 10
+    }
+  ]
+}
+
+Rules:
+- Keep roughly the same number of questions (${existingQuiz.questions.length})
+- Prefer multiple-choice with 4 options
+- Apply the admin instructions carefully
+- Keep correct answers accurate`;
+
+    const jsonTextRaw = await nvidiaGenerateText({
+      user: prompt,
+      temperature: 0.5,
+      max_tokens: 4096,
+    });
+    let jsonText = jsonTextRaw.trim();
+    if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    }
+    const parsed = JSON.parse(jsonText.trim());
+    const questions: QuizQuestion[] = (parsed.questions || []).map((q: any, i: number) => ({
+      id: q.id || `uq${i + 1}`,
+      question: q.question || '',
+      type: (q.type as QuizQuestion['type']) || 'multiple-choice',
+      options: q.options || [],
+      correctAnswer: q.correctAnswer ?? (q.options ? q.options[0] : ''),
+      explanation: q.explanation,
+      points: typeof q.points === 'number' ? q.points : 10,
+    }));
+    if (questions.length === 0) {
+      throw new Error('AI returned no refined quiz questions');
+    }
+    const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
+    return {
+      questions,
+      passingScore: existingQuiz.passingScore || 70,
+      timeLimit: existingQuiz.timeLimit || Math.max(20, questions.length * 2),
+      totalPoints,
+      instructions:
+        existingQuiz.instructions ||
+        `Complete this unit quiz to verify your understanding of "${unitTitle}".`,
+    };
   }
 
   /**

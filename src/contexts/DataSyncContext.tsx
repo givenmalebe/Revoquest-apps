@@ -557,7 +557,7 @@ export const DataSyncProvider: React.FC<DataSyncProviderProps> = ({ children }) 
         updatedAt: new Date().toISOString(),
       };
 
-      setCourses(prev => [...prev, newCourse]);
+      setCourses(prev => DatabaseService.sortCoursesNewestFirst([newCourse, ...prev]));
       notifySubscribers('course_created', newCourse);
       
       console.log('📚 Course created:', newCourse.title);
@@ -896,8 +896,11 @@ export const DataSyncProvider: React.FC<DataSyncProviderProps> = ({ children }) 
         console.log('🔄 Refreshed course titles:', filteredCoursesData.map(c => c.title));
         console.log('🔄 Refreshed course instructorIds:', filteredCoursesData.map(c => ({ title: c.title, instructorId: c.instructorId })));
       }
-      setCourses(filteredCoursesData);
-      notifySubscribers('courses_updated', filteredCoursesData);
+      const sortedCourses = DatabaseService.sortCoursesNewestFirst(
+        filteredCoursesData.map((c) => DatabaseService.stripLessonQuizzesFromCourse(c))
+      );
+      setCourses(sortedCourses);
+      notifySubscribers('courses_updated', sortedCourses);
       console.log('✅ Courses refreshed from Firebase:', filteredCoursesData.length);
     } catch (error) {
       console.error('Error refreshing courses:', error);
@@ -1555,7 +1558,11 @@ export const DataSyncProvider: React.FC<DataSyncProviderProps> = ({ children }) 
             enrollments: enrollmentsData.length
           });
           
-          setCourses(filteredCoursesData);
+          setCourses(
+            DatabaseService.sortCoursesNewestFirst(
+              filteredCoursesData.map((c) => DatabaseService.stripLessonQuizzesFromCourse(c))
+            )
+          );
           setStudents(studentsData);
           setAssignments(assignmentsData);
           setStudentProgress(studentProgressData);
@@ -1615,21 +1622,32 @@ export const DataSyncProvider: React.FC<DataSyncProviderProps> = ({ children }) 
                 courseTitles: filteredCourses.map(c => c.title)
               });
 
-              setCourses(filteredCourses);
-              notifySubscribers('courses_updated', filteredCourses);
-              console.log('🔄 Courses state updated for learner:', filteredCourses.length);
+              const sortedLearnerCourses = DatabaseService.sortCoursesNewestFirst(
+                filteredCourses.map((c) => DatabaseService.stripLessonQuizzesFromCourse(c))
+              );
+              setCourses(sortedLearnerCourses);
+              notifySubscribers('courses_updated', sortedLearnerCourses);
+              console.log('🔄 Courses state updated for learner:', sortedLearnerCourses.length);
             }).catch(error => {
               console.error('Error filtering learner courses:', error);
               setCourses([]);
             });
           } else {
             // For instructors and admins, always update (but still filter deleted courses)
-            setCourses(filteredCoursesData);
-            console.log('🔄 Courses state updated to:', filteredCoursesData.length);
+            const sortedCourses = DatabaseService.sortCoursesNewestFirst(
+              filteredCoursesData.map((c) => DatabaseService.stripLessonQuizzesFromCourse(c))
+            );
+            setCourses(sortedCourses);
+            console.log('🔄 Courses state updated to:', sortedCourses.length);
           }
           
           if (user.role !== 'learner') {
-            notifySubscribers('courses_updated', filteredCoursesData);
+            notifySubscribers(
+              'courses_updated',
+              DatabaseService.sortCoursesNewestFirst(
+                filteredCoursesData.map((c) => DatabaseService.stripLessonQuizzesFromCourse(c))
+              )
+            );
           }
         } catch (error) {
           // Handle AbortError specifically

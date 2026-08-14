@@ -6,6 +6,11 @@ import {
   getFinalExamDisplayScore,
   hasPassedFinalExam,
 } from '@/utils/finalExamProgress';
+import {
+  buildCourseTitleMap,
+  getCourseDisplayName,
+  resolveLessonDisplayName,
+} from '@/utils/courseDisplayName';
 const MAX_FINAL_EXAM_ATTEMPTS = 5;
 const MAX_FAILED_QUESTIONS_IN_AI_CONTEXT = 8;
 
@@ -39,13 +44,11 @@ export interface LearnerProgressSummary {
 
 const GREETING_SESSION_KEY = 'learner_ai_greeting_shown';
 
-function getLessonTitle(course: { units?: { lessons?: { id: string; title?: string }[] }[] } | null, lessonId: string): string {
-  if (!course?.units) return lessonId;
-  for (const unit of course.units) {
-    const lesson = unit.lessons?.find((l: { id: string }) => l.id === lessonId);
-    if (lesson) return lesson.title || lessonId;
-  }
-  return lessonId;
+function getLessonTitle(
+  course: { units?: { lessons?: { id: string; title?: string }[] }[] } | null,
+  lessonId: string
+): string {
+  return resolveLessonDisplayName(lessonId, course).lessonTitle;
 }
 
 /** Readable final-exam snapshot for AI tutor (pass/fail, attempts, what happened). */
@@ -240,9 +243,10 @@ function averageQuizScore(lessonProgressList: LessonProgress[]): number | null {
 function getEffectiveCourseSnapshot(
   courseId: string,
   course: CourseLike | null,
-  fullProgress: StudentProgressData | null
+  fullProgress: StudentProgressData | null,
+  titleMap: Map<string, string>
 ): LearnerProgressSummary['byCourse'][number] {
-  const title = course?.title || courseId;
+  const title = getCourseDisplayName(courseId, titleMap, course);
   const totalLessons = countLessons(course);
   const lessonsCompleted = countCompletedLessons(course, fullProgress?.lessonProgress ?? []);
   const passed = hasPassedFinalExam(fullProgress ?? undefined);
@@ -303,6 +307,8 @@ export async function getLearnerProgressSummary(studentId: string): Promise<Lear
     ]),
   ];
 
+  const titleMap = await buildCourseTitleMap(studentId, courseIds);
+
   const byCourse: LearnerProgressSummary['byCourse'] = [];
   const quizLines: string[] = [];
   const finalExamLines: string[] = [];
@@ -317,7 +323,7 @@ export async function getLearnerProgressSummary(studentId: string): Promise<Lear
       persistentProgressService.getStudentProgress(studentId, courseId),
     ]);
 
-    const snapshot = getEffectiveCourseSnapshot(courseId, course, fullProgress);
+    const snapshot = getEffectiveCourseSnapshot(courseId, course, fullProgress, titleMap);
     byCourse.push(snapshot);
     totalPercent += snapshot.percent;
     if (snapshot.finalExamPassed || snapshot.certificateIssued) {
@@ -402,7 +408,7 @@ export async function getLearnerProgressSummary(studentId: string): Promise<Lear
           `AUTHORITATIVE learner progress (trust these numbers exactly — do not guess or contradict them):`,
           `Enrolled in ${courseCount} course(s). ${coursesCompleted} fully completed (passed final exam). Average progress across courses: ${overallPercent}%.`,
           avgQuizScorePercent != null ? `Average quiz score across all quizzes: ${avgQuizScorePercent}%.` : '',
-          `Per course: ${perCourseLines.join(' | ')}`,
+          `Per course (always use these course titles — never internal ids): ${perCourseLines.join(' | ')}`,
         ]
           .filter(Boolean)
           .join(' ');

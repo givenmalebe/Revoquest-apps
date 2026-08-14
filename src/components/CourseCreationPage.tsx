@@ -39,6 +39,8 @@ import AICourseBuilder from './AICourseBuilder';
 import { CourseAssessment } from "@/firebase/database";
 import { useAuth } from '@/contexts/AuthContext';
 import { DEFAULT_NVIDIA_MODEL } from '@/services/nvidiaClient';
+import { UnitQuizPanel } from './UnitQuizPanel';
+import type { QuizContent } from '@/services/lessonContentService';
 
 interface CourseCreationPageProps {
   onBack: () => void;
@@ -267,11 +269,11 @@ const CourseCreationPage: React.FC<CourseCreationPageProps> = ({ onBack, onSave 
     }));
   };
 
-  const updateUnit = (unitId: number, field: string, value: any) => {
+  const updateUnit = (unitId: number | string, field: string, value: any) => {
     setCourseData(prev => ({
       ...prev,
-      units: prev.units.map(u => 
-        u.id === unitId ? { ...u, [field]: value } : u
+      units: prev.units.map(u =>
+        String(u.id) === String(unitId) ? { ...u, [field]: value } : u
       )
     }));
   };
@@ -406,11 +408,7 @@ const CourseCreationPage: React.FC<CourseCreationPageProps> = ({ onBack, onSave 
         duration,
         lesson.richTextContent
       );
-      // Generate quiz from lesson content so learners can verify understanding
-      const quizContent = await lessonContentService.generateQuizFromLessonContent(
-        lesson.title || 'Lesson',
-        generated.content
-      );
+      // Quizzes are unit-level now — do not attach per-lesson quizzes during lesson generation
       setCourseData(prev => ({
         ...prev,
         units: prev.units.map(u =>
@@ -425,7 +423,7 @@ const CourseCreationPage: React.FC<CourseCreationPageProps> = ({ onBack, onSave 
                         objectives: generated.objectives || l.objectives,
                         resources: generated.resources || l.resources,
                         richTextContent: generated.richTextContent,
-                        quizContent
+                        quizContent: undefined as any
                       }
                     : l
                 )
@@ -600,6 +598,7 @@ const CourseCreationPage: React.FC<CourseCreationPageProps> = ({ onBack, onSave 
           description: unit.description || '',
           order: index + 1,
           isPublished: unit.isPublished || true, // Publish units by default
+          quizContent: (unit as { quizContent?: unknown }).quizContent || undefined,
           lessons: unit.lessons.map((lesson, lessonIndex) => ({
             id: lesson.id.toString(),
             title: lesson.title || `Lesson ${lessonIndex + 1}`,
@@ -616,7 +615,7 @@ const CourseCreationPage: React.FC<CourseCreationPageProps> = ({ onBack, onSave 
             objectives: lesson.objectives || [],
             resources: (lesson.resources as string[]) || [],
             quiz: lesson.quiz || { questions: [], passingScore: 70, timeLimit: 0 },
-            quizContent: (lesson as { quizContent?: unknown }).quizContent || undefined
+            quizContent: undefined
           }))
         }))
       };
@@ -1297,6 +1296,17 @@ const CourseCreationPage: React.FC<CourseCreationPageProps> = ({ onBack, onSave 
                     </div>
                   </CardHeader>
                   <CardContent>
+
+                    <div className="mt-4 mb-4">
+                      <UnitQuizPanel
+                        unitTitle={unit.title || `Unit ${unitIndex + 1}`}
+                        unitDescription={unit.description || ''}
+                        lessons={unit.lessons || []}
+                        quizContent={(unit as { quizContent?: QuizContent }).quizContent || null}
+                        onChange={(quiz) => updateUnit(unit.id, 'quizContent', quiz)}
+                      />
+                    </div>
+
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium text-gray-700">Skills/Lessons</h4>
@@ -1531,40 +1541,6 @@ const CourseCreationPage: React.FC<CourseCreationPageProps> = ({ onBack, onSave 
                                     <Sparkles className="w-3 h-3 mr-2" />
                                     Generate content with AI
                                   </Button>
-                                  {lesson.quizContent?.questions?.length ? (
-                                    <div className="flex items-center justify-between text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
-                                      <span>📝 {lesson.quizContent.questions.length} questions • {lesson.quizContent.passingScore}% to pass</span>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="text-red-500 hover:text-red-700 h-6 px-1.5 text-[10px]"
-                                        onClick={() => {
-                                          if (confirm('Are you sure you want to delete the quiz for this lesson?')) {
-                                            updateLesson(unit.id, lesson.id, 'quizContent', null);
-                                          }
-                                        }}
-                                      >
-                                        <Trash2 className="w-3 h-3 mr-1" />
-                                        Delete Quiz
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="ghost"
-                                      className="w-full text-xs h-8"
-                                      onClick={() => generateQuizForLesson(unit.id, lesson.id)}
-                                      disabled={generatingQuiz === `${unit.id}-${lesson.id}`}
-                                    >
-                                      {generatingQuiz === `${unit.id}-${lesson.id}` ? (
-                                        <span className="flex items-center gap-2"><span className="animate-spin w-3 h-3 border border-gray-600 border-t-transparent rounded-full" />Generating quiz...</span>
-                                      ) : (
-                                        <><Target className="w-3 h-3 mr-2" />Generate quiz for this lesson only</>
-                                      )}
-                                    </Button>
-                                  )}
                                   {/* Rendered HTML/CSS preview of generated lesson */}
                                   {(lesson as { richTextContent?: string }).richTextContent && (
                                     <div className="mt-3 rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
@@ -1689,60 +1665,7 @@ const CourseCreationPage: React.FC<CourseCreationPageProps> = ({ onBack, onSave 
                                 </>
                               )}
 
-                              {/* Each lesson gets its own AI-generated quiz: for video and slides, show Generate quiz */}
-                              {(lesson.type === 'video' || lesson.type === 'slides') && (
-                                <div className="space-y-2">
-                                  <Label className="text-xs text-gray-600">Quiz for this lesson</Label>
-                                  {!lesson.quizContent?.questions?.length ? (
-                                    <>
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        className="w-full text-xs h-8"
-                                        onClick={() => generateQuizForLesson(unit.id, lesson.id)}
-                                        disabled={generatingQuiz === `${unit.id}-${lesson.id}`}
-                                      >
-                                        {generatingQuiz === `${unit.id}-${lesson.id}` ? (
-                                          <>
-                                            <div className="animate-spin w-3 h-3 border border-gray-600 border-t-transparent rounded-full mr-2" />
-                                            Generating...
-                                          </>
-                                        ) : (
-                                          <>
-                                            <Target className="w-3 h-3 mr-2" />
-                                            Generate quiz for this lesson
-                                          </>
-                                        )}
-                                      </Button>
-                                      {quizGenerated === `${unit.id}-${lesson.id}` && (
-                                        <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
-                                          <CheckCircle className="w-3 h-3" />
-                                          Quiz generated
-                                        </div>
-                                      )}
-                                    </>
-                                  ) : (
-                                    <div className="flex items-center justify-between text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
-                                      <span>📝 {lesson.quizContent.questions.length} questions • {lesson.quizContent.passingScore}% to pass</span>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="text-red-500 hover:text-red-700 h-6 px-1.5 text-[10px]"
-                                        onClick={() => {
-                                          if (confirm('Are you sure you want to delete the quiz for this lesson?')) {
-                                            updateLesson(unit.id, lesson.id, 'quizContent', null);
-                                          }
-                                        }}
-                                      >
-                                        <Trash2 className="w-3 h-3 mr-1" />
-                                        Delete Quiz
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
+                              {/* Per-lesson quizzes removed — use Unit Quiz panel */}
 
                               {/* Quiz Configuration */}
                               {lesson.type === 'quiz' && (

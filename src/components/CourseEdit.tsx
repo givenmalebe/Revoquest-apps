@@ -49,6 +49,8 @@ import { collection, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/fi
 import { db } from "@/firebase/config";
 import StudentAssignmentManager from "./StudentAssignmentManager";
 import { FileUploadService, UploadedFile } from "@/services/fileUploadService";
+import { UnitQuizPanel } from "./UnitQuizPanel";
+import type { QuizContent } from "@/services/lessonContentService";
 
 interface Lesson {
   id: string;
@@ -95,6 +97,13 @@ interface Unit {
   order: number;
   isPublished: boolean;
   lessons: Lesson[];
+  quizContent?: {
+    questions: { id: string; question: string; type: string; options?: string[]; correctAnswer?: string | string[]; explanation?: string; points?: number }[];
+    passingScore: number;
+    timeLimit?: number;
+    totalPoints?: number;
+    instructions?: string;
+  };
 }
 
 interface CourseEditProps {
@@ -109,12 +118,15 @@ interface CourseEditProps {
 
 const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewLesson, onDeleteCourse }) => {
   
-  // Initialize editingCourse with content type fields added to all lessons
+  // Initialize editingCourse with content type fields; strip legacy per-lesson quizzes
   const initializeCourseWithContentTypes = (courseData: Course) => {
-    
+    const sourceUnits =
+      (courseData.units?.length ? courseData.units : (courseData as { modules?: Unit[] }).modules) || [];
+    const strippedUnits = DatabaseService.stripLessonQuizzesFromUnits(sourceUnits);
+
     const updatedCourse = {
       ...courseData,
-      units: courseData.units?.map(unit => ({
+      units: strippedUnits.map(unit => ({
         ...unit,
         lessons: unit.lessons?.map(lesson => ({
           ...lesson,
@@ -124,11 +136,10 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
           uploadedFiles: lesson.uploadedFiles || [],
           richTextContent: lesson.richTextContent || ''
         })) || []
-      })) || [],
+      })),
       assessments: courseData.assessments || []
     };
-    
-    
+
     return updatedCourse;
   };
   
@@ -418,17 +429,14 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
         duration,
         editingLesson.richTextContent
       );
-      const quizContent = await lessonContentService.generateQuizFromLessonContent(
-        editingLesson.title || 'Lesson',
-        generated.content
-      );
       const updated: Lesson = {
         ...editingLesson,
         content: generated.content || editingLesson.content,
         objectives: generated.objectives || editingLesson.objectives,
         resources: editingLesson.resources || [],
         richTextContent: generated.richTextContent,
-        quizContent,
+        // Quizzes are unit-level now — do not attach per-lesson quizzes
+        quizContent: undefined,
       };
       updateLesson(selectedUnit.id, editingLesson.id, updated);
       setEditingLesson(updated);
@@ -1143,10 +1151,10 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
       console.log('Course edit - original lessons count:', editingCourse.lessons);
       console.log('Course edit - units structure:', editingCourse.units);
       
-      // Clean up empty resources from all lessons before saving
+      // Strip legacy lesson quizzes + clean empty resources before saving
       const cleanedCourse = {
         ...editingCourse,
-        units: editingCourse.units?.map(unit => ({
+        units: DatabaseService.stripLessonQuizzesFromUnits(editingCourse.units).map(unit => ({
           ...unit,
           lessons: unit.lessons.map(lesson => ({
             ...lesson,
@@ -1154,7 +1162,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
               resource && resource.title && resource.title.trim() !== ''
             ) || []
           }))
-        })) || []
+        }))
       };
 
       const updatedCourse = {
@@ -1531,13 +1539,13 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
     }
   };
 
-  const updateUnit = (unitId: number, updates: Partial<Unit>) => {
+  const updateUnit = (unitId: number | string, updates: Partial<Unit>) => {
     setEditingCourse(prev => ({
       ...prev,
-      units: prev.units?.map(u => u.id === unitId ? { ...u, ...updates } : u) || []
+      units: prev.units?.map(u => String(u.id) === String(unitId) ? { ...u, ...updates } : u) || []
     }));
     
-    if (selectedUnit?.id === unitId) {
+    if (selectedUnit && String(selectedUnit.id) === String(unitId)) {
       setSelectedUnit(prev => prev ? { ...prev, ...updates } : prev);
     }
   };
@@ -1995,7 +2003,19 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
                       )}
                     </Card>
 
-                    {/* Lessons */}
+                    <UnitQuizPanel
+                      unitTitle={selectedUnit.title}
+                      unitDescription={selectedUnit.description}
+                      lessons={selectedUnit.lessons || []}
+                      quizContent={(selectedUnit.quizContent as QuizContent | undefined) || null}
+                      onChange={(quiz) => {
+                        const next = { ...selectedUnit, quizContent: quiz || undefined };
+                        updateUnit(selectedUnit.id, next);
+                        setSelectedUnit(next);
+                      }}
+                    />
+
+                    {/* Lessons card continues below */}
                     <Card>
                       <CardHeader>
                         <div className="flex items-center justify-between">
@@ -2115,45 +2135,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
                                   </div>
                                 )}
 
-                                {/* Each lesson gets its own AI-generated quiz: for video and slides, show Generate quiz */}
-                                {(editingLesson.type === 'video' || editingLesson.type === 'slides') && (
-                                  <div className="space-y-2">
-                                    <Label>Quiz for this lesson</Label>
-                                    {!editingLesson.quizContent?.questions?.length ? (
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={generateQuizForEditingLesson}
-                                        disabled={generatingQuizForEdit}
-                                      >
-                                        {generatingQuizForEdit ? (
-                                          <>Generating...</>
-                                        ) : (
-                                          <><Target className="w-4 h-4 mr-2" />Generate quiz for this lesson</>
-                                        )}
-                                      </Button>
-                                    ) : (
-                                      <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded">
-                                        <span>📝 {editingLesson.quizContent.questions.length} questions • {editingLesson.quizContent.passingScore}% to pass</span>
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="xs"
-                                          className="text-red-500 hover:text-red-700 h-7 px-2"
-                                          onClick={() => {
-                                            if (confirm('Are you sure you want to delete the quiz for this lesson?')) {
-                                              setEditingLesson(prev => prev ? { ...prev, quizContent: undefined } : null);
-                                            }
-                                          }}
-                                        >
-                                          <Trash2 className="w-3.5 h-3.5 mr-1" />
-                                          Delete Quiz
-                                        </Button>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                {/* Per-lesson quizzes removed — use Unit Quiz panel above */}
 
                                 {/* Learn: AI generate content + rich text preview (same as Create Course). Also show for legacy 'reading' type. */}
                                 {(editingLesson.type === 'learn' || editingLesson.type === 'reading') && (
@@ -2187,36 +2169,6 @@ const CourseEdit: React.FC<CourseEditProps> = ({ course, onBack, onSave, onViewL
                                       <Sparkles className="w-4 h-4 mr-2" />
                                       Generate content with AI
                                     </Button>
-                                    {editingLesson.quizContent?.questions?.length ? (
-                                      <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded">
-                                        <span>📝 {editingLesson.quizContent.questions.length} quiz questions • {editingLesson.quizContent.passingScore}% to pass</span>
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="xs"
-                                          className="text-red-500 hover:text-red-700 h-7 px-2"
-                                          onClick={() => {
-                                            if (confirm('Are you sure you want to delete the quiz for this lesson?')) {
-                                              setEditingLesson(prev => prev ? { ...prev, quizContent: undefined } : null);
-                                            }
-                                          }}
-                                        >
-                                          <Trash2 className="w-3.5 h-3.5 mr-1" />
-                                          Delete Quiz
-                                        </Button>
-                                      </div>
-                                    ) : (
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={generateQuizForEditingLesson}
-                                        disabled={generatingQuizForEdit}
-                                      >
-                                        <Target className="w-4 h-4 mr-2" />
-                                        Generate quiz for this lesson
-                                      </Button>
-                                    )}
                                     {editingLesson.richTextContent && (
                                       <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
                                         <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 text-xs font-medium text-slate-600">

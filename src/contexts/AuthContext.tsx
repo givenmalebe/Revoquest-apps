@@ -106,12 +106,39 @@ interface AuthProviderProps {
 }
 
 // Helper function to convert UserProfile to User
-const convertUserProfileToUser = (profile: UserProfile): User => ({
+const convertUserProfileToUser = (profile: UserProfile): User | null => {
+  const rawRole = String(profile.role || '').toLowerCase().trim().replace(/[_ ]+/g, '-');
+  const role: User['role'] | '' =
+    rawRole === 'admin' ||
+    rawRole === 'administrator' ||
+    rawRole === 'super-admin' ||
+    rawRole === 'superadmin' ||
+    rawRole === 'sub-admin' ||
+    rawRole === 'subadmin' ||
+    rawRole === 'owner'
+      ? 'admin'
+      : rawRole === 'instructor' || rawRole === 'teacher' || rawRole === 'tutor'
+        ? 'instructor'
+        : rawRole === 'student' || rawRole === 'learner'
+          ? 'learner'
+          : '';
+  if (!role || !profile.uid) return null;
+  let firstName = String(profile.firstName || '').trim();
+  let lastName = String(profile.lastName || '').trim();
+  if (!firstName && !lastName) {
+    const combined = String((profile as { name?: string; fullName?: string }).name || (profile as { fullName?: string }).fullName || '').trim();
+    if (combined) {
+      const parts = combined.split(/\s+/).filter(Boolean);
+      firstName = parts[0] || '';
+      lastName = parts.slice(1).join(' ');
+    }
+  }
+  return {
   id: profile.uid,
-  firstName: profile.firstName,
-  lastName: profile.lastName,
+  firstName,
+  lastName,
   email: profile.email,
-  role: profile.role === 'student' ? 'learner' : profile.role,
+  role,
   avatar: profile.avatar,
   phone: profile.phone,
   identityNumber: profile.identityNumber,
@@ -144,7 +171,8 @@ const convertUserProfileToUser = (profile: UserProfile): User => ({
   setaRegistration: profile.setaRegistration,
   qctoRegistration: profile.qctoRegistration,
   permissions: profile.permissions
-});
+};
+};
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -155,11 +183,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         if (firebaseUser) {
           const userProfile = await AuthService.getCurrentUserProfile();
-          if (userProfile) {
-            setUser(convertUserProfileToUser(userProfile));
-          } else {
-            setUser(null);
-          }
+          setUser(userProfile ? convertUserProfileToUser(userProfile) : null);
         } else {
           setUser(null);
         }
@@ -176,14 +200,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, password: string) => {
     try {
-      setIsLoading(true);
       const userProfile = await AuthService.signIn(email, password);
-      setUser(convertUserProfileToUser(userProfile));
+      const converted = convertUserProfileToUser(userProfile);
+      if (!converted) {
+        await AuthService.signOut();
+        throw new Error('This account has no valid role. Please contact an administrator.');
+      }
+      setUser(converted);
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -206,7 +232,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         firebaseRole as 'student' | 'instructor' | 'admin',
         userData.identityNumber
       );
-      setUser(convertUserProfileToUser(userProfile));
+      const converted = convertUserProfileToUser(userProfile);
+      if (!converted) {
+        await AuthService.signOut();
+        throw new Error('This account has no valid role. Please contact an administrator.');
+      }
+      setUser(converted);
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;

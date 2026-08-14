@@ -36,7 +36,7 @@ export default function FunnelLogin() {
       <FunnelHeader />
       <main className="flex-1">
         <LoginPage
-          backHref={funnelPath("")}
+          backHref={funnelPath('/')}
           backLabel="Back to Revo Learn"
           logoSrc={funnelLogo}
           successRedirect={funnelPath("/dashboard")}

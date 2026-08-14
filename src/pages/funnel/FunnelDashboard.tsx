@@ -83,18 +83,29 @@ export default function FunnelDashboard() {
   }
 
   const renderDashboard = () => {
-    switch (user.role) {
+    switch ((user.role || '').toLowerCase()) {
       case 'admin':
         return <AdminDashboard />;
       case 'instructor':
         return <InstructorDashboard />;
       case 'learner':
-      default:
+      case 'student':
         return <LearnerDashboard />;
+      default:
+        return (
+          <div className="min-h-screen flex items-center justify-center">
+            <p className="text-muted-foreground">This account has no valid role.</p>
+          </div>
+        );
     }
   };
 
-  const area = user.role === 'admin' ? 'admin' : user.role === 'instructor' ? 'instructor' : 'learner';
+  const area =
+    (user.role || '').toLowerCase() === 'admin'
+      ? 'admin'
+      : (user.role || '').toLowerCase() === 'instructor'
+        ? 'instructor'
+        : 'learner';
 
   return (
     <ChatProvider>

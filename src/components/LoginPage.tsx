@@ -5,9 +5,73 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, LogIn, User, Lock, ArrowLeft, Sparkles } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, LogIn, User, Lock, ArrowLeft, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import revoquestLogo from "@/assets/revoquest-logo.png";
+import { cn } from "@/lib/utils";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function getAuthErrorCode(error: unknown): string {
+  const err = error as { code?: string; message?: string; customData?: { _tokenResponse?: { error?: { message?: string } } } };
+  const fromCode = String(err?.code || "").toLowerCase();
+  const fromMessage = String(err?.message || "");
+  const fromToken = String(err?.customData?._tokenResponse?.error?.message || "");
+  const combined = `${fromCode} ${fromMessage} ${fromToken}`.toLowerCase();
+  const match = combined.match(/auth\/[a-z0-9-]+/) || combined.match(/invalid[_-]login[_-]credentials/);
+  if (match) return match[0].replace(/_/g, "-");
+  return fromCode;
+}
+
+function getLoginErrorMessage(error: unknown): { message: string; email?: string; password?: string } {
+  const code = getAuthErrorCode(error);
+  if (code.includes("user-not-found")) {
+    return {
+      message: "No account found with this email address.",
+      email: "This email is not registered.",
+    };
+  }
+  if (code.includes("wrong-password")) {
+    return {
+      message: "Incorrect password. Please try again.",
+      password: "Wrong password.",
+    };
+  }
+  if (
+    code.includes("invalid-credential") ||
+    code.includes("invalid-login-credentials")
+  ) {
+    return {
+      message: "Incorrect email or password. Please check your details and try again.",
+      email: "Check this email address.",
+      password: "Check this password.",
+    };
+  }
+  if (code.includes("invalid-email")) {
+    return { message: "Please enter a valid email address.", email: "Enter a valid email address." };
+  }
+  if (code.includes("too-many-requests")) {
+    return { message: "Too many failed attempts. Please wait a few minutes and try again." };
+  }
+  if (code.includes("user-disabled")) {
+    return { message: "This account has been disabled. Please contact support." };
+  }
+  if (code.includes("network-request-failed")) {
+    return { message: "Network error. Please check your connection and try again." };
+  }
+  const fallback = String((error as { message?: string })?.message || "").trim();
+  if (/credential|password|user-not-found|invalid-login/i.test(`${code} ${fallback}`)) {
+    return {
+      message: "Incorrect email or password. Please check your details and try again.",
+      email: "Check this email address.",
+      password: "Check this password.",
+    };
+  }
+  if (fallback && !fallback.toLowerCase().includes("firebase:")) {
+    return { message: fallback };
+  }
+  return { message: "Login failed. Please check your email and password and try again." };
+}
 
 interface LoginPageProps {
   onLogin?: (email: string, password: string) => Promise<void>;
@@ -51,6 +115,7 @@ export const LoginPage = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [resetMessage, setResetMessage] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +124,8 @@ export const LoginPage = ({
       ...prev,
       [name]: value
     }));
-    setError(""); // Clear error when user types
+    setError("");
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
     setResetMessage("");
   };
 
@@ -94,35 +160,42 @@ export const LoginPage = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const email = formData.email.trim();
+    const password = formData.password;
+    const nextFieldErrors: { email?: string; password?: string } = {};
+
+    if (!email) {
+      nextFieldErrors.email = "Please enter your email address.";
+    } else if (!EMAIL_PATTERN.test(email)) {
+      nextFieldErrors.email = "Please enter a valid email address.";
+    }
+    if (!password) {
+      nextFieldErrors.password = "Please enter your password.";
+    }
+
+    if (nextFieldErrors.email || nextFieldErrors.password) {
+      setFieldErrors(nextFieldErrors);
+      setError("Please fix the highlighted fields and try again.");
+      return;
+    }
+
     setIsLoading(true);
     setError("");
+    setFieldErrors({});
 
     try {
       if (onLogin) {
-        await onLogin(formData.email, formData.password);
+        await onLogin(email, password);
       } else {
-        await login(formData.email, formData.password);
+        await login(email, password);
       }
       if (successRedirect) {
         navigate(successRedirect);
       }
-    } catch (error: any) {
-      // Handle Firebase auth errors
-      if (error.code === 'auth/user-not-found') {
-        setError("No account found with this email address.");
-      } else if (error.code === 'auth/wrong-password') {
-        setError("Incorrect password. Please try again.");
-      } else if (error.code === 'auth/invalid-credential') {
-        setError("Email or password is incorrect. Please try again.");
-      } else if (error.code === 'auth/invalid-email') {
-        setError("Please enter a valid email address.");
-      } else if (error.code === 'auth/too-many-requests') {
-        setError("Too many failed attempts. Please try again later.");
-      } else if (error.code === 'auth/user-disabled') {
-        setError("This account has been disabled. Please contact support.");
-      } else {
-        setError(error.message || "Login failed. Please try again.");
-      }
+    } catch (error: unknown) {
+      const mapped = getLoginErrorMessage(error);
+      setError(mapped.message);
+      setFieldErrors({ email: mapped.email, password: mapped.password });
     } finally {
       setIsLoading(false);
     }
@@ -144,7 +217,11 @@ export const LoginPage = ({
         <div className="absolute top-6 left-6 z-20">
           <Button
             variant="outline"
-            onClick={() => window.location.href = backHref}
+            type="button"
+            onClick={() => {
+              const target = backHref && backHref.trim() ? backHref : '/';
+              navigate(target);
+            }}
             className="flex items-center gap-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-700 border-orange-200 dark:border-orange-800 shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -189,7 +266,7 @@ export const LoginPage = ({
             </CardHeader>
 
             <CardContent className="relative space-y-6 px-8 pb-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} noValidate className="space-y-6">
                 {/* Email Field */}
                 <div className="space-y-3">
                   <Label htmlFor="email" className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
@@ -207,10 +284,21 @@ export const LoginPage = ({
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="pl-12 h-12 text-base border-2 border-slate-200 dark:border-slate-700 focus:border-orange-500 dark:focus:border-orange-400 rounded-xl transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-600"
-                      required
+                      aria-invalid={Boolean(fieldErrors.email)}
+                      className={cn(
+                        "pl-12 h-12 text-base border-2 rounded-xl transition-all duration-300",
+                        fieldErrors.email
+                          ? "border-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-400"
+                          : "border-slate-200 dark:border-slate-700 focus:border-orange-500 dark:focus:border-orange-400 hover:border-slate-300 dark:hover:border-slate-600"
+                      )}
                     />
                   </div>
+                  {fieldErrors.email && (
+                    <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password Field */}
@@ -230,8 +318,13 @@ export const LoginPage = ({
                       placeholder="Enter your password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className="pl-12 pr-12 h-12 text-base border-2 border-slate-200 dark:border-slate-700 focus:border-orange-500 dark:focus:border-orange-400 rounded-xl transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-600"
-                      required
+                      aria-invalid={Boolean(fieldErrors.password)}
+                      className={cn(
+                        "pl-12 pr-12 h-12 text-base border-2 rounded-xl transition-all duration-300",
+                        fieldErrors.password
+                          ? "border-red-500 focus:border-red-500 dark:border-red-500 dark:focus:border-red-400"
+                          : "border-slate-200 dark:border-slate-700 focus:border-orange-500 dark:focus:border-orange-400 hover:border-slate-300 dark:hover:border-slate-600"
+                      )}
                     />
                     <Button
                       type="button"
@@ -247,6 +340,12 @@ export const LoginPage = ({
                       )}
                     </Button>
                   </div>
+                  {fieldErrors.password && (
+                    <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      {fieldErrors.password}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex justify-end -mt-2">
@@ -264,7 +363,8 @@ export const LoginPage = ({
                 {/* Error Message */}
                 {error && (
                   <Alert variant="destructive" className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-                    <AlertDescription className="text-red-700 dark:text-red-300">{error}</AlertDescription>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-red-700 dark:text-red-300 font-medium">{error}</AlertDescription>
                   </Alert>
                 )}
 

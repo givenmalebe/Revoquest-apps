@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { DatabaseService } from '@/firebase/database';
 import type { Course } from '@/firebase/database';
@@ -14,6 +14,7 @@ export default function LMSCheckout() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoPayStarted = useRef(false);
 
   useEffect(() => {
     if (!user) {
@@ -73,13 +74,24 @@ export default function LMSCheckout() {
     }
   };
 
+  // Auto-open Yoco as soon as the course is loaded
+  useEffect(() => {
+    if (loading || !course || autoPayStarted.current) return;
+    const price = Number(course.price ?? 0);
+    if (price < 0.01) return;
+    autoPayStarted.current = true;
+    handlePay();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, course?.id]);
+
   const formatPrice = (p: number) =>
     p > 0 ? `R ${Number(p).toLocaleString()}` : 'Free';
 
-  if (loading) {
+  if (loading || (submitting && !error)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-slate-50 dark:bg-slate-900">
         <Loader2 className="h-10 w-10 animate-spin text-orange-500" />
+        <p className="text-sm text-slate-500">Opening Yoco payment…</p>
       </div>
     );
   }

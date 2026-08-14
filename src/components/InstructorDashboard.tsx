@@ -67,6 +67,7 @@ import ProgressDashboard from './ProgressDashboard';
 import { EventCreationDialog } from './EventCreationDialog';
 import { CalendarService, CalendarEvent } from '@/services/calendarService';
 import { 
+  DatabaseService,
   Course,
   Assignment,
   Instructor,
@@ -2534,7 +2535,7 @@ export const InstructorDashboard = () => {
     // console.log('First instructor course units:', filteredCourses[0]?.units);
     // console.log('First instructor course lessons count:', filteredCourses[0]?.lessons);
     
-    return filteredCourses.map(course => ({
+    return DatabaseService.sortCoursesNewestFirst(filteredCourses).map(course => ({
       // Convert to Course interface expected by components
       id: course.id,
       title: course.title,

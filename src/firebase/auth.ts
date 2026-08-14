@@ -10,7 +10,7 @@ import {
   EmailAuthProvider,
   updateEmail
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { auth, db, functions as firebaseFunctions } from './config';
 
@@ -41,28 +41,209 @@ export interface UserProfile {
   permissions?: string[];
 }
 
-const createFallbackProfile = (user: User): UserProfile => {
-  const now = new Date().toISOString();
-  const displayName = user.displayName?.trim() ?? '';
-  const [firstNamePart, ...lastNameParts] = displayName.split(/\s+/).filter(Boolean);
-  const emailPrefix = user.email?.split('@')[0] ?? 'User';
-
-  return {
-    uid: user.uid,
-    email: user.email ?? '',
-    firstName: firstNamePart || emailPrefix,
-    lastName: lastNameParts.join(' ') || '',
-    role: 'student',
-    identityNumber: '',
-    joinDate: now,
-    lastActive: now,
-    isActive: true,
-    enrolledCourses: [],
-    completedCourses: [],
-    progress: 0,
-    currentGrade: 'N/A',
-  };
+type FirestoreUserRecord = UserProfile & {
+  id?: string;
+  userType?: string;
+  name?: string;
+  fullName?: string;
+  displayName?: string;
+  Email?: string;
+  userEmail?: string;
 };
+
+function normalizeStoredRole(role?: string): UserProfile['role'] | '' {
+  const value = String(role || '').toLowerCase().trim().replace(/[_ ]+/g, '-');
+  if (
+    value === 'admin' ||
+    value === 'administrator' ||
+    value === 'super-admin' ||
+    value === 'superadmin' ||
+    value === 'sub-admin' ||
+    value === 'subadmin' ||
+    value === 'owner'
+  ) {
+    return 'admin';
+  }
+  if (value === 'instructor' || value === 'teacher' || value === 'tutor') return 'instructor';
+  if (value === 'student' || value === 'learner') return 'student';
+  return '';
+}
+
+function isPlaceholderName(value: string): boolean {
+  const n = value.trim().toLowerCase();
+  return !n || ['user', 'u', 'unknown', 'unknown user', 'n/a', 'na', 'test'].includes(n);
+}
+
+function splitName(data: Partial<FirestoreUserRecord>, authDisplayName?: string): { firstName: string; lastName: string } {
+  const firstName = String(
+    data.firstName || (data as { first_name?: string }).first_name || ''
+  ).trim();
+  const lastName = String(
+    data.lastName || (data as { last_name?: string }).last_name || ''
+  ).trim();
+  if (firstName || lastName) {
+    return { firstName, lastName };
+  }
+  const combined = String(data.name || data.fullName || data.displayName || authDisplayName || '').trim();
+  if (!combined) return { firstName: '', lastName: '' };
+  const parts = combined.split(/\s+/).filter(Boolean);
+  return { firstName: parts[0] || '', lastName: parts.slice(1).join(' ') };
+}
+
+function profileRole(data: Partial<FirestoreUserRecord> | undefined): UserProfile['role'] | '' {
+  if (!data) return '';
+  return normalizeStoredRole(
+    data.role ||
+      data.userType ||
+      (data as { userRole?: string }).userRole ||
+      (data as { accountType?: string }).accountType ||
+      (data as { type?: string }).type
+  );
+}
+
+function isCompleteProfile(data: Partial<FirestoreUserRecord> | undefined, authDisplayName?: string): boolean {
+  if (!data) return false;
+  const role = profileRole(data);
+  if (!role) return false;
+  const { firstName, lastName } = splitName(data, authDisplayName);
+  const full = `${firstName} ${lastName}`.trim();
+  return Boolean((firstName || lastName) && !isPlaceholderName(full) && !isPlaceholderName(firstName));
+}
+
+function pickBestProfile(
+  candidates: Array<{ id: string; data: FirestoreUserRecord } | null | undefined>,
+  authDisplayName?: string
+): { id: string; data: FirestoreUserRecord } | null {
+  const usable = candidates.filter(
+    (item): item is { id: string; data: FirestoreUserRecord } =>
+      Boolean(item) && Boolean(profileRole(item!.data))
+  );
+  const named = usable.filter((item) => isCompleteProfile(item.data, authDisplayName));
+  return (
+    named.find((item) => profileRole(item.data) === 'admin') ||
+    named[0] ||
+    usable.find((item) => profileRole(item.data) === 'admin') ||
+    usable[0] ||
+    null
+  );
+}
+
+function toUserProfile(
+  uid: string,
+  email: string,
+  data: FirestoreUserRecord,
+  authDisplayName?: string
+): UserProfile {
+  const role = profileRole(data);
+  const { firstName, lastName } = splitName(data, authDisplayName);
+  return {
+    ...data,
+    uid,
+    email: data.email || email,
+    firstName,
+    lastName,
+    role: role as UserProfile['role'],
+    isActive: data.isActive !== false,
+    joinDate: data.joinDate || new Date().toISOString(),
+    lastActive: new Date().toISOString(),
+  };
+}
+
+async function findProfileByEmail(
+  email: string,
+  authDisplayName?: string
+): Promise<{ id: string; data: FirestoreUserRecord } | null> {
+  const trimmed = email.trim();
+  const normalized = trimmed.toLowerCase();
+  if (!normalized) return null;
+  const usersRef = collection(db, 'users');
+  const unique = new Map<string, FirestoreUserRecord>();
+  for (const value of [...new Set([trimmed, normalized])]) {
+    const snap = await getDocs(query(usersRef, where('email', '==', value)));
+    for (const item of snap.docs) {
+      unique.set(item.id, { id: item.id, ...(item.data() as FirestoreUserRecord) });
+    }
+  }
+  return pickBestProfile(
+    [...unique.entries()].map(([id, data]) => ({ id, data })),
+    authDisplayName
+  );
+}
+
+async function findCompleteProfile(
+  q: ReturnType<typeof query>,
+  authDisplayName?: string
+): Promise<{ id: string; data: FirestoreUserRecord } | null> {
+  const snap = await getDocs(q);
+  return pickBestProfile(
+    snap.docs.map((item) => ({ id: item.id, data: { id: item.id, ...(item.data() as FirestoreUserRecord) } })),
+    authDisplayName
+  );
+}
+
+/** Load the real account for this Auth user — never an empty stub. */
+async function resolveAuthUserProfile(user: User): Promise<UserProfile | null> {
+  const email = user.email || '';
+  const uidRef = doc(db, 'users', user.uid);
+  let uidData: FirestoreUserRecord | undefined;
+  try {
+    const uidSnap = await getDoc(uidRef);
+    if (uidSnap.exists()) {
+      uidData = { id: user.uid, ...(uidSnap.data() as FirestoreUserRecord) };
+    }
+  } catch (error) {
+    console.error('Could not read users/' + user.uid, error);
+  }
+
+  // The signed-in Auth UID document wins whenever it has a real role.
+  // Never replace a learner/instructor with a different admin profile.
+  if (uidData && profileRole(uidData)) {
+    return toUserProfile(user.uid, email, uidData, user.displayName);
+  }
+
+  const candidates: Array<{ id: string; data: FirestoreUserRecord } | null> = [];
+  try {
+    candidates.push(
+      await findCompleteProfile(
+        query(collection(db, 'users'), where('uid', '==', user.uid)),
+        user.displayName
+      )
+    );
+  } catch (error) {
+    console.error('Could not look up profile by uid field', error);
+  }
+  try {
+    if (email) {
+      candidates.push(await findProfileByEmail(email, user.displayName));
+    }
+  } catch (error) {
+    console.error('Could not look up profile by email', error);
+  }
+
+  const match = pickBestProfile(candidates, user.displayName);
+  if (!match || !profileRole(match.data)) return null;
+
+  const restored = toUserProfile(user.uid, email, match.data, user.displayName);
+  try {
+    await setDoc(
+      uidRef,
+      {
+        ...match.data,
+        id: user.uid,
+        uid: user.uid,
+        email: email || match.data.email,
+        role: restored.role,
+        firstName: restored.firstName,
+        lastName: restored.lastName,
+        lastActive: restored.lastActive,
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error('Could not restore profile onto users/' + user.uid, error);
+  }
+  return restored;
+}
 
 export class AuthService {
   // Sign up new user
@@ -124,35 +305,12 @@ export class AuthService {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      const userRef = doc(db, 'users', user.uid);
-      const lastActive = new Date().toISOString();
-
-      // Update last active timestamp (creates doc if missing)
-      await setDoc(
-        userRef,
-        {
-          lastActive,
-          uid: user.uid,
-          email: user.email ?? undefined,
-        },
-        { merge: true }
-      );
-
-      // Get user profile, create fallback if it doesn't exist yet
-      const userDoc = await getDoc(userRef);
-      if (userDoc.exists()) {
-        const profileData = userDoc.data() as UserProfile;
-        return {
-          ...profileData,
-          uid: user.uid,
-          email: user.email ?? profileData.email
-        };
+      const profile = await resolveAuthUserProfile(user);
+      if (!profile) {
+        await signOut(auth);
+        throw new Error('No complete profile found for this account. Please contact an administrator.');
       }
-
-      const fallbackProfile = createFallbackProfile(user);
-      await setDoc(userRef, fallbackProfile, { merge: true });
-      return fallbackProfile;
+      return profile;
     } catch (error) {
       console.error('Error signing in:', error);
       throw error;
@@ -173,18 +331,8 @@ export class AuthService {
   static async getCurrentUserProfile(): Promise<UserProfile | null> {
     const user = auth.currentUser;
     if (!user) return null;
-
     try {
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (userDoc.exists()) {
-        const profileData = userDoc.data() as UserProfile;
-        return {
-          ...profileData,
-          uid: user.uid,
-          email: user.email ?? profileData.email
-        };
-      }
-      return null;
+      return await resolveAuthUserProfile(user);
     } catch (error) {
       console.error('Error getting user profile:', error);
       return null;

@@ -26,12 +26,13 @@ export const SmartLMS = () => {
 
   // Render appropriate dashboard based on user role
   const renderDashboard = () => {
-    switch (user?.role) {
+    switch ((user?.role || '').toLowerCase()) {
       case 'admin':
         return <AdminDashboard />;
       case 'instructor':
         return <InstructorDashboard />;
       case 'learner':
+      case 'student':
         return <LearnerDashboard />;
       default:
         return (

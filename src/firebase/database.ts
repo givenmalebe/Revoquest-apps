@@ -149,6 +149,22 @@ export interface CourseModule {
   lessons: Lesson[];
   order: number;
   isPublished?: boolean;
+  /** One quiz covering the whole unit (preferred over per-lesson quizzes). */
+  quizContent?: {
+    questions: {
+      id: string;
+      question: string;
+      type: 'multiple-choice' | 'true-false' | 'short-answer' | 'essay';
+      options?: string[];
+      correctAnswer: string | string[];
+      explanation?: string;
+      points: number;
+    }[];
+    passingScore: number;
+    timeLimit: number;
+    totalPoints: number;
+    instructions: string;
+  };
 }
 
 export interface Lesson {
@@ -437,6 +453,113 @@ export class DatabaseService {
     return { ...course, price: num } as T;
   }
 
+  /** Convert Firestore Timestamp / Date / string into epoch ms for sorting. */
+  static courseDateMs(value: unknown): number {
+    if (!value) return 0;
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === 'string') {
+      const t = Date.parse(value);
+      return Number.isNaN(t) ? 0 : t;
+    }
+    if (typeof value === 'object' && value !== null) {
+      const maybe = value as { toDate?: () => Date; seconds?: number; _seconds?: number };
+      if (typeof maybe.toDate === 'function') {
+        try {
+          return maybe.toDate().getTime();
+        } catch {
+          // ignore
+        }
+      }
+      if (typeof maybe.seconds === 'number') return maybe.seconds * 1000;
+      if (typeof maybe._seconds === 'number') return maybe._seconds * 1000;
+    }
+    return 0;
+  }
+
+  /** Newest courses first (createdAt, then updatedAt). */
+  static sortCoursesNewestFirst<T extends { createdAt?: unknown; updatedAt?: unknown }>(courses: T[]): T[] {
+    return [...courses].sort((a, b) => {
+      const tb = DatabaseService.courseDateMs(b.createdAt) || DatabaseService.courseDateMs(b.updatedAt);
+      const ta = DatabaseService.courseDateMs(a.createdAt) || DatabaseService.courseDateMs(a.updatedAt);
+      return tb - ta;
+    });
+  }
+
+  /**
+   * Remove per-lesson quizzes (legacy). Keeps unit-level `quizContent` on modules/units.
+   * Converts dedicated quiz lessons to learn lessons without quiz data.
+   */
+  static stripLessonQuizzesFromUnits<T extends CourseModule>(units: T[] | undefined | null): T[] {
+    if (!units?.length) return [];
+    return units.map((unit) => ({
+      ...unit,
+      lessons: (unit.lessons || []).map((lesson) => {
+        const { quizContent: _qc, quiz: _q, ...rest } = lesson as Lesson & { quiz?: unknown };
+        const nextType = rest.type === 'quiz' ? 'learn' : rest.type;
+        return {
+          ...rest,
+          type: nextType,
+        } as Lesson;
+      }),
+    })) as T[];
+  }
+
+  /** In-memory strip of lesson quizzes on a course (keeps unit quizContent). */
+  static stripLessonQuizzesFromCourse<T extends Course>(course: T): T {
+    const source = course.units || course.modules || [];
+    const units = DatabaseService.stripLessonQuizzesFromUnits(source);
+    return {
+      ...course,
+      units,
+      ...(course.modules ? { modules: units } : {}),
+    };
+  }
+
+  /** True if any lesson still has quiz / quizContent or type quiz. */
+  static courseHasLessonQuizzes(course: { units?: CourseModule[]; modules?: CourseModule[] }): boolean {
+    const units = course.units || course.modules || [];
+    return units.some((unit) =>
+      (unit.lessons || []).some((lesson) => {
+        const withQuiz = lesson as Lesson & { quiz?: { questions?: unknown[] } };
+        if (lesson.type === 'quiz') return true;
+        if (lesson.quizContent?.questions?.length) return true;
+        if (withQuiz.quiz?.questions?.length) return true;
+        return false;
+      })
+    );
+  }
+
+  /** One-time migration: strip lesson quizzes from every course; keep unit quizzes. */
+  static async stripLessonQuizzesFromAllCourses(): Promise<{ updated: number; skipped: number; total: number }> {
+    const courses = await DatabaseService.getCourses();
+    let updated = 0;
+    let skipped = 0;
+
+    for (const course of courses) {
+      const units = course.units || course.modules;
+      if (!units?.length || !DatabaseService.courseHasLessonQuizzes(course)) {
+        skipped++;
+        continue;
+      }
+
+      const strippedUnits = DatabaseService.stripLessonQuizzesFromUnits(units);
+      const payload: Partial<Course> = {
+        units: strippedUnits,
+        updatedAt: new Date().toISOString(),
+      };
+      if (course.modules) {
+        payload.modules = strippedUnits;
+      }
+
+      await DatabaseService.updateCourse(course.id, payload);
+      updated++;
+      console.log(`Stripped lesson quizzes from: ${course.title} (${course.id})`);
+    }
+
+    return { updated, skipped, total: courses.length };
+  }
+
   static async createCourse(courseData: Omit<Course, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
     try {
       const preparedCourseData = {
@@ -591,10 +714,38 @@ export class DatabaseService {
         console.log('First course lessons count:', courses[0].units?.reduce((total, unit) => total + unit.lessons.length, 0) || 0);
       }
       
-      return courses;
+      // Always return newest-created first (client-side too, in case Timestamp shapes differ)
+      return DatabaseService.sortCoursesNewestFirst(courses);
     } catch (error) {
       console.error('Error getting courses:', error);
-      throw error;
+      // Fallback without composite index / orderBy if needed
+      try {
+        const constraints = [];
+        if (filters?.instructorId) {
+          constraints.push(where('instructorId', '==', filters.instructorId));
+        }
+        if (filters?.isPublished !== undefined) {
+          constraints.push(where('isPublished', '==', filters.isPublished));
+        }
+        if (filters?.category) {
+          constraints.push(where('category', '==', filters.category));
+        }
+        if (filters?.limit) {
+          constraints.push(limit(filters.limit));
+        }
+        const q = constraints.length
+          ? query(collection(db, 'courses'), ...constraints)
+          : query(collection(db, 'courses'));
+        const querySnapshot = await getDocs(q);
+        const courses = querySnapshot.docs.map(doc =>
+          DatabaseService.normalizeCoursePrice({ id: doc.id, ...doc.data() } as Course)
+        );
+        const sorted = DatabaseService.sortCoursesNewestFirst(courses);
+        return filters?.limit ? sorted.slice(0, filters.limit) : sorted;
+      } catch (fallbackError) {
+        console.error('Error getting courses (fallback):', fallbackError);
+        throw error;
+      }
     }
   }
 
@@ -831,7 +982,7 @@ export class DatabaseService {
             firstName: userData.firstName || '',
             lastName: userData.lastName || '',
             email: userData.email || '',
-            role: userData.role || userData.userType || 'learner',
+            role: userData.role || userData.userType || '',
             avatar: userData.avatar || '',
             phone: userData.phone || '',
             enrolledCourses: userData.enrolledCourses || [],
@@ -847,7 +998,7 @@ export class DatabaseService {
             badges: userData.badges || [],
             uid: userData.uid || doc.id
           };
-        });
+        }).filter((user) => Boolean(user.role || user.firstName || user.lastName));
         callback(allUsers);
       } catch (error) {
         console.error('Error processing all users snapshot:', error);
@@ -1087,7 +1238,7 @@ export class DatabaseService {
           firstName: userData.firstName || '',
           lastName: userData.lastName || '',
           email: userData.email || '',
-          role: userData.role || userData.userType || 'learner',
+          role: userData.role || userData.userType || '',
           avatar: userData.avatar || '',
           phone: userData.phone || '',
           enrolledCourses: userData.enrolledCourses || [],
@@ -1103,7 +1254,7 @@ export class DatabaseService {
           badges: userData.badges || [],
           uid: userData.uid || doc.id
         };
-      });
+      }).filter((user) => Boolean(user.role || user.firstName || user.lastName));
       
       console.log('DatabaseService.getAllUsers - Fetched all users:', allUsers.length);
       return allUsers;
@@ -1120,6 +1271,28 @@ export class DatabaseService {
     }
     const userRef = doc(db, 'users', userId);
     await deleteDoc(userRef);
+  }
+
+  /** Delete a user document and related learner records (client-side fallback). */
+  static async deleteUserAndRelatedData(userId: string, uid?: string): Promise<void> {
+    const ids = [...new Set([userId, uid].filter(Boolean))] as string[];
+    for (const id of ids) {
+      try {
+        await deleteDoc(doc(db, 'users', id));
+      } catch (error) {
+        console.warn('Could not delete users doc', id, error);
+      }
+      try {
+        await deleteDoc(doc(db, 'students', id));
+      } catch (_) {}
+    }
+
+    for (const id of ids) {
+      const enrollmentSnap = await getDocs(query(collection(db, 'enrollments'), where('studentId', '==', id)));
+      await Promise.all(enrollmentSnap.docs.map((d) => deleteDoc(d.ref)));
+      const progressSnap = await getDocs(query(collection(db, 'studentProgress'), where('studentId', '==', id)));
+      await Promise.all(progressSnap.docs.map((d) => deleteDoc(d.ref)));
+    }
   }
 
   static async getStudentById(studentId: string): Promise<Student | null> {

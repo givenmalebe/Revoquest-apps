@@ -23,8 +23,16 @@ import {
   Compass,
   MessageCircle,
   X,
-  ChevronLeft
+  ChevronLeft,
+  Target,
+  Lock
 } from "lucide-react";
+import { getQuizAverageForExam, QUIZ_AVERAGE_FOR_EXAM_PERCENT } from '@/utils/quizAverage';
+import {
+  computeLearnerCourseProgress,
+  getFinalExamDisplayScore,
+  hasPassedFinalExam,
+} from '@/utils/finalExamProgress';
 
 interface Lesson {
   id: string;
@@ -45,6 +53,22 @@ interface Unit {
   description: string;
   lessons: Lesson[];
   completed: boolean;
+  /** Unit-level quiz shown on the last lesson of the unit */
+  quizContent?: {
+    questions: {
+      id: string;
+      question: string;
+      type: 'multiple-choice' | 'true-false' | 'short-answer' | 'essay';
+      options?: string[];
+      correctAnswer?: string | string[];
+      explanation?: string;
+      points?: number;
+    }[];
+    passingScore: number;
+    timeLimit?: number;
+    totalPoints?: number;
+    instructions?: string;
+  };
 }
 
 interface CourseStructureViewProps {
@@ -52,10 +76,11 @@ interface CourseStructureViewProps {
   courseProgress?: any; // Progress data from the main dashboard
   onClose: () => void;
   onViewLesson?: (lesson: Lesson, unit: Unit, normalizedCourse?: any) => void;
+  onViewUnitQuiz?: (unit: Unit) => void;
   onTakeExam?: () => void; // When exam is available (all lessons completed)
 }
 
-const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, courseProgress, onClose, onViewLesson, onTakeExam }) => {
+const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, courseProgress, onClose, onViewLesson, onViewUnitQuiz, onTakeExam }) => {
   // Debug: Log the raw course data
   console.log('CourseStructureView received course:', course);
   console.log('Course units:', course.units);
@@ -86,7 +111,9 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
       qctoQualifications: rawCourse.qctoQualifications || [],
       complianceStatus: rawCourse.complianceStatus || 'Pending Review',
       saqaId: rawCourse.saqaId || '',
-      units: normalizeUnits(rawCourse.units || rawCourse.modules || [])
+      units: normalizeUnits(
+        (rawCourse.units?.length ? rawCourse.units : rawCourse.modules) || []
+      )
     };
     
     return normalizedCourse;
@@ -109,7 +136,9 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
       title: unit.title || `Unit ${index + 1}`,
       description: unit.description || '',
       lessons: normalizeLessons(unit.lessons || []),
-      completed: unit.completed || false
+      completed: unit.completed || false,
+      // Keep unit-level quiz for LessonViewer (last lesson of unit)
+      quizContent: unit.quizContent || undefined,
     }));
   };
 
@@ -232,58 +261,26 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
     }
   };
 
-  // Use courseProgress data if available, otherwise calculate from course lessons
-  const totalLessons = courseProgress?.courseProgress?.totalLessons || normalizedCourse.units.reduce((sum, unit) => sum + unit.lessons.length, 0);
-  
-  // Get all completed lesson IDs from progress data
-  const completedLessonIds = courseProgress?.lessonProgress?.filter(lp => lp.completed).map(lp => lp.lessonId) || [];
-  
-  // Use the completed lessons count from courseProgress if available (more reliable)
-  // Otherwise count unique completed lessons by matching against course lesson IDs
-  const completedLessons = courseProgress?.courseProgress?.completedLessons ?? normalizedCourse.units.reduce((sum, unit) => {
-    return sum + unit.lessons.filter(lesson => completedLessonIds.includes(lesson.id)).length;
-  }, 0);
-  
-  const progressPercentage = courseProgress?.courseProgress?.progressPercentage || (totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0);
-  
-  // Calculate completed units - use courseProgress data if available, otherwise calculate from course structure
-  const completedUnits = courseProgress?.courseProgress?.completedUnits || (() => {
-    // Calculate completed units - a unit is only completed when ALL lessons are completed
-    return normalizedCourse.units.filter(unit => {
-      const unitLessons = unit.lessons || [];
-      if (unitLessons.length === 0) return false;
-      
-      // Check if all lessons in this unit are completed
-      const allLessonsInUnitCompleted = unitLessons.every(lesson => {
-        return completedLessonIds.includes(lesson.id);
-      });
-      
-      return allLessonsInUnitCompleted && unitLessons.length > 0;
-    }).length;
-  })();
+  // Match completed lessons to current course structure; if final exam is passed, show 100%.
+  const progressStats = computeLearnerCourseProgress(normalizedCourse, courseProgress);
+  const totalLessons = progressStats.totalLessons;
+  const completedLessons = progressStats.completedLessons;
+  const progressPercentage = progressStats.progressPercentage;
+  const completedUnits = progressStats.completedUnits;
+  const completedLessonIds = (courseProgress?.lessonProgress || [])
+    .filter((lp) => lp.completed)
+    .map((lp) => lp.lessonId);
   
   // Debug logging
   console.log('CourseStructureView progress calculation:', {
     courseProgress,
     courseProgressStructure: courseProgress?.courseProgress,
-    completedUnitsFromProgress: courseProgress?.courseProgress?.completedUnits,
-    completedUnitsFromCalculation: (() => {
-      return normalizedCourse.units.filter(unit => {
-        const unitLessons = unit.lessons || [];
-        if (unitLessons.length === 0) return false;
-        
-        const completedLessonsInUnit = unitLessons.filter(lesson => lesson.completed).length;
-        const totalLessonsInUnit = unitLessons.length;
-        
-        return completedLessonsInUnit === totalLessonsInUnit && totalLessonsInUnit > 0;
-      }).length;
-    })(),
     totalLessons,
     completedLessons,
     completedLessonIds,
-    completedLessonIdsLength: completedLessonIds.length,
     completedUnits,
     progressPercentage,
+    examPassed: progressStats.examPassed,
     usingCourseProgress: !!courseProgress,
     normalizedCourseUnits: normalizedCourse.units.map(unit => ({
       id: unit.id,
@@ -299,16 +296,16 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
   const firstUnit = normalizedCourse.units[0];
   const firstLesson = firstUnit?.lessons?.[0];
 
-  // Exam is available when all lessons are completed (by count or by progress 99%+)
-  const allLessonsCompleted = totalLessons > 0 && completedLessons === totalLessons;
-  const FINAL_EXAM_PASS_PERCENT = 80;
-  const finalExamPassed =
-    typeof courseProgress?.finalExamScore === 'number' &&
-    courseProgress.finalExamScore >= FINAL_EXAM_PASS_PERCENT;
+  const finalExamPassed = progressStats.examPassed || hasPassedFinalExam(courseProgress);
+  const finalExamDisplayScore = getFinalExamDisplayScore(courseProgress);
   const lessonsCompleteForExam =
-    allLessonsCompleted || (totalLessons > 0 && progressPercentage >= 99);
-  const examAvailable = lessonsCompleteForExam && !!onTakeExam && !finalExamPassed;
-  const courseFullyComplete = finalExamPassed && lessonsCompleteForExam;
+    progressStats.allLessonsDone || (totalLessons > 0 && progressPercentage >= 99);
+  const quizGate = getQuizAverageForExam(normalizedCourse, courseProgress?.lessonProgress);
+  const examAvailable =
+    lessonsCompleteForExam && !!onTakeExam && !finalExamPassed && quizGate.meetsThreshold;
+  const examLockedByQuizAverage =
+    lessonsCompleteForExam && !finalExamPassed && !quizGate.meetsThreshold;
+  const courseFullyComplete = finalExamPassed;
 
   const COURSE_STRUCTURE_TOUR_STEPS: { title: string; description: string }[] = [
     { title: 'Course View & Structure', description: "This page has two parts: on the **left**, **Course Units** with your progress and the list of units and lessons. On the **right**, you see the selected unit overview and lesson details. I'll walk you through each part." },
@@ -359,7 +356,7 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                         className="border-slate-300 dark:border-slate-600 shrink-0"
                         onClick={() => {
                           dismissCoursePagePopout();
-                          window.location.href = '/ai-tutor';
+                          window.location.assign('/ai-tutor');
                         }}
                       >
                         <MessageCircle className="w-4 h-4 mr-2" />
@@ -590,7 +587,9 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                     )}
                     <div className="flex justify-between text-sm">
                       <span>Status:</span>
-                      <span className="font-medium">{normalizedCourse.complianceStatus}</span>
+                      <span className="font-medium">
+                        {courseFullyComplete ? 'Completed' : (normalizedCourse.complianceStatus || '—')}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -601,7 +600,9 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Status:</span>
-                      <span className="font-medium">{normalizedCourse.complianceStatus || '—'}</span>
+                      <span className="font-medium">
+                        {courseFullyComplete ? 'Completed' : (normalizedCourse.complianceStatus || '—')}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -651,7 +652,7 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                   </div>
                 </div>
 
-                {/* Take exam – only while not yet passed */}
+                {/* Take exam – only while not yet passed and quiz average is 75%+ */}
                 {examAvailable && (
                   <Button
                     className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white"
@@ -660,6 +661,16 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                     <FileText className="w-4 h-4 mr-2" />
                     Take final exam
                   </Button>
+                )}
+                {examLockedByQuizAverage && (
+                  <div className="w-full mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-center">
+                    <Lock className="w-5 h-5 text-amber-600 mx-auto mb-1" />
+                    <p className="text-sm font-semibold text-amber-900">Final exam locked</p>
+                    <p className="text-xs text-amber-800 mt-0.5">
+                      Quiz average {quizGate.average ?? 0}% · need {QUIZ_AVERAGE_FOR_EXAM_PERCENT}%
+                      {quizGate.required > 0 ? ` (${quizGate.taken}/${quizGate.required} quizzes)` : ''}
+                    </p>
+                  </div>
                 )}
                 {courseFullyComplete && (
                   <div className="w-full mb-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-center">
@@ -750,6 +761,30 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                               </div>
                             </div>
                           ))}
+                          {unit.quizContent?.questions?.length ? (
+                            <div
+                              className="p-2 rounded cursor-pointer transition-colors hover:bg-orange-50 border-l-2 border-l-orange-400"
+                              onClick={() => {
+                                if (onViewUnitQuiz) {
+                                  onViewUnitQuiz(unit);
+                                } else if (onViewLesson && unit.lessons?.length) {
+                                  onViewLesson(unit.lessons[unit.lessons.length - 1], unit);
+                                }
+                              }}
+                            >
+                              <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 bg-orange-200 rounded-full flex items-center justify-center">
+                                  <Target className="w-3 h-3 text-orange-700" />
+                                </div>
+                                <div className="flex-1">
+                                  <span className="text-sm font-medium text-orange-900">Unit Quiz</span>
+                                  <div className="text-xs text-orange-700">
+                                    {unit.quizContent.questions.length} questions
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : null}
                         </div>
                       )}
                     </div>
@@ -925,6 +960,40 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                   ))
                   ) : null}
 
+                {selectedUnit.quizContent?.questions?.length ? (
+                  <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-orange-500">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                            <Target className="w-6 h-6 text-orange-600" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900">Unit Quiz</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {selectedUnit.quizContent.questions.length} questions ·{' '}
+                              {selectedUnit.quizContent.passingScore || 70}% to pass
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          className="bg-orange-500 hover:bg-orange-600 text-white shrink-0"
+                          onClick={() => {
+                            if (onViewUnitQuiz) {
+                              onViewUnitQuiz(selectedUnit);
+                            } else if (onViewLesson && selectedUnit.lessons?.length) {
+                              onViewLesson(selectedUnit.lessons[selectedUnit.lessons.length - 1], selectedUnit);
+                            }
+                          }}
+                        >
+                          <Target className="w-4 h-4 mr-2" />
+                          Start unit quiz
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : null}
+
                 {/* Final exam – show when all lessons completed */}
                 {examAvailable && (
                   <Card className="border-2 border-green-200 bg-green-50/50 dark:bg-green-950/20 dark:border-green-800">
@@ -952,6 +1021,25 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                     </CardContent>
                   </Card>
                 )}
+                {examLockedByQuizAverage && (
+                  <Card className="border-2 border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-800">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center">
+                          <Lock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-amber-900 dark:text-amber-100">Final exam locked</h3>
+                          <p className="text-sm text-amber-800 dark:text-amber-200 mt-0.5">
+                            Your quiz average is {quizGate.average ?? 0}%. You need {QUIZ_AVERAGE_FOR_EXAM_PERCENT}% across all unit quizzes
+                            {quizGate.required > 0 ? ` (${quizGate.taken}/${quizGate.required} completed)` : ''}.
+                            Retake quizzes from the outline to raise your average.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
                 {courseFullyComplete && (
                   <Card className="border-2 border-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/30 dark:border-emerald-700">
                     <CardContent className="p-6">
@@ -962,7 +1050,7 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                         <div>
                           <h3 className="font-semibold text-emerald-900 dark:text-emerald-100">Course completed</h3>
                           <p className="text-sm text-emerald-800 dark:text-emerald-200 mt-0.5">
-                            You passed the final exam ({courseProgress?.finalExamScore}%). Progress is 100% — no need to retake the exam.
+                            You passed the final exam ({finalExamDisplayScore}%). Progress is 100% — no need to retake the exam.
                           </p>
                         </div>
                       </div>
@@ -1020,6 +1108,24 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                       </div>
                     </CardContent>
                   </Card>
+                ) : examLockedByQuizAverage ? (
+                  <Card className="border-2 border-amber-200 bg-amber-50/70 dark:bg-amber-950/20 dark:border-amber-800">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center">
+                          <Lock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-amber-900 dark:text-amber-100">Final exam locked</h3>
+                          <p className="text-sm text-amber-800 dark:text-amber-200 mt-0.5">
+                            Your quiz average is {quizGate.average ?? 0}%. You need {QUIZ_AVERAGE_FOR_EXAM_PERCENT}% across all unit quizzes
+                            {quizGate.required > 0 ? ` (${quizGate.taken}/${quizGate.required} completed)` : ''}.
+                            Retake quizzes from the outline to raise your average.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ) : courseFullyComplete ? (
                   <Card className="border-2 border-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/30 dark:border-emerald-700">
                     <CardContent className="p-6">
@@ -1030,7 +1136,7 @@ const CourseStructureView: React.FC<CourseStructureViewProps> = ({ course, cours
                         <div>
                           <h3 className="font-semibold text-emerald-900 dark:text-emerald-100">Course completed</h3>
                           <p className="text-sm text-emerald-800 dark:text-emerald-200 mt-0.5">
-                            Final exam passed ({courseProgress?.finalExamScore}%). Your course is 100% complete.
+                            Final exam passed ({finalExamDisplayScore}%). Your course is 100% complete.
                           </p>
                         </div>
                       </div>

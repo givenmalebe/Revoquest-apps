@@ -9,6 +9,7 @@ interface UserAvatarProps {
     firstName?: string;
     lastName?: string;
     name?: string; // For backward compatibility
+    email?: string;
   };
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
@@ -54,15 +55,26 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     );
   }
 
-  // Get initials from firstName/lastName or name
+  // Get initials from firstName/lastName, name, or email — never a generic "U"
   const getInitials = () => {
-    if (user.firstName && user.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    const first = (user.firstName || '').trim();
+    const last = (user.lastName || '').trim();
+    if (first && last) {
+      return `${first[0]}${last[0]}`.toUpperCase();
     }
-    if (user.name) {
-      return user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    if (first) return first[0].toUpperCase();
+    if (last) return last[0].toUpperCase();
+    if (user.name?.trim()) {
+      return user.name
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase();
     }
-    return 'U';
+    if (user.email?.trim()) return user.email.trim()[0].toUpperCase();
+    return '?';
   };
 
   const initials = getInitials();
@@ -112,7 +124,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         <span className="text-sm font-medium text-gray-900 truncate max-w-20">
           {user.firstName && user.lastName 
             ? `${user.firstName} ${user.lastName}`
-            : user.name || 'Unknown User'
+            : user.name || user.email || 'Unknown User'
           }
         </span>
       )}

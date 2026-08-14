@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { funnelPath } from '@/utils/funnelPath';
+import { learnerHomePath } from '@/utils/funnelPath';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -518,7 +518,7 @@ async function executeAITutorActions(
         results.push(`Added to your To-Do list: **"${action.title}"**${due}.`);
       } else if (action.type === 'switch_tab') {
         const tab = action.tab || 'overview';
-        navigate(`/lms?tab=${tab}`);
+        navigate(`${learnerHomePath()}?tab=${tab}`);
         results.push(`Opening your **${tab}** tab so you can see it.`);
       }
     } catch (err) {
@@ -530,10 +530,10 @@ async function executeAITutorActions(
   // Always show what was created: open Calendar after event(s), Overview after todo(s), so the learner can see it
   if (!hasSwitchTab) {
     if (didCreateEvent) {
-      navigate('/lms?tab=calendar');
+      navigate(`${learnerHomePath()}?tab=calendar`);
       results.push('Opening your **Calendar** tab so you can see the new event.');
     } else if (didAddTodo) {
-      navigate('/lms?tab=overview');
+      navigate(`${learnerHomePath()}?tab=overview`);
       results.push('Opening your **Overview** tab so you can see your To-Do list.');
     }
   }
@@ -721,8 +721,8 @@ async function executeTutorToolCall(
     console.error('Tutor tool call failed:', name, args, err);
     result = `Error: ${err instanceof Error ? err.message : 'Failed to execute'}`;
   }
-  if (didModifyCalendar) navigate('/lms?tab=calendar');
-  else if (didModifyTodo) navigate('/lms?tab=overview');
+  if (didModifyCalendar) navigate(`${learnerHomePath()}?tab=calendar`);
+  else if (didModifyTodo) navigate(`${learnerHomePath()}?tab=overview`);
   return { result, didCreateEvent, didAddTodo };
 }
 
@@ -957,7 +957,7 @@ export const AITutorPage = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        navigate('/lms');
+        navigate(learnerHomePath());
       }
     };
 
@@ -1040,7 +1040,7 @@ export const AITutorPage = () => {
         ? `\n\nLearner progress (includes final exam PASSED / NOT PASSED / NOT STARTED per course): ${progressSummary.summaryForAI}`
         : '';
       const courseContext = progressSummary?.byCourse?.length
-        ? `\n\nYou are tutoring this learner in: ${progressSummary.byCourse.map((c) => c.title).join(', ')}. Use their course names when you talk about their learning. Refer to these courses when relevant and offer subject-specific study materials and links.`
+        ? `\n\nYou are tutoring this learner in: ${progressSummary.byCourse.map((c) => c.title).join(', ')}. Use ONLY these human-readable course titles when you talk about their learning — never mention internal database ids.`
         : '\n\nThe learner may be about to enroll or browsing. Offer to help with any course they are doing or planning to take.';
       const southAfricanTimeContext = getSouthAfricanTimeContext();
       const pdfSlideDeckContext =
@@ -1457,9 +1457,9 @@ export const AITutorPage = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate(funnelPath('/dashboard'))}
+                onClick={() => navigate(learnerHomePath())}
                 className="hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
-                title="Back to Revo Learn"
+                title="Back to dashboard"
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>

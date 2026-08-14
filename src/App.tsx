@@ -68,6 +68,10 @@ const RevolearnRootRoutes = (
     <Route path="/login" element={<FunnelLogin />} />
     <Route path="/dashboard" element={<FunnelDashboard />} />
     <Route path="/checkout/:courseId" element={<FunnelCheckout />} />
+    <Route path="/lms" element={<LMSPage />} />
+    <Route path="/lms/checkout/:courseId" element={<LMSCheckout />} />
+    <Route path="/ai-tutor" element={<AITutorPage />} />
+    <Route path="/profile" element={<ProfilePage />} />
     <Route path="/success" element={<FunnelSuccess />} />
     <Route path="/cancel" element={<FunnelCancel />} />
   </>

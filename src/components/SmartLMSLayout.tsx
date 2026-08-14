@@ -29,6 +29,7 @@ import { NotificationBell } from './NotificationBell';
 import UserProfile from './UserProfile';
 import UserAvatar from './UserAvatar';
 import revoquestLogo from "@/assets/revoquest-logo.png";
+import { setLearnerHomePath, aiTutorPath } from "@/utils/funnelPath";
 
 interface SmartLMSLayoutProps {
   children: React.ReactNode;
@@ -38,6 +39,10 @@ export const SmartLMSLayout = ({ children }: SmartLMSLayoutProps) => {
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+
+  useEffect(() => {
+    setLearnerHomePath('/lms');
+  }, []);
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
@@ -95,7 +100,7 @@ export const SmartLMSLayout = ({ children }: SmartLMSLayoutProps) => {
           { name: 'My Courses', href: '/learner/courses', icon: BookOpen },
           { name: 'Progress', href: '/learner/progress', icon: BarChart3 },
           { name: 'Certificates', href: '/learner/certificates', icon: Award },
-          { name: 'AI Tutor', href: '/ai-tutor', icon: MessageCircle },
+          { name: 'AI Tutor', href: aiTutorPath(), icon: MessageCircle },
           { name: 'Calendar', href: '/learner/calendar', icon: Calendar },
         ];
       default:
@@ -103,7 +108,7 @@ export const SmartLMSLayout = ({ children }: SmartLMSLayoutProps) => {
     }
   };
 
-  const navItems = getNavigationItems(user?.role || 'learner');
+  const navItems = getNavigationItems(user?.role || '');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -170,16 +175,20 @@ export const SmartLMSLayout = ({ children }: SmartLMSLayoutProps) => {
               <Avatar className="w-8 h-8">
                 <AvatarImage src={user?.avatar} />
                 <AvatarFallback className="bg-blue-100 text-blue-600">
-                  {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                  {(
+                    `${user?.firstName?.trim()?.[0] || ''}${user?.lastName?.trim()?.[0] || ''}` ||
+                    user?.email?.trim()?.[0] ||
+                    '?'
+                  ).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.firstName} {user?.lastName}
+                  {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email}
                 </p>
                 <div className="flex items-center space-x-2">
-                  <Badge variant="outline" className={cn("text-xs", getRoleColor(user?.role || 'learner'))}>
-                    {getRoleIcon(user?.role || 'learner')}
+                  <Badge variant="outline" className={cn("text-xs", getRoleColor(user?.role || ''))}>
+                    {getRoleIcon(user?.role || '')}
                     <span className="ml-1 capitalize">{user?.role}</span>
                   </Badge>
                 </div>
@@ -225,7 +234,7 @@ export const SmartLMSLayout = ({ children }: SmartLMSLayoutProps) => {
                   <UserAvatar user={user} size="md" />
                   <div className="hidden md:block text-left">
                     <p className="text-sm font-medium text-gray-900">
-                      {user?.firstName} {user?.lastName}
+                      {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email}
                     </p>
                     <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
                   </div>

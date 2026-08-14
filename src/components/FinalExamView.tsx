@@ -419,7 +419,7 @@ export const FinalExamView: React.FC<FinalExamViewProps> = ({ course, onComplete
       params.set('context', 'exam_help');
       params.set('courseId', course.id);
       params.set('courseTitle', course.title || '');
-      window.location.href = `/ai-tutor?${params.toString()}`;
+      window.location.assign(`/ai-tutor?${params.toString()}`);
     };
     return (
       <>

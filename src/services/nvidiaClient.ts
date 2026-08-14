@@ -1,23 +1,13 @@
-import { nativeFetch } from '../utils/nativeFetch';
-import { auth } from '../firebase/config';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import app, { auth } from '../firebase/config';
 
 export const DEFAULT_NVIDIA_MODEL = 'meta/llama-3.1-8b-instruct';
 
 const FIREBASE_REGION = 'us-central1';
+const functions = getFunctions(app, FIREBASE_REGION);
 
 export function hasNvidiaConfigured(): boolean {
   return !!import.meta.env.VITE_FIREBASE_PROJECT_ID?.trim();
-}
-
-function getCloudFunctionUrl(functionName: string): string {
-  const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
-  return `https://${FIREBASE_REGION}-${projectId}.cloudfunctions.net/${functionName}`;
-}
-
-async function getIdToken(): Promise<string> {
-  const user = auth.currentUser;
-  if (!user) throw new Error('User not authenticated. Please log in and try again.');
-  return user.getIdToken();
 }
 
 export interface NvidiaChatMessage {
@@ -40,11 +30,20 @@ export async function nvidiaChatCompletion(
   messages: NvidiaChatMessage[],
   options?: NvidiaCompletionOptions
 ): Promise<NvidiaCompletionResult> {
-  const url = getCloudFunctionUrl('secureNvidiaChat');
-  const idToken = await getIdToken();
+  if (!auth.currentUser) {
+    throw new Error('User not authenticated. Please log in and try again.');
+  }
 
-  const body = JSON.stringify({
-    data: {
+  const secureNvidiaChat = httpsCallable<
+    {
+      messages: NvidiaChatMessage[];
+      options?: NvidiaCompletionOptions;
+    },
+    { choices?: Array<{ message?: { content?: unknown } }> }
+  >(functions, 'secureNvidiaChat', { timeout: 300000 });
+
+  try {
+    const { data } = await secureNvidiaChat({
       messages,
       options: {
         model: options?.model ?? DEFAULT_NVIDIA_MODEL,
@@ -52,35 +51,29 @@ export async function nvidiaChatCompletion(
         max_tokens: options?.max_tokens,
         response_format: options?.response_format,
       },
-    },
-  });
+    });
 
-  const response = await nativeFetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${idToken}`,
-    },
-    body,
-  });
+    const message = data?.choices?.[0]?.message;
+    const content =
+      typeof message?.content === 'string'
+        ? message.content
+        : message?.content != null
+          ? String(message.content)
+          : '';
 
-  if (!response.ok) {
-    const text = await response.text();
-    let detail = text;
-    try {
-      const json = JSON.parse(text);
-      detail = json?.error?.message || json?.result?.message || text;
-    } catch { /* use raw text */ }
-    throw new Error(`Cloud Function error (${response.status}): ${detail}`);
+    if (!content.trim()) {
+      throw new Error('AI returned an empty response. Please try again.');
+    }
+
+    return { content: content.trim() };
+  } catch (err: unknown) {
+    const anyErr = err as { code?: string; message?: string };
+    const msg = anyErr?.message || 'Failed to generate with AI';
+    if (msg.toLowerCase().includes('failed to fetch') || anyErr?.code === 'unavailable') {
+      throw new Error('Could not reach the quiz AI service. Please refresh and try again.');
+    }
+    throw new Error(msg.replace(/^FirebaseError:\s*/i, '').replace(/^internal:\s*/i, ''));
   }
-
-  const json = await response.json();
-  const result = json?.result ?? json?.data ?? json;
-  const message = result?.choices?.[0]?.message;
-  const content =
-    typeof message?.content === 'string' ? message.content : message?.content != null ? String(message.content) : '';
-
-  return { content: content.trim() };
 }
 
 export async function nvidiaGenerateText(params: {

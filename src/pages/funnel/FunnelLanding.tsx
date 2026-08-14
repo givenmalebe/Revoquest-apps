@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { DatabaseService } from '@/firebase/database';
 import type { Course } from '@/firebase/database';
-import { BookOpen, Clock, ArrowRight, Loader2, GraduationCap, Shield, Zap, Search, X, Users, BarChart3, CheckCircle2, Star } from 'lucide-react';
+import { BookOpen, Clock, ArrowRight, Loader2, GraduationCap, Shield, Zap, Search, X, Users, BarChart3, CheckCircle2, Star, Gift, Timer } from 'lucide-react';
 import { funnelPath } from '@/utils/funnelPath';
 
 export default function FunnelLanding() {
@@ -14,6 +14,38 @@ export default function FunnelLanding() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   const closeModal = useCallback(() => setSelectedCourse(null), []);
+
+  // 6-hour countdown timer (persisted per session via sessionStorage)
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const key = 'revo_free_course_deadline';
+    const stored = sessionStorage.getItem(key);
+    if (stored) {
+      const remaining = Math.max(0, parseInt(stored, 10) - Date.now());
+      return remaining;
+    }
+    const deadline = Date.now() + 6 * 60 * 60 * 1000;
+    sessionStorage.setItem(key, String(deadline));
+    return 6 * 60 * 60 * 1000;
+  });
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const interval = setInterval(() => {
+      const key = 'revo_free_course_deadline';
+      const deadline = parseInt(sessionStorage.getItem(key) || '0', 10);
+      const remaining = Math.max(0, deadline - Date.now());
+      setTimeLeft(remaining);
+      if (remaining <= 0) clearInterval(interval);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timeLeft > 0]);
+
+  const formatCountdown = (ms: number) => {
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   useEffect(() => {
     if (selectedCourse) {
@@ -59,7 +91,7 @@ export default function FunnelLanding() {
 
   const filteredCourses = useMemo(() => {
     const normalizedSearch = courseSearch.trim().toLowerCase();
-    return courses.filter((course) => {
+    const filtered = courses.filter((course) => {
       const matchesCategory =
         courseCategoryFilter === 'all' ||
         (course.category?.trim() || 'General') === courseCategoryFilter;
@@ -77,6 +109,7 @@ export default function FunnelLanding() {
         .toLowerCase();
       return searchable.includes(normalizedSearch);
     });
+    return DatabaseService.sortCoursesNewestFirst(filtered);
   }, [courses, courseSearch, courseCategoryFilter]);
 
   return (
@@ -138,6 +171,16 @@ export default function FunnelLanding() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(249,115,22,0.12),transparent)]" />
 
         <div className="relative z-10 container mx-auto max-w-5xl px-4 py-20 text-center">
+          {timeLeft > 0 && (
+            <div className="inline-flex items-center gap-3 rounded-full border border-green-500/50 bg-green-500/10 px-5 py-2.5 text-sm font-semibold text-green-300 mb-4 shadow-lg shadow-green-500/10 animate-pulse">
+              <Gift className="h-5 w-5 text-green-400" />
+              <span>You qualify for a FREE course!</span>
+              <span className="flex items-center gap-1.5 rounded-full bg-green-500/20 px-3 py-1 text-xs font-bold text-green-200 tabular-nums">
+                <Timer className="h-3.5 w-3.5" />
+                {formatCountdown(timeLeft)}
+              </span>
+            </div>
+          )}
           <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/40 bg-orange-500/15 px-4 py-2 text-sm font-medium text-orange-300 mb-8 shadow-lg shadow-orange-500/10">
             <Shield className="h-4 w-4" />
             <span>Accredited qualifications | Secure payment | Instant access</span>
@@ -196,6 +239,21 @@ export default function FunnelLanding() {
 
         {!loading && !error && courses.length > 0 && (
           <>
+            {timeLeft > 0 && (
+              <div className="mb-6 rounded-xl border border-green-600/40 bg-gradient-to-r from-green-900/30 to-emerald-900/20 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-500/20">
+                  <Gift className="h-6 w-6 text-green-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-base font-bold text-green-300">Your first course is FREE!</p>
+                  <p className="text-sm text-green-400/80 mt-0.5">New users get their first course at no cost. Choose any course below and enroll with your ID number.</p>
+                </div>
+                <div className="flex items-center gap-2 rounded-lg bg-green-500/15 border border-green-500/30 px-4 py-2">
+                  <Timer className="h-4 w-4 text-green-400" />
+                  <span className="text-lg font-bold text-green-300 tabular-nums">{formatCountdown(timeLeft)}</span>
+                </div>
+              </div>
+            )}
             <div className="mb-8 flex flex-col gap-4">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="text-2xl font-semibold text-white">

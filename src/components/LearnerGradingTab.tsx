@@ -16,6 +16,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { persistentProgressService } from '@/services/persistentProgressService';
 import { DatabaseService, Course } from '@/firebase/database';
 import {
+  buildCourseTitleMap,
+  getCourseDisplayName,
+  resolveLessonDisplayName,
+} from '@/utils/courseDisplayName';
+import {
   getFinalExamDisplayDate,
   getFinalExamDisplayScore,
   hasPassedFinalExam,
@@ -46,6 +51,7 @@ export const LearnerGradingTab: React.FC = () => {
       // Get all progress documents for this learner (each doc = a course)
       const allProgress = await persistentProgressService.getAllStudentProgress(user.id);
       const courseIds = Object.keys(allProgress);
+      const titleMap = await buildCourseTitleMap(user.id, courseIds);
 
       const allGrades: CourseAssessmentGrade[] = [];
 
@@ -63,12 +69,13 @@ export const LearnerGradingTab: React.FC = () => {
           persistentProgressService.getStudentProgress(user.id, courseId),
         ]);
 
+        const courseName = getCourseDisplayName(courseId, titleMap, course);
         const displayScore = getFinalExamDisplayScore(progress ?? undefined);
         const submittedAt = getFinalExamDisplayDate(progress ?? undefined);
         if (typeof displayScore === 'number' && submittedAt) {
           finalExams.push({
             courseId,
-            courseName: course?.title || courseId,
+            courseName,
             score: displayScore,
             submittedAt,
             passed: hasPassedFinalExam(progress ?? undefined),
@@ -80,7 +87,8 @@ export const LearnerGradingTab: React.FC = () => {
         lessonProgressList
           .filter((lp) => typeof lp.score === 'number')
           .forEach((lp) => {
-            const { unitTitle, lessonTitle } = getUnitAndLessonTitles(course, lp.lessonId);
+            const { unitTitle, lessonTitle } = resolveLessonDisplayName(lp.lessonId, course);
+            const assessmentTitle = unitTitle ? `${unitTitle} – ${lessonTitle}` : lessonTitle;
             const percentage = lp.score as number;
             const letterGrade = GradingService.calculateLetterGrade(percentage);
             const timestamp = lp.completedAt || lp.lastAccessedAt || new Date().toISOString();
@@ -90,9 +98,9 @@ export const LearnerGradingTab: React.FC = () => {
               studentId: user.id,
               studentName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email || user.id,
               courseId,
-              courseName: course?.title || courseId,
+              courseName,
               assessmentId: lp.lessonId,
-              assessmentTitle: lessonTitle || lp.lessonId,
+              assessmentTitle,
               assessmentType: 'formative',
               marks: percentage,
               maxMarks: 100,
@@ -165,21 +173,8 @@ export const LearnerGradingTab: React.FC = () => {
   }, [quizGrades]);
 
   const getUnitAndLessonTitles = (course: Course | null, lessonId: string) => {
-    let unitTitle: string | null = null;
-    let lessonTitle: string = lessonId;
-
-    if (course?.units) {
-      for (const unit of course.units as any[]) {
-        const lesson = unit.lessons?.find((l: any) => l.id === lessonId);
-        if (lesson) {
-          unitTitle = unit.title || null;
-          lessonTitle = lesson.title || lessonId;
-          break;
-        }
-      }
-    }
-
-    return { unitTitle, lessonTitle };
+    const resolved = resolveLessonDisplayName(lessonId, course);
+    return { unitTitle: resolved.unitTitle, lessonTitle: resolved.lessonTitle };
   };
 
   const extractUnitAndLesson = (title: string) => {

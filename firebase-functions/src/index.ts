@@ -2,8 +2,12 @@ import * as path from "path";
 import * as dotenv from "dotenv";
 
 // Load .env from project root or firebase-functions dir (for local emulator); deployed functions use Firebase config or env vars
-dotenv.config({ path: path.join(process.cwd(), ".env") });
-dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
+try {
+  dotenv.config({ path: path.join(process.cwd(), ".env") });
+  dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
+} catch {
+  // Ignore dotenv failures during Firebase CLI code analysis / deploy
+}
 
 // Force redeploy - switching to live Yoco mode - 2025-03-27
 
@@ -1133,12 +1137,13 @@ export const createYocoCheckoutForLearner = onCall({
 
 // --- Shared: run enrollment + send email (used by webhook and completeFunnelEnrollmentByEmail) ---
 async function runEnrollmentFromSession(
-  session: { courseId: string; customerEmail: string; firstName: string; lastName: string; password?: string; identityNumber?: string },
+  session: { courseId: string; customerEmail: string; firstName: string; lastName: string; password?: string; identityNumber?: string; type?: string },
   sessionRef: { update: (data: object) => Promise<unknown>; get: () => Promise<{ data: () => Record<string, unknown> | undefined }> },
   db: ReturnType<typeof getFirestore>,
   auth: ReturnType<typeof getAuth>
 ): Promise<{ uid: string; isNewUser: boolean }> {
   const { courseId, customerEmail, firstName, lastName, password: sessionPassword, identityNumber } = session;
+  const isFreeEnrollment = session.type === "free_first_course";
   let uid: string;
   let isNewUser = false;
   let usedProvidedPassword = false;
@@ -1195,7 +1200,9 @@ async function runEnrollmentFromSession(
   const courseRef = db.collection("courses").doc(courseId);
   const courseSnap = await courseRef.get();
   const courseData = courseSnap.exists ? courseSnap.data() : null;
-  const coursePrice = typeof (courseData?.price as number | undefined) === "number" ? (courseData?.price as number) : 0;
+  const coursePrice = isFreeEnrollment
+    ? 0
+    : (typeof (courseData?.price as number | undefined) === "number" ? (courseData?.price as number) : 0);
 
   if (!existingEnrolled.includes(courseId)) {
     await db.collection("enrollments").add({
@@ -1233,10 +1240,31 @@ async function runEnrollmentFromSession(
   }
 
   try {
+    if (!EMAIL_USER || !EMAIL_PASS) {
+      logger.warn("Funnel: skipping post-enrollment email — EMAIL_USER/EMAIL_PASS not configured", {
+        customerEmail,
+      });
+      await sessionRef.update({
+        status: "completed",
+        completedAt: now,
+        amountPaid: coursePrice,
+        courseTitle: (courseData?.title as string) || undefined,
+        emailSkipped: true,
+      });
+      return { uid, isNewUser };
+    }
+
     const transporter = createTransporter(EMAIL_USER, EMAIL_PASS);
-    const sessionData = (await sessionRef.get().then((s) => s.data())) as { newUserCreated?: boolean; hadPasswordAtCheckout?: boolean } | undefined;
+    const sessionData = (await sessionRef.get().then((s) => s.data())) as {
+      newUserCreated?: boolean;
+      hadPasswordAtCheckout?: boolean;
+      type?: string;
+    } | undefined;
     const sendWelcomeEmail = isNewUser || sessionData?.newUserCreated === true;
     const sendVerificationNotSetPassword = usedProvidedPassword || sessionData?.hadPasswordAtCheckout === true;
+    const successIntro = isFreeEnrollment || sessionData?.type === "free_first_course"
+      ? "You've been enrolled in your first course for free."
+      : "Your payment was successful.";
 
     if (sendWelcomeEmail) {
       if (sendVerificationNotSetPassword) {
@@ -1250,14 +1278,14 @@ async function runEnrollmentFromSession(
         const loginDetailsText = passwordForEmail
           ? `\n\nYour login details to access the platform:\nEmail (username): ${customerEmail}\nPassword: ${passwordForEmail}\n\n`
           : `\n\nUse your email and the password you set at checkout to log in after confirming your email.\n\n`;
-        const textBody = `Hi ${firstName},\n\nYour payment was successful. We've created your Revo Learn account and enrolled you in your course.${loginDetailsText}Please confirm your email address by clicking the link below (one-time):\n\n${verificationLink}\n\nAfter you confirm your email, log in at ${APP_BASE_URL}/funnel/login or ${APP_BASE_URL}/lms with the email and password above.\n\nRegards,\nRevo Learn Team`;
+        const textBody = `Hi ${firstName},\n\n${successIntro} We've created your Revo Learn account and enrolled you in your course.${loginDetailsText}Please confirm your email address by clicking the link below (one-time):\n\n${verificationLink}\n\nAfter you confirm your email, log in at ${APP_BASE_URL}/funnel/login or ${APP_BASE_URL}/lms with the email and password above.\n\nRegards,\nRevo Learn Team`;
         const loginDetailsHtml = passwordForEmail
           ? `<p><strong>Your login details to access the platform:</strong></p><p>Email (username): <strong>${customerEmail}</strong><br/>Password: <strong>${passwordForEmail}</strong></p><p>Keep these safe. After confirming your email below, use them to log in.</p>`
           : `<p>Use your email and the password you set at checkout to log in after confirming your email.</p>`;
         const htmlBody = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #f97316;">Confirm your email</h2>
           <p>Hi ${firstName},</p>
-          <p>Your payment was successful. We've created your account and enrolled you in your course.</p>
+          <p>${successIntro} We've created your account and enrolled you in your course.</p>
           ${loginDetailsHtml}
           <p><strong>Confirm your email</strong> by clicking the button below:</p>
           <p><a href="${verificationLink}" style="background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Confirm my email</a></p>
@@ -1289,11 +1317,11 @@ async function runEnrollmentFromSession(
             )}&continueUrl=${continueUrlEnc}`
           : firebaseResetLink;
         const subject = "Revo Learn – Create your password and log in to your course";
-        const textBody = `Hi ${firstName},\n\nYour payment was successful. We've created your Revo Learn account and enrolled you in your course.\n\nYour login username is your email: ${customerEmail}\n\nTo log in to the learner dashboard, you need to create a password first. Use this link (one-time):\n\n${setPasswordUrl}\n\nAfter you set your password, you'll be logged in and can access your course at: ${APP_BASE_URL}/lms\n\nRegards,\nRevo Learn Team`;
+        const textBody = `Hi ${firstName},\n\n${successIntro} We've created your Revo Learn account and enrolled you in your course.\n\nYour login username is your email: ${customerEmail}\n\nTo log in to the learner dashboard, you need to create a password first. Use this link (one-time):\n\n${setPasswordUrl}\n\nAfter you set your password, you'll be logged in and can access your course at: ${APP_BASE_URL}/lms\n\nRegards,\nRevo Learn Team`;
         const htmlBody = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #f97316;">Your Revo Learn account is ready</h2>
           <p>Hi ${firstName},</p>
-          <p>Your payment was successful. We've created your account and enrolled you in your course.</p>
+          <p>${successIntro} We've created your account and enrolled you in your course.</p>
           <p><strong>Your login username:</strong> ${customerEmail}</p>
           <p><strong>Create your password</strong> using the link below, then you can log in to your learner dashboard.</p>
           <p><a href="${setPasswordUrl}" style="background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Create password & go to dashboard</a></p>
@@ -1311,13 +1339,13 @@ async function runEnrollmentFromSession(
         logger.info("Funnel: welcome + set-password email sent", { to: customerEmail });
       }
     } else {
-      const htmlBody = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;"><h2 style="color: #f97316;">Course access added</h2><p>Hi ${firstName},</p><p>Your payment was successful. The new course is now available in your learner dashboard.</p><p><a href="${APP_BASE_URL}/lms" style="background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Go to learner dashboard</a></p><p>Regards,<br/>Revo Quest Team</p></div>`;
+      const htmlBody = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;"><h2 style="color: #f97316;">Course access added</h2><p>Hi ${firstName},</p><p>${successIntro} The new course is now available in your learner dashboard.</p><p><a href="${APP_BASE_URL}/lms" style="background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Go to learner dashboard</a></p><p>Regards,<br/>Revo Quest Team</p></div>`;
       await transporter.sendMail({
         from: EMAIL_USER,
         to: customerEmail,
         replyTo: ADMIN_EMAIL,
         subject: "Revo Quest – New course added to your account",
-        text: `Hi ${firstName},\n\nYour payment was successful. The new course is in your learner dashboard. Log in at ${APP_BASE_URL}/lms\n\nRegards,\nRevo Quest Team`,
+        text: `Hi ${firstName},\n\n${successIntro} The new course is in your learner dashboard. Log in at ${APP_BASE_URL}/lms\n\nRegards,\nRevo Quest Team`,
         html: htmlBody,
       });
       logger.info("Funnel: course-added email sent", { to: customerEmail });
@@ -1329,8 +1357,17 @@ async function runEnrollmentFromSession(
       courseTitle: (courseData?.title as string) || undefined,
     });
   } catch (emailError) {
-    logger.error("Funnel: failed to send post-payment email", { customerEmail, error: emailError });
-    throw emailError;
+    // Enrollment already succeeded — never fail the whole flow because email failed
+    logger.error("Funnel: failed to send post-enrollment email", { customerEmail, error: emailError });
+    try {
+      await sessionRef.update({
+        status: "completed",
+        completedAt: now,
+        amountPaid: coursePrice,
+        courseTitle: (courseData?.title as string) || undefined,
+        emailError: emailError instanceof Error ? emailError.message : String(emailError),
+      });
+    } catch (_) {}
   }
   return { uid, isNewUser };
 }
@@ -1661,6 +1698,10 @@ const CORS_ORIGINS = [
   "https://www.revoquest.co.za",
   "https://revoquest-9e217.web.app",
   "https://revoquest-9e217.firebaseapp.com",
+  "https://revolearn.co.za",
+  "https://www.revolearn.co.za",
+  "https://revolearn-redirect.web.app",
+  "https://revolearn-redirect.firebaseapp.com",
 ];
 
 // --- Callable: register Yoco webhook to receive payment.succeeded events (admin only) ---
@@ -1730,15 +1771,68 @@ export const registerYocoWebhook = onCall({ cors: CORS_ORIGINS, secrets: [yocoSe
   }
 });
 
+async function deleteQueryByField(
+  db: ReturnType<typeof getFirestore>,
+  collectionName: string,
+  field: string,
+  values: string[]
+) {
+  for (const value of [...new Set(values.filter(Boolean))]) {
+    const snap = await db.collection(collectionName).where(field, "==", value).get();
+    if (snap.empty) continue;
+    let batch = db.batch();
+    let count = 0;
+    for (const docSnap of snap.docs) {
+      batch.delete(docSnap.ref);
+      count += 1;
+      if (count === 400) {
+        await batch.commit();
+        batch = db.batch();
+        count = 0;
+      }
+    }
+    if (count > 0) await batch.commit();
+  }
+}
+
+async function isAdminCaller(
+  db: ReturnType<typeof getFirestore>,
+  callerUid: string,
+  callerEmail?: string | null
+): Promise<boolean> {
+  const isAdminRole = (role: string) => {
+    const value = String(role || "").toLowerCase();
+    return value === "admin" || value === "sub-admin" || value === "subadmin";
+  };
+  const callerSnap = await db.collection("users").doc(callerUid).get();
+  if (isAdminRole(String(callerSnap.data()?.role || callerSnap.data()?.userType || ""))) {
+    return true;
+  }
+  const emails = [...new Set(
+    [callerEmail, callerSnap.data()?.email]
+      .map((value) => String(value || "").trim())
+      .filter(Boolean)
+  )];
+  for (const email of emails) {
+    const variants = [...new Set([email, email.toLowerCase()])];
+    for (const value of variants) {
+      const snap = await db.collection("users").where("email", "==", value).get();
+      if (snap.docs.some((item) => isAdminRole(String(item.data()?.role || item.data()?.userType || "")))) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 /**
- * Delete a user from Firebase Auth and Firestore (users collection).
- * Callable only by an authenticated user with role "admin".
- * Pass the user ID (Firebase Auth UID, same as Firestore users doc id) to delete.
+ * Create a user in Firebase Auth + Firestore without changing the admin's login session.
+ * Client-side createUserWithEmailAndPassword would sign the admin in as the new user.
  */
-export const deleteUserByAdmin = onCall({ cors: CORS_ORIGINS }, async (request) => {
+export const createUserByAdmin = onCall({ cors: true, region: "us-central1" }, async (request) => {
   const callerUid = request.auth?.uid;
   if (!callerUid) {
-    throw new Error("You must be logged in to delete a user.");
+    throw new HttpsError("unauthenticated", "You must be logged in to create a user.");
   }
   try {
     initializeApp();
@@ -1746,40 +1840,199 @@ export const deleteUserByAdmin = onCall({ cors: CORS_ORIGINS }, async (request) 
   const db = getFirestore();
   const adminAuth = getAuth();
 
-  const callerSnap = await db.collection("users").doc(callerUid).get();
-  const callerRole = (callerSnap.data()?.role as string)?.toLowerCase?.();
-  const isAdmin = callerRole === "admin";
-  if (!isAdmin) {
-    throw new Error("Only admins can delete users.");
+  if (!(await isAdminCaller(db, callerUid, request.auth?.token?.email))) {
+    throw new HttpsError("permission-denied", "Only admins can create users.");
   }
 
-  const userId = (request.data?.userId as string)?.trim?.();
-  if (!userId) {
-    throw new Error("userId is required.");
+  const data = (request.data || {}) as Record<string, unknown>;
+  const email = String(data.email || "").trim().toLowerCase();
+  const password = String(data.password || "");
+  const firstName = String(data.firstName || "").trim();
+  const lastName = String(data.lastName || "").trim();
+  const role = String(data.role || "learner").trim().toLowerCase();
+
+  if (!email || !password || !firstName || !lastName) {
+    throw new HttpsError("invalid-argument", "First name, last name, email, and password are required.");
   }
-  if (userId === callerUid) {
-    throw new Error("You cannot delete your own account from here.");
+  if (password.length < 6) {
+    throw new HttpsError("invalid-argument", "Password must be at least 6 characters.");
+  }
+
+  const allowedRoles = new Set(["learner", "student", "instructor", "admin", "sub-admin", "subadmin"]);
+  if (!allowedRoles.has(role)) {
+    throw new HttpsError("invalid-argument", "Invalid role.");
+  }
+
+  let created;
+  try {
+    created = await adminAuth.createUser({
+      email,
+      password,
+      displayName: `${firstName} ${lastName}`,
+      disabled: false,
+    });
+  } catch (authErr: unknown) {
+    const code = authErr && typeof authErr === "object" && "code" in authErr
+      ? String((authErr as { code: string }).code)
+      : "";
+    if (code === "auth/email-already-exists") {
+      throw new HttpsError("already-exists", "This email is already registered. Please use a different email.");
+    }
+    if (code === "auth/invalid-email") {
+      throw new HttpsError("invalid-argument", "Invalid email address.");
+    }
+    if (code === "auth/invalid-password") {
+      throw new HttpsError("invalid-argument", "Password is too weak. Please choose a stronger password.");
+    }
+    throw new HttpsError(
+      "internal",
+      authErr instanceof Error ? authErr.message : "Failed to create Auth user."
+    );
+  }
+
+  const now = new Date().toISOString();
+  const userData: Record<string, unknown> = {
+    id: created.uid,
+    uid: created.uid,
+    firstName,
+    lastName,
+    email,
+    phone: String(data.phone || "").trim(),
+    role,
+    isActive: true,
+    bio: String(data.bio || "").trim(),
+    linkedin: String(data.linkedin || "").trim(),
+    experience: String(data.experience || "").trim(),
+    education: String(data.education || "").trim(),
+    idNumber: String(data.idNumber || "").trim(),
+    identityNumber: String(data.idNumber || "").trim(),
+    country: String(data.country || "").trim(),
+    stateProvince: String(data.stateProvince || "").trim(),
+    gender: String(data.gender || "").trim(),
+    createdAt: now,
+    updatedAt: now,
+    lastActive: now,
+    joinDate: now,
+  };
+
+  if (role === "instructor") {
+    const specialization = Array.isArray(data.specialization)
+      ? data.specialization
+      : String(data.specialization || "").split(",").map((s) => s.trim()).filter(Boolean);
+    const qualifications = Array.isArray(data.qualifications)
+      ? data.qualifications
+      : String(data.qualifications || "").split(",").map((s) => s.trim()).filter(Boolean);
+    Object.assign(userData, {
+      specialization,
+      qualifications,
+      assignedStudents: Array.isArray(data.assignedStudents) ? data.assignedStudents : [],
+      learners: Array.isArray(data.assignedStudents) ? data.assignedStudents.length : 0,
+      courses: [],
+      rating: 0,
+      setaRegistration: "",
+      qctoRegistration: "",
+    });
+  } else if (role === "learner" || role === "student") {
+    Object.assign(userData, {
+      enrolledCourses: [],
+      completedCourses: [],
+      currentGrade: "N/A",
+      progress: 0,
+    });
+  } else if (role === "sub-admin" || role === "subadmin") {
+    Object.assign(userData, {
+      assignedInstructors: Array.isArray(data.assignedInstructors) ? data.assignedInstructors : [],
+      instructors: Array.isArray(data.assignedInstructors) ? data.assignedInstructors.length : 0,
+      courses: [],
+      rating: 0,
+    });
+  } else if (role === "admin") {
+    userData.permissions = ["read", "write", "delete", "manage_users"];
+  }
+
+  await db.collection("users").doc(created.uid).set(userData);
+  logger.info("createUserByAdmin: created user", { uid: created.uid, email, role, by: callerUid });
+
+  return { success: true, user: { ...userData, id: created.uid, uid: created.uid } };
+});
+
+/**
+ * Delete a user from Firebase Auth and Firestore (users collection).
+ * Callable only by an authenticated user with role "admin".
+ * Pass the user ID (Firebase Auth UID, same as Firestore users doc id) to delete.
+ */
+export const deleteUserByAdmin = onCall({ cors: true, region: "us-central1" }, async (request) => {
+  const callerUid = request.auth?.uid;
+  if (!callerUid) {
+    throw new HttpsError("unauthenticated", "You must be logged in to delete a user.");
+  }
+  try {
+    initializeApp();
+  } catch (_) {}
+  const db = getFirestore();
+  const adminAuth = getAuth();
+
+  if (!(await isAdminCaller(db, callerUid, request.auth?.token?.email))) {
+    throw new HttpsError("permission-denied", "Only admins can delete users.");
+  }
+
+  const userId = String(request.data?.userId || "").trim();
+  const uid = String(request.data?.uid || userId).trim();
+  if (!userId) {
+    throw new HttpsError("invalid-argument", "userId is required.");
+  }
+  if (userId === callerUid || uid === callerUid) {
+    throw new HttpsError("failed-precondition", "You cannot delete your own account from here.");
+  }
+
+  const idsToDelete = [...new Set([userId, uid].filter(Boolean))];
+
+  for (const id of idsToDelete) {
+    try {
+      await adminAuth.deleteUser(id);
+      logger.info("deleteUserByAdmin: deleted Auth user", { id });
+    } catch (authErr: unknown) {
+      const code = authErr && typeof authErr === "object" && "code" in authErr
+        ? (authErr as { code: string }).code
+        : "";
+      if (code !== "auth/user-not-found") {
+        logger.warn("deleteUserByAdmin: Auth delete", {
+          id,
+          error: authErr instanceof Error ? authErr.message : String(authErr),
+        });
+      }
+    }
+  }
+
+  for (const id of idsToDelete) {
+    const userRef = db.collection("users").doc(id);
+    const userSnap = await userRef.get();
+    if (userSnap.exists) {
+      await userRef.delete();
+      logger.info("deleteUserByAdmin: deleted Firestore user doc", { id });
+    }
+    const studentRef = db.collection("students").doc(id);
+    const studentSnap = await studentRef.get();
+    if (studentSnap.exists) {
+      await studentRef.delete();
+    }
   }
 
   try {
-    await adminAuth.deleteUser(userId);
-  } catch (authErr: unknown) {
-    const code = authErr && typeof authErr === "object" && "code" in authErr
-      ? (authErr as { code: string }).code
-      : "";
-    const msg = code === "auth/user-not-found"
-      ? "Firebase Auth user not found (may already be deleted)."
-      : authErr instanceof Error ? authErr.message : "Failed to delete Auth user.";
-    logger.warn("deleteUserByAdmin: Auth delete", { userId, error: msg });
-    // Continue to delete Firestore doc even if Auth user was already gone
+    const uidFieldSnap = await db.collection("users").where("uid", "in", idsToDelete.slice(0, 10)).get();
+    for (const docSnap of uidFieldSnap.docs) {
+      if (docSnap.id !== callerUid) {
+        await docSnap.ref.delete();
+      }
+    }
+  } catch (queryErr) {
+    logger.warn("deleteUserByAdmin: uid query", { error: queryErr instanceof Error ? queryErr.message : String(queryErr) });
   }
 
-  const userRef = db.collection("users").doc(userId);
-  const userSnap = await userRef.get();
-  if (userSnap.exists) {
-    await userRef.delete();
-    logger.info("deleteUserByAdmin: deleted Firestore user doc", { userId });
-  }
+  await deleteQueryByField(db, "enrollments", "studentId", idsToDelete);
+  await deleteQueryByField(db, "enrollments", "userId", idsToDelete);
+  await deleteQueryByField(db, "studentProgress", "studentId", idsToDelete);
+  await deleteQueryByField(db, "notifications", "userId", idsToDelete);
 
   return { success: true, message: "User deleted from Authentication and Firestore." };
 });
@@ -1788,7 +2041,7 @@ export const deleteUserByAdmin = onCall({ cors: CORS_ORIGINS }, async (request) 
  * secureOpenRouterChat: Secure backend proxy for OpenRouter chat completions.
  * Authenticates the user and calls OpenRouter without exposing the API key on the frontend.
  */
-export const secureOpenRouterChat = onCall({ cors: CORS_ORIGINS }, async (request) => {
+export const secureOpenRouterChat = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new Error("Unauthorized. You must be logged in.");
@@ -1863,7 +2116,7 @@ export const secureOpenRouterChat = onCall({ cors: CORS_ORIGINS }, async (reques
  * secureOpenRouterImage: Secure backend proxy for OpenRouter educational illustrations/images.
  * Authenticates the user and handles the OpenRouter multimodal image endpoints.
  */
-export const secureOpenRouterImage = onCall({ cors: CORS_ORIGINS }, async (request) => {
+export const secureOpenRouterImage = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new Error("Unauthorized. You must be logged in.");
@@ -1942,7 +2195,7 @@ export const secureOpenRouterImage = onCall({ cors: CORS_ORIGINS }, async (reque
  * secureGeminiImage: Secure backend proxy for direct Gemini image illustrations as a fallback.
  * Authenticates the user and connects to the Google Generative Language API securely.
  */
-export const secureGeminiImage = onCall({ cors: CORS_ORIGINS }, async (request) => {
+export const secureGeminiImage = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new Error("Unauthorized. You must be logged in.");
@@ -1993,7 +2246,7 @@ export const secureGeminiImage = onCall({ cors: CORS_ORIGINS }, async (request) 
  * secureNvidiaChat: Secure backend proxy for NVIDIA API chat completions.
  * OpenAI-compatible endpoint. Authenticates the user and proxies without exposing the API key.
  */
-export const secureNvidiaChat = onCall({ cors: CORS_ORIGINS, secrets: [nvidiaApiKey], timeoutSeconds: 300 }, async (request) => {
+export const secureNvidiaChat = onCall({ cors: true, secrets: [nvidiaApiKey], timeoutSeconds: 300, memory: "512MiB" }, async (request) => {
   try {
     const uid = request.auth?.uid;
     if (!uid) {
@@ -2073,12 +2326,20 @@ export const checkIdentityNumberUsed = onCall({ cors: true }, async (request) =>
   if (!identityNumber) {
     return { used: false };
   }
-  const db = getFirestore();
-  const snap = await db.collection("users")
-    .where("identityNumber", "==", identityNumber)
-    .limit(1)
-    .get();
-  return { used: !snap.empty };
+  try {
+    try {
+      initializeApp();
+    } catch (_) {}
+    const db = getFirestore();
+    const snap = await db.collection("users")
+      .where("identityNumber", "==", identityNumber)
+      .limit(1)
+      .get();
+    return { used: !snap.empty };
+  } catch (err) {
+    logger.error("checkIdentityNumberUsed error", err);
+    throw new HttpsError("internal", "Could not verify identity number.");
+  }
 });
 
 // --- Free first-course enrollment for new users (verified by identity number) ---
@@ -2095,6 +2356,10 @@ export const freeFirstCourseEnrollment = onCall({ cors: true }, async (request) 
   if (!courseId || !customerEmail || !firstName || !lastName || !identityNumber?.trim()) {
     return { success: false, error: "All fields including Identity Number are required for free enrollment." };
   }
+
+  try {
+    initializeApp();
+  } catch (_) {}
 
   const db = getFirestore();
   const auth = getAuth();
@@ -2141,35 +2406,12 @@ export const freeFirstCourseEnrollment = onCall({ cors: true }, async (request) 
 
     await docRef.update({ enrolled: true, enrolledAt: new Date().toISOString(), uid: result.uid });
 
-    // Send verification email link
-    try {
-      const verifyLink = await auth.generateEmailVerificationLink(customerEmail.trim());
-      const courseSnap = await db.collection("courses").doc(courseId).get();
-      const courseTitle = courseSnap.exists ? (courseSnap.data()?.title as string) || "your course" : "your course";
-      const { createTransport } = await import("nodemailer");
-      const emailUser = process.env.EMAIL_USER || "";
-      const emailPass = process.env.EMAIL_PASS || "";
-      if (emailUser && emailPass) {
-        const transporter = createTransport({
-          service: "gmail",
-          auth: { user: emailUser, pass: emailPass },
-        });
-        await transporter.sendMail({
-          from: `"Revo Learn" <${emailUser}>`,
-          to: customerEmail.trim(),
-          subject: `Welcome to Revo Learn – Free Enrollment: ${courseTitle}`,
-          html: `<p>Hi ${firstName},</p>
-<p>You've been enrolled in <strong>${courseTitle}</strong> for free as a first-time learner!</p>
-<p>Please verify your email to activate your account: <a href="${verifyLink}">Verify Email</a></p>
-<p>You can then log in at the Revo Learn dashboard with your email and password.</p>
-<p>Happy learning!<br/>Revo Learn Team</p>`,
-        });
-      }
-    } catch (emailErr) {
-      logger.warn("freeFirstCourseEnrollment: verification email failed", emailErr);
-    }
-
-    return { success: true, message: "You've been enrolled for free! Check your email to verify your account." };
+    return {
+      success: true,
+      message: EMAIL_USER && EMAIL_PASS
+        ? "You've been enrolled for free! Check your email to verify your account."
+        : "You've been enrolled for free! You can log in with the email and password you set.",
+    };
   } catch (err) {
     logger.error("freeFirstCourseEnrollment error", err);
     return { success: false, error: err instanceof Error ? err.message : "Enrollment failed." };

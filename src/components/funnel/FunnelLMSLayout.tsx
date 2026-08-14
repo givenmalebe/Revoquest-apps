@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UserAvatar from '@/components/UserAvatar';
 import UserProfile from '@/components/UserProfile';
-import { funnelPath } from '@/utils/funnelPath';
+import { funnelPath, learnerHomePath, setLearnerHomePath } from '@/utils/funnelPath';
 
 const funnelLogo = '/revoquest%20logo.png';
 
@@ -19,6 +19,10 @@ export function FunnelLMSLayout({ children }: FunnelLMSLayoutProps) {
   const { user, logout } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
 
+  useEffect(() => {
+    setLearnerHomePath(funnelPath('/dashboard'));
+  }, []);
+
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to log out?')) {
       logout(funnelPath('/login'));
@@ -30,7 +34,7 @@ export function FunnelLMSLayout({ children }: FunnelLMSLayoutProps) {
       <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-sm">
         <div className="container mx-auto max-w-7xl px-4 py-3">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link to={funnelPath('')} className="flex items-center gap-3">
+            <Link to={learnerHomePath()} className="flex items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 sm:h-12 sm:w-12">
                 <img src={funnelLogo} alt="Revo Learn" className="h-full w-full object-contain" />
               </span>
@@ -45,7 +49,7 @@ export function FunnelLMSLayout({ children }: FunnelLMSLayoutProps) {
               >
                 <UserAvatar user={user} size="sm" />
                 <span className="hidden sm:inline font-medium">
-                  {user?.firstName} {user?.lastName}
+                  {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email}
                 </span>
                 <span className="hidden sm:inline text-slate-500 capitalize">({user?.role})</span>
               </button>

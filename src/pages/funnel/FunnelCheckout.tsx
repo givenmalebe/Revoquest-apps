@@ -45,28 +45,42 @@ export default function FunnelCheckout() {
   const successUrl = `${baseUrl}${funnelPath('/dashboard?paid=1')}`;
   const cancelUrl = `${baseUrl}${funnelPath('/cancel')}`;
 
-  const handleIdCheck = async () => {
-    const id = identityNumber.trim();
-    if (!id) {
+  const checkIdEligibility = async (id: string): Promise<boolean | null> => {
+    const trimmed = id.trim();
+    if (!trimmed) {
       setIsFirstTimeUser(null);
-      return;
+      return null;
     }
     setCheckingId(true);
-    setError(null);
     try {
-      const { used } = await checkIdentityNumberUsed(id);
-      setIsFirstTimeUser(!used);
-    } catch {
+      const { used } = await checkIdentityNumberUsed(trimmed);
+      const firstTime = !used;
+      setIsFirstTimeUser(firstTime);
+      return firstTime;
+    } catch (err) {
+      console.error('checkIdentityNumberUsed failed', err);
       setIsFirstTimeUser(null);
+      return null;
     } finally {
       setCheckingId(false);
     }
+  };
+
+  const handleIdCheck = async () => {
+    setError(null);
+    await checkIdEligibility(identityNumber);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!course || !courseId) return;
     setError(null);
+
+    const id = identityNumber.trim();
+    if (!id) {
+      setError('Identity Number is required to enroll.');
+      return;
+    }
     if (password.length < 6) {
       setError('Password must be at least 6 characters.');
       return;
@@ -75,8 +89,17 @@ export default function FunnelCheckout() {
       setError('Password and Confirm password do not match.');
       return;
     }
+
     setSubmitting(true);
     try {
+      // Always re-check ID on submit so free enrollment is never skipped
+      const firstTime = await checkIdEligibility(id);
+      if (firstTime === null) {
+        setError('Could not verify your Identity Number. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+
       const { registered } = await checkFunnelEmailRegistered(email.trim());
       if (registered) {
         setError('This email is already registered. Please log in to add a course, or use a different email.');
@@ -84,15 +107,15 @@ export default function FunnelCheckout() {
         return;
       }
 
-      // Free first course for new users with a valid identity number
-      if (isFirstTimeUser && identityNumber.trim()) {
+      // Free first course for new users (ID not in the system)
+      if (firstTime) {
         const result = await freeFirstCourseEnrollment({
           courseId,
           customerEmail: email.trim(),
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           password: password.trim(),
-          identityNumber: identityNumber.trim(),
+          identityNumber: id,
         });
         if (result.success) {
           setFreeEnrollSuccess(true);
@@ -103,6 +126,7 @@ export default function FunnelCheckout() {
         return;
       }
 
+      // Returning user — pay with Yoco
       const amountCents = Math.round((course.price ?? 0) * 100);
       if (amountCents <= 0) {
         setError('This course has no price set. Please contact support.');
@@ -116,7 +140,7 @@ export default function FunnelCheckout() {
         customerEmail: email.trim(),
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        identityNumber: identityNumber.trim() || undefined,
+        identityNumber: id,
         password: password.trim(),
         successUrl,
         cancelUrl,
@@ -216,8 +240,15 @@ export default function FunnelCheckout() {
             )}
             <div>
               <p className="font-medium text-white">{course.title}</p>
-              <p className="mt-1 text-lg font-bold text-orange-500">
-                {formatPrice(course.price ?? 0)}
+              <p className={`mt-1 text-lg font-bold ${isFirstTimeUser === true ? 'text-green-400' : 'text-orange-500'}`}>
+                {isFirstTimeUser === true ? (
+                  <>
+                    <span className="line-through text-slate-500 text-base mr-2">{formatPrice(course.price ?? 0)}</span>
+                    Free
+                  </>
+                ) : (
+                  formatPrice(course.price ?? 0)
+                )}
               </p>
             </div>
           </div>
@@ -326,29 +357,40 @@ export default function FunnelCheckout() {
               />
             </div>
             <p className="text-xs text-slate-500">
-              After payment we’ll create your Revo Learn account and enroll you. You can log in with this email and password at the learner dashboard. We’ll also send a verification link to this email—click it to confirm your address.
+              {isFirstTimeUser === false
+                ? 'After payment we’ll create your Revo Learn account and enroll you. You can log in with this email and password at the learner dashboard.'
+                : 'Enter your Identity Number so we can check if you qualify for a free first course. We’ll create your Revo Learn account and enroll you.'}
+              {' '}We’ll also send a verification link to your email—click it to confirm your address.
             </p>
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || checkingId}
               className={`flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold text-white transition disabled:opacity-60 ${
-                isFirstTimeUser
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : 'bg-orange-500 hover:bg-orange-600'
+                isFirstTimeUser === false
+                  ? 'bg-orange-500 hover:bg-orange-600'
+                  : 'bg-green-600 hover:bg-green-700'
               }`}
             >
-              {submitting ? (
+              {submitting || checkingId ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  {isFirstTimeUser ? 'Enrolling you for free…' : 'Opening payment page…'}
+                  {checkingId
+                    ? 'Checking ID…'
+                    : isFirstTimeUser === false
+                      ? 'Opening payment page…'
+                      : 'Enrolling…'}
                 </>
-              ) : isFirstTimeUser ? (
+              ) : isFirstTimeUser === false ? (
+                <>
+                  <CreditCard className="h-5 w-5" /> Pay with Yoco
+                </>
+              ) : isFirstTimeUser === true ? (
                 <>
                   <Gift className="h-5 w-5" /> Enroll for Free
                 </>
               ) : (
                 <>
-                  <CreditCard className="h-5 w-5" /> Pay with Yoco
+                  <Gift className="h-5 w-5" /> Enroll
                 </>
               )}
             </button>

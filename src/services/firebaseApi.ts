@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   getDoc,
@@ -186,8 +187,12 @@ class FirebaseApiService {
           })
         };
 
-        const docRef = await addDoc(collection(db, 'users'), userProfile);
-        return this.createResponse({ id: docRef.id, ...userProfile });
+        const uid = (userData as { uid?: string }).uid;
+        if (!uid) {
+          throw new Error('Cannot create a user profile without an Auth uid');
+        }
+        await setDoc(doc(db, 'users', uid), { ...userProfile, uid, id: uid });
+        return this.createResponse({ id: uid, ...userProfile });
       } catch (error) {
         this.handleError(error, 'user registration');
       }
@@ -317,7 +322,9 @@ class FirebaseApiService {
         }
 
         const querySnapshot = await getDocs(q);
-        const users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+        const users = querySnapshot.docs
+          .map(docSnap => ({ id: docSnap.id, ...docSnap.data() } as User))
+          .filter((user) => Boolean(user.role || user.firstName || user.lastName));
         return this.createResponse(users);
       } catch (error) {
         this.handleError(error, 'get users');
@@ -337,14 +344,20 @@ class FirebaseApiService {
       }
     },
 
-    create: async (userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<{ id: string }>> => {
+    create: async (userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'> & { uid?: string }): Promise<ApiResponse<{ id: string }>> => {
       try {
-        const docRef = await addDoc(collection(db, 'users'), {
+        const uid = userData.uid || (userData as { id?: string }).id;
+        if (!uid) {
+          throw new Error('Cannot create a user profile without an Auth uid');
+        }
+        await setDoc(doc(db, 'users', uid), {
           ...userData,
+          uid,
+          id: uid,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
-        return this.createResponse({ id: docRef.id });
+        return this.createResponse({ id: uid });
       } catch (error) {
         this.handleError(error, 'create user');
       }

@@ -179,9 +179,10 @@ Return this exact JSON structure (no markdown, no commentary):
 
 Requirements:
 - EXACTLY 6 units, each with EXACTLY 3 lessons
-- Mix lesson types: reading, video, quiz, project, discussion
+- Mix lesson types: reading, video, project, discussion (do NOT create a quiz lesson type — quizzes are generated per unit later)
 - Keep "content" to 2-3 sentences only (will be expanded later)
 - Keep "readingContent" empty (will be expanded later)
+- Keep quiz shells empty if present; prefer no per-lesson quiz content
 - Use valid JSON only. Escape newlines as \\n inside strings.
 - Return only one JSON object, nothing else.
     `;

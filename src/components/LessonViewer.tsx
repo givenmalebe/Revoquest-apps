@@ -34,6 +34,7 @@ import { lessonContentService } from '../services/lessonContentService';
 import { DatabaseService } from '../firebase/database';
 import { useAuth } from '../contexts/AuthContext';
 import { getDisplayCorrectAnswer, gradeQuestions } from '@/utils/quizGrading';
+import { sanitizePracticeHtml } from '@/utils/lessonHtml';
 
 
 interface Lesson {
@@ -100,6 +101,7 @@ interface Unit {
   title: string;
   description: string;
   lessons: Lesson[];
+  quizContent?: Lesson['quizContent'];
 }
 
 interface LessonViewerProps {
@@ -110,13 +112,15 @@ interface LessonViewerProps {
   onClose: () => void;
   /** When provided, "Back to Course" uses this to return to the course structure view instead of closing. */
   onBackToCourse?: () => void;
-  onNextLesson: () => void;
+  onNextLesson: (options?: { toUnitQuiz?: boolean; afterUnitQuiz?: boolean }) => void;
   onPreviousLesson: () => void;
   onCompleteLesson: (lessonId: string) => void;
   isFirstLesson: boolean;
   isLastLesson: boolean;
   currentLessonIndex: number;
   totalLessons: number;
+  /** When true, show the unit quiz as its own page (not inside a lesson). */
+  isUnitQuizView?: boolean;
 }
 
 const LessonViewer: React.FC<LessonViewerProps> = ({
@@ -132,7 +136,8 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
   isFirstLesson,
   isLastLesson,
   currentLessonIndex,
-  totalLessons
+  totalLessons,
+  isUnitQuizView = false,
 }) => {
   const { user } = useAuth();
   const [isCompleted, setIsCompleted] = useState(false); // Will be loaded from database
@@ -144,6 +149,8 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
   const [isSubmittingQuiz, setIsSubmittingQuiz] = useState(false);
   // Quiz can come from the lesson or be generated on-the-fly for lessons that don't have one yet
   const [lessonQuizContent, setLessonQuizContent] = useState<Lesson['quizContent'] | null>(null);
+  /** Dedicated unit-quiz page (owned here so parent navigation cannot skip it). */
+  const [unitQuizPageOpen, setUnitQuizPageOpen] = useState(false);
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [lessonStartTime, setLessonStartTime] = useState<Date | null>(null);
@@ -170,129 +177,17 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
 
   const isQuizEmptyOrTemplate = useCallback((quiz?: any) => {
     if (!quiz || !quiz.questions || quiz.questions.length === 0) return true;
-    return quiz.questions.some((q: any) => {
-      const text = (q.question || '').toLowerCase();
+    // Only treat as placeholder if every question looks like a boilerplate sample
+    const isSample = (q: any) => {
+      const text = (q.question || '').toLowerCase().trim();
       return (
         text.includes('sample question') ||
-        text.includes('what is the correct answer') ||
-        (text.includes('primary purpose of') && text.includes('in')) ||
-        (text.includes('can be applied across different areas of')) ||
-        (text.includes('key benefits of')) ||
-        (text.includes('contributes to the success of') && text.includes('projects'))
+        text === 'what is the correct answer?' ||
+        text.startsWith('what is the correct answer')
       );
-    });
+    };
+    return quiz.questions.every(isSample);
   }, []);
-
-  // Effective quiz: from lesson or generated on-the-fly (so every lesson can have a quiz)
-  const effectiveQuizContent =
-    lessonQuizContent && !isQuizEmptyOrTemplate(lessonQuizContent)
-      ? lessonQuizContent
-      : currentLesson.quizContent && !isQuizEmptyOrTemplate(currentLesson.quizContent)
-      ? currentLesson.quizContent
-      : null;
-
-  // Sync quiz from lesson when lesson changes; reset quiz UI state
-  useEffect(() => {
-    const initialQuiz = currentLesson.quizContent && !isQuizEmptyOrTemplate(currentLesson.quizContent)
-      ? currentLesson.quizContent
-      : null;
-    setLessonQuizContent(initialQuiz);
-    setShowQuizResults(false);
-    setQuizAnswers({});
-    setQuizScore(0);
-    setQuizCorrectByQuestionId({});
-  }, [currentLesson.id, currentLesson.quizContent, isQuizEmptyOrTemplate]);
-
-  // When lesson changes (Next/Previous), scroll main content AND window to top immediately.
-  // Use 'instant' (no animation) so the quiz auto-generation that follows cannot push it back down.
-  useEffect(() => {
-    // Scroll the inner CardContent container
-    if (mainContentScrollRef.current) {
-      mainContentScrollRef.current.scrollTop = 0;
-    }
-    // Also reset the browser window scroll position (catches full-page layouts)
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
-  }, [currentLesson.id, currentLessonIndex]);
-
-  const generateQuizForLesson = React.useCallback(async () => {
-    if (!course || !currentUnit || !currentLesson) return;
-    const courseId = course.id;
-    const unitId = currentUnit.id;
-    const lessonIdForThisRun = currentLesson.id;
-    const unitsSnapshot = (course.units || course.modules || []) as Unit[];
-    setIsGeneratingQuiz(true);
-    try {
-      const title = currentLesson.title || 'This lesson';
-      const contentParts: string[] = [];
-
-      // Generic lesson text
-      if (currentLesson.content) contentParts.push(currentLesson.content);
-      if (currentLesson.description) contentParts.push(currentLesson.description);
-      if (currentLesson.objectives?.length) {
-        contentParts.push('Learning objectives: ' + currentLesson.objectives.join('. '));
-      }
-
-      // Reading content (string or structured)
-      if (typeof currentLesson.readingContent === 'string') {
-        contentParts.push(currentLesson.readingContent);
-      } else if (currentLesson.readingContent) {
-        const sectionsText = currentLesson.readingContent.sections
-          ?.map((s) => `${s.title}\n${s.content}`)
-          .join('\n\n');
-        if (sectionsText) contentParts.push(sectionsText);
-        if (currentLesson.readingContent.summary) {
-          contentParts.push('Summary: ' + currentLesson.readingContent.summary);
-        }
-      }
-
-      // Video lessons – include transcript/description so quiz matches the video
-      if (currentLesson.videoContent) {
-        if (currentLesson.videoContent.description) {
-          contentParts.push('Video description: ' + currentLesson.videoContent.description);
-        }
-        if (currentLesson.videoContent.transcript) {
-          contentParts.push('Video transcript: ' + currentLesson.videoContent.transcript);
-        }
-      }
-
-      // Slides lessons – if we have rich text or reading sections, feed that in
-      if (currentLesson.readingContentType === 'slides') {
-        if (currentLesson.richTextContent) {
-          contentParts.push('Slides notes: ' + currentLesson.richTextContent);
-        }
-      }
-
-      const lessonText = contentParts.join('\n\n').trim() || title;
-      const generated = await lessonContentService.generateQuizFromLessonContent(title, lessonText);
-      if (lessonIdForThisRun !== currentLesson.id) return;
-      setLessonQuizContent(generated);
-      const updatedUnits = unitsSnapshot.map((u) =>
-        u.id === unitId
-          ? { ...u, lessons: u.lessons.map((l) => (l.id === lessonIdForThisRun ? { ...l, quizContent: generated } : l)) }
-          : u
-      );
-      await DatabaseService.updateCourse(courseId, { units: updatedUnits, modules: updatedUnits });
-    } catch (err) {
-      console.error('Failed to generate quiz for lesson:', err);
-    } finally {
-      if (lessonIdForThisRun === currentLesson.id) {
-        setIsGeneratingQuiz(false);
-        // After quiz generation finishes, re-scroll to top so the new quiz content
-        // doesn't push the viewport to the bottom of the page.
-        if (mainContentScrollRef.current) {
-          mainContentScrollRef.current.scrollTop = 0;
-        }
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
-      }
-    }
-  }, [course, currentUnit, currentLesson]);
-
-  // Ensure every lesson has a quiz: auto-generate when we open a lesson that doesn't have one or has a template quiz (e.g. after Next Lesson)
-  useEffect(() => {
-    const hasNoQuiz = isQuizEmptyOrTemplate(currentLesson.quizContent);
-    if (!hasNoQuiz || !course || !currentUnit || !currentLesson) return;
-    generateQuizForLesson();
-  }, [currentLesson.id, currentLesson.quizContent, course, currentUnit, currentLesson, generateQuizForLesson, isQuizEmptyOrTemplate]);
 
   const lessonTourRefs = {
     backToCourse: useRef<HTMLDivElement>(null),
@@ -302,6 +197,112 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
     navButtons: useRef<HTMLDivElement>(null),
   };
   const mainContentScrollRef = useRef<HTMLDivElement>(null);
+  const lessonViewerRootRef = useRef<HTMLDivElement>(null);
+
+  const scrollLessonToTop = useCallback(() => {
+    const reset = () => {
+      if (mainContentScrollRef.current) {
+        mainContentScrollRef.current.scrollTop = 0;
+      }
+
+      // Walk up parents — layout scroll may be on window, main, or a dashboard wrapper
+      let node: HTMLElement | null = lessonViewerRootRef.current || mainContentScrollRef.current;
+      while (node) {
+        if (node.scrollTop > 0) node.scrollTop = 0;
+        node = node.parentElement;
+      }
+
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+
+      lessonTourRefs.backToCourse.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
+    };
+
+    reset();
+    requestAnimationFrame(reset);
+    window.setTimeout(reset, 50);
+    window.setTimeout(reset, 200);
+  }, []);
+
+  // Prefer fresh unit from course; keep quizContent from either source
+  const resolvedUnit = (() => {
+    const units = course?.units || course?.modules || [];
+    const match = units.find(
+      (u: any) => String(u?.id) === String(currentUnit?.id)
+    );
+    if (!match) return currentUnit;
+    return {
+      ...currentUnit,
+      ...match,
+      lessons: match.lessons || currentUnit?.lessons || [],
+      quizContent: match.quizContent ?? currentUnit?.quizContent,
+    };
+  })();
+
+  // Last lesson by order (not raw array position)
+  const unitLessonsSorted = (resolvedUnit?.lessons || [])
+    .map((l: any, i: number) => ({ lesson: l, order: Number(l.order) || i + 1 }))
+    .sort((a, b) => a.order - b.order)
+    .map((x) => x.lesson);
+  const lastByOrder = unitLessonsSorted[unitLessonsSorted.length - 1];
+  const lastByArray = (resolvedUnit?.lessons || [])[(resolvedUnit?.lessons || []).length - 1];
+  const currentInUnitIdx = unitLessonsSorted.findIndex(
+    (l: any) => String(l?.id) === String(currentLesson.id)
+  );
+  const isLastLessonOfUnit =
+    unitLessonsSorted.length > 0 &&
+    (currentInUnitIdx === unitLessonsSorted.length - 1 ||
+      String(lastByOrder?.id) === String(currentLesson.id) ||
+      String(lastByArray?.id) === String(currentLesson.id) ||
+      Number(currentLesson.order) === Number(lastByOrder?.order));
+
+  const unitQuizRaw = resolvedUnit?.quizContent;
+  const unitHasQuiz = Boolean(unitQuizRaw?.questions?.length) && !isQuizEmptyOrTemplate(unitQuizRaw);
+
+  // Local quiz page takes priority; parent flag kept as fallback
+  const showingUnitQuiz = unitQuizPageOpen || isUnitQuizView;
+
+  // Quiz is a separate page after the last lesson — never inline in lesson content
+  const effectiveQuizContent =
+    showingUnitQuiz && unitHasQuiz ? unitQuizRaw : null;
+
+  const unitsList = course?.units || course?.modules || [];
+  const currentUnitIndex = unitsList.findIndex(
+    (u: any) => String(u?.id) === String(resolvedUnit?.id || currentUnit?.id)
+  );
+  const isLastUnit =
+    unitsList.length > 0 && currentUnitIndex === unitsList.length - 1;
+  const lastLessonLeadsToQuiz = isLastLessonOfUnit && unitHasQuiz && !showingUnitQuiz;
+
+  // Leave quiz page when the lesson/unit changes from outside
+  const keepQuizPageRef = useRef(false);
+  useEffect(() => {
+    if (keepQuizPageRef.current) {
+      keepQuizPageRef.current = false;
+      return;
+    }
+    setUnitQuizPageOpen(false);
+  }, [currentLesson.id, currentUnit?.id]);
+
+  // Sync quiz answers when entering unit-quiz page
+  useEffect(() => {
+    if (!showingUnitQuiz) return;
+    const initialQuiz =
+      resolvedUnit?.quizContent && !isQuizEmptyOrTemplate(resolvedUnit.quizContent)
+        ? resolvedUnit.quizContent
+        : null;
+    setLessonQuizContent(initialQuiz);
+    setShowQuizResults(false);
+    setQuizAnswers({});
+    setQuizScore(0);
+    setQuizCorrectByQuestionId({});
+  }, [showingUnitQuiz, resolvedUnit?.id, isQuizEmptyOrTemplate]);
+
+  // When lesson / quiz step changes, always start at the top
+  useEffect(() => {
+    scrollLessonToTop();
+  }, [currentLesson.id, currentLessonIndex, showingUnitQuiz, scrollLessonToTop]);
 
   useEffect(() => {
     if (!showCoursePageTour) return;
@@ -829,8 +830,12 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
     setQuizScore(score);
     setShowQuizResults(true);
     try {
-      await persistentProgressService.recordQuizAttempt(user.id, course.id, currentLesson.id, score);
-      if (score >= effectiveQuizContent.passingScore) {
+      const quizAttemptId = showingUnitQuiz
+        ? `unit-quiz-${resolvedUnit?.id || currentUnit.id}`
+        : currentLesson.id;
+      await persistentProgressService.recordQuizAttempt(user.id, course.id, quizAttemptId, score);
+      // Unit quiz is its own page — do not re-complete the last lesson on pass
+      if (!showingUnitQuiz && score >= effectiveQuizContent.passingScore) {
         await handleCompleteLesson(score);
       }
     } catch (err) {
@@ -877,52 +882,73 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
     }
   };
 
-  // Smart next lesson handler - auto-completes current lesson when navigating
+  // Smart next handler — lesson → (unit quiz page) → next unit / finish
   const handleSmartNextLesson = async () => {
+    // Capture BEFORE any await — parent state updates must not change this intent
+    const openQuizAfterComplete = isLastLessonOfUnit && unitHasQuiz && !showingUnitQuiz;
+
     console.log('🔄 Next lesson button clicked:', {
       isCompleted,
       isLastLesson,
-      timeRequirementMet,
-      timeRemainingSeconds,
+      showingUnitQuiz,
+      openQuizAfterComplete,
+      unitHasQuiz,
+      isLastLessonOfUnit,
       currentLessonId: currentLesson?.id,
-      currentLessonTitle: currentLesson?.title
     });
+
+    // From dedicated unit quiz page: require a passing attempt, then advance units
+    if (showingUnitQuiz) {
+      if (!showQuizResults || !effectiveQuizContent || quizScore < effectiveQuizContent.passingScore) {
+        return;
+      }
+      setUnitQuizPageOpen(false);
+      // afterUnitQuiz tells parent to skip re-opening a quiz and go to next unit
+      onNextLesson({ afterUnitQuiz: true });
+      scrollLessonToTop();
+      return;
+    }
+
+    // Open quiz page first (sync), then complete lesson in background if needed.
+    // This prevents parent navigation from winning a race against the quiz page.
+    if (openQuizAfterComplete) {
+      keepQuizPageRef.current = true;
+      setUnitQuizPageOpen(true);
+      onNextLesson({ toUnitQuiz: true });
+      scrollLessonToTop();
+      if (!isCompleted && user) {
+        try {
+          await handleCompleteLesson();
+        } catch (error) {
+          console.error('📊 Error completing lesson before quiz:', error);
+        }
+      }
+      return;
+    }
 
     // If lesson is not completed, complete it first
     if (!isCompleted && user) {
-      console.log('📚 Lesson not completed, completing it first...');
       setIsCompletingLesson(true);
-      
       try {
-        // Auto-complete current lesson before moving to next
         await handleCompleteLesson();
-        
-        // Small delay to ensure completion is processed
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        console.log('✅ Lesson completed, proceeding to next lesson');
+        await new Promise(resolve => setTimeout(resolve, 300));
       } catch (error) {
         console.error('📊 Error completing lesson:', error);
-        // Still proceed to next lesson even if completion fails
       } finally {
         setIsCompletingLesson(false);
       }
-    } else {
-      console.log('📚 Lesson already completed or no user, proceeding directly...');
     }
 
-    // Now navigate to next lesson or complete course
+    // Last lesson of course with no quiz → finish via parent
     if (isLastLesson) {
-      console.log('🎉 Last lesson completed! Triggering course completion...');
-      // Trigger course completion summary through the parent component
       if (onCompleteLesson) {
         await onCompleteLesson(currentLesson.id);
       }
-    } else {
-      console.log('➡️ Moving to next lesson...');
-      // Move to next lesson
-      onNextLesson();
+      return;
     }
+
+    onNextLesson();
+    scrollLessonToTop();
   };
 
   const renderVideoContent = () => {
@@ -1166,7 +1192,18 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
           <div className="curriculum-lesson-wrapper space-y-4">
             <div 
               className="curriculum-lesson-content prose prose-slate max-w-none p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm"
-              dangerouslySetInnerHTML={{ __html: currentLesson.richTextContent }}
+              dangerouslySetInnerHTML={{ __html: sanitizePracticeHtml(currentLesson.richTextContent) }}
+              onClick={(e) => {
+                const trigger = (e.target as HTMLElement).closest('a, button, .solutions-link');
+                if (!trigger) return;
+                const text = (trigger.textContent || '').toLowerCase();
+                if (!/view solutions|self-check|see answers|show answers/.test(text)) return;
+                e.preventDefault();
+                const details = trigger
+                  .closest('.challenge-set, .practice-opportunities, .curriculum-lesson-content')
+                  ?.querySelector('details.practice-solutions') as HTMLDetailsElement | null;
+                if (details) details.open = !details.open;
+              }}
             />
             <style>{`
               .curriculum-lesson-content .curriculum-lesson {
@@ -1743,6 +1780,39 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                 cursor: pointer;
                 font-weight: 600;
               }
+              .curriculum-lesson-content .practice-solutions {
+                margin-top: 1rem;
+                border: 1px solid #86efac;
+                background: #fff;
+                border-radius: 0.65rem;
+                padding: 0.35rem 0.85rem 0.85rem;
+              }
+              .curriculum-lesson-content .practice-solutions summary {
+                cursor: pointer;
+                font-weight: 700;
+                color: #1d4ed8;
+                padding: 0.5rem 0;
+                list-style: none;
+              }
+              .curriculum-lesson-content .practice-solutions summary::-webkit-details-marker {
+                display: none;
+              }
+              .curriculum-lesson-content .practice-solutions summary::after {
+                content: ' ▾';
+                font-size: 0.8em;
+                color: #64748b;
+              }
+              .curriculum-lesson-content .practice-solutions[open] summary::after {
+                content: ' ▴';
+              }
+              .curriculum-lesson-content .practice-solutions-body,
+              .curriculum-lesson-content .practice-solutions ol {
+                margin: 0.25rem 0 0;
+                padding-left: 1.25rem;
+                color: #166534;
+                font-size: 0.9rem;
+                line-height: 1.7;
+              }
 
               /* ===== COMPARISON TABLE ===== */
               .curriculum-lesson-content .comparison-table {
@@ -1941,51 +2011,6 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
           </div>
         )}
 
-        {/* Quiz section: every lesson has a quiz (from course or generated on-the-fly) */}
-        {effectiveQuizContent && effectiveQuizContent.questions?.length > 0 ? (
-          <div className="mt-8">
-            {renderQuizContent()}
-          </div>
-        ) : !isGeneratingQuiz ? (
-          <div className="mt-8">
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-slate-600" />
-                    Quiz for this lesson
-                  </h2>
-                  <p className="text-sm text-slate-600 mt-1">
-                    This lesson doesn&apos;t have a quiz yet. Generate one now to test your understanding; your results will be saved to the Grades tab.
-                  </p>
-                </div>
-                <Button
-                  onClick={generateQuizForLesson}
-                  disabled={isGeneratingQuiz}
-                  className="bg-blue-600 hover:bg-blue-700 shrink-0"
-                >
-                  {isGeneratingQuiz ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      Generating…
-                    </>
-                  ) : (
-                    <>
-                      <Target className="w-4 h-4 mr-2" />
-                      Generate quiz for this lesson
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex items-center justify-center gap-3 text-slate-600">
-            <RefreshCw className="w-5 h-5 animate-spin" />
-            <span>Generating your quiz…</span>
-          </div>
-        )}
-        
         {/* Fallback to AI-generated content or basic content */}
         {(!currentLesson.googleSlidesUrl && !currentLesson.uploadedFiles?.length && !currentLesson.richTextContent && !currentLesson.youtubeUrl) && (
           <div className="space-y-6">
@@ -2060,10 +2085,15 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="w-5 h-5 text-slate-600" />
-                  <h2 className="text-xl font-bold text-slate-900">Quiz: Test Your Understanding</h2>
+                  <h2 className="text-xl font-bold text-slate-900">
+                    {showingUnitQuiz ? 'Unit Quiz' : 'Quiz: Test Your Understanding'}
+                  </h2>
                 </div>
                 <p className="text-sm text-slate-600 mb-6">
-                  {effectiveQuizContent.instructions || 'Complete this quiz to verify your understanding of the lesson content.'}
+                  {effectiveQuizContent.instructions ||
+                    (showingUnitQuiz
+                      ? 'Complete this unit quiz to verify your understanding before moving on.'
+                      : 'Complete this quiz to verify your understanding of the lesson content.')}
                 </p>
                 <div className="space-y-6">
                   {effectiveQuizContent.questions.map((question, index) => (
@@ -2294,27 +2324,62 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
     </div>
   );
 
+  const renderUnitQuizCta = () => {
+    if (!(isLastLessonOfUnit && unitHasQuiz && !showingUnitQuiz)) return null;
+    return (
+      <div className="mt-8 rounded-2xl border border-orange-200 bg-orange-50 p-5 shadow-sm">
+        <p className="text-sm font-semibold text-orange-900">Unit quiz</p>
+        <p className="text-sm text-orange-800 mt-1">
+          You have reached the end of {resolvedUnit?.title || currentUnit.title}. Take the unit quiz before continuing.
+        </p>
+        <Button
+          className="mt-3 bg-orange-500 hover:bg-orange-600 text-white"
+          onClick={() => {
+            keepQuizPageRef.current = true;
+            setUnitQuizPageOpen(true);
+            onNextLesson({ toUnitQuiz: true });
+            scrollLessonToTop();
+          }}
+        >
+          Start unit quiz
+        </Button>
+      </div>
+    );
+  };
+
   const renderLessonContent = () => {
+    let body: React.ReactNode;
     switch (currentLesson.type) {
       case 'video':
-        return renderVideoContent();
+        body = renderVideoContent();
+        break;
       case 'reading':
       case 'learn':
       case 'article':
-        return renderReadingContent();
+        body = renderReadingContent();
+        break;
       case 'quiz':
-        return renderQuizContent();
+        body = renderQuizContent();
+        break;
       case 'project':
-        return renderProjectContent();
+        body = renderProjectContent();
+        break;
       case 'slides':
-        return renderReadingContent();
+        body = renderReadingContent();
+        break;
       default:
-        return (
+        body = (
           <div className="prose max-w-none">
             <p className="text-gray-700 leading-relaxed">{currentLesson.content || currentLesson.description}</p>
           </div>
         );
     }
+    return (
+      <>
+        {body}
+        {renderUnitQuizCta()}
+      </>
+    );
   };
 
   // Debug: Log the lesson data at the start of render
@@ -2360,7 +2425,7 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div ref={lessonViewerRootRef} className="min-h-screen bg-gray-50 flex flex-col">
       {/* AI greeting popout – centered, when starting or continuing a course */}
       {showCoursePageAIPopout && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50">
@@ -2400,7 +2465,7 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                         className="border-slate-300 dark:border-slate-600 shrink-0"
                         onClick={() => {
                           dismissCoursePagePopout();
-                          window.location.href = '/ai-tutor';
+                          window.location.assign('/ai-tutor');
                         }}
                       >
                         <MessageCircle className="w-4 h-4 mr-2" />
@@ -2489,13 +2554,22 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                 ref={lessonTourRefs.lessonHeader}
                 className={`transition-all duration-300 ${showCoursePageTour && coursePageTourStep === 2 ? 'ring-2 ring-orange-500 ring-offset-2 ring-offset-white rounded-lg' : ''}`}
               >
-                <h1 className="text-base sm:text-lg font-semibold">{currentLesson.title}</h1>
-                <p className="text-xs sm:text-sm text-gray-500">{currentUnit.title}</p>
+                <h1 className="text-base sm:text-lg font-semibold">
+                  {showingUnitQuiz
+                    ? `Unit Quiz: ${resolvedUnit?.title || currentUnit.title}`
+                    : currentLesson.title}
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  {showingUnitQuiz
+                    ? 'Complete this quiz before continuing to the next unit'
+                    : currentUnit.title}
+                </p>
               </div>
             </div>
             
             <div className="flex items-center gap-3 sm:gap-4">
-              {/* Countdown Timer Display - editable */}
+              {/* Countdown Timer Display - editable (hidden on unit quiz step) */}
+              {!showingUnitQuiz && (
               <div
                 ref={lessonTourRefs.timerBlock}
                 className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all duration-300 text-xs sm:text-sm flex-wrap sm:flex-nowrap justify-start sm:justify-center ${showCoursePageTour && coursePageTourStep === 4 ? 'ring-2 ring-orange-500 ring-offset-2 ring-offset-white' : ''} ${
@@ -2550,6 +2624,7 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                   </>
                 )}
               </div>
+              )}
             </div>
           </div>
         </div>
@@ -2558,31 +2633,41 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
       {/* Main Content - Scrollable */}
       <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex-1 min-h-0 flex flex-col">
-          <div className="grid gap-6 lg:grid-cols-3 flex-1 min-h-0 lg:grid-rows-[minmax(0,1fr)]">
-            {/* Lesson Content - Scrollable */}
+          <div className={`grid gap-6 flex-1 min-h-0 lg:grid-rows-[minmax(0,1fr)] ${showingUnitQuiz ? 'lg:grid-cols-1' : 'lg:grid-cols-3'}`}>
+            {/* Lesson / Unit quiz content */}
             <div
               ref={lessonTourRefs.mainContent}
-              className={`lg:col-span-2 flex flex-col min-h-0 overflow-hidden transition-all duration-300 ${showCoursePageTour && coursePageTourStep === 3 ? 'ring-2 ring-orange-500 ring-offset-2 ring-offset-gray-50 rounded-xl' : ''}`}
+              className={`${showingUnitQuiz ? '' : 'lg:col-span-2'} flex flex-col min-h-0 overflow-hidden transition-all duration-300 ${showCoursePageTour && coursePageTourStep === 3 ? 'ring-2 ring-orange-500 ring-offset-2 ring-offset-gray-50 rounded-xl' : ''}`}
             >
               <Card className="flex flex-col h-full min-h-0 overflow-hidden">
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center gap-3">
-                    {getLessonIcon(currentLesson.type)}
+                    {showingUnitQuiz ? <Target className="w-5 h-5 text-orange-600" /> : getLessonIcon(currentLesson.type)}
                     <div>
-                      <CardTitle className="text-xl">{currentLesson.title}</CardTitle>
+                      <CardTitle className="text-xl">
+                        {showingUnitQuiz
+                          ? `Unit Quiz — ${resolvedUnit?.title || currentUnit.title}`
+                          : currentLesson.title}
+                      </CardTitle>
                       <div className="flex items-center gap-4 mt-2">
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {currentLesson.duration} min
-                        </Badge>
-                        <Badge variant={currentLesson.type === 'video' ? 'default' : 'secondary'}>
-                          {currentLesson.type.charAt(0).toUpperCase() + currentLesson.type.slice(1)}
-                        </Badge>
-                        {isCompleted && (
-                          <Badge variant="default" className="flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3" />
-                            Completed
-                          </Badge>
+                        {showingUnitQuiz ? (
+                          <Badge variant="secondary">Unit assessment</Badge>
+                        ) : (
+                          <>
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {currentLesson.duration} min
+                            </Badge>
+                            <Badge variant={currentLesson.type === 'video' ? 'default' : 'secondary'}>
+                              {currentLesson.type.charAt(0).toUpperCase() + currentLesson.type.slice(1)}
+                            </Badge>
+                            {isCompleted && (
+                              <Badge variant="default" className="flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3" />
+                                Completed
+                              </Badge>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
@@ -2592,12 +2677,21 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                   ref={mainContentScrollRef}
                   className="flex-1 overflow-y-auto overflow-x-hidden space-y-6 min-h-0 pb-24"
                 >
-                  {renderLessonContent()}
+                  {showingUnitQuiz ? (
+                    effectiveQuizContent?.questions?.length ? (
+                      renderQuizContent()
+                    ) : (
+                      <p className="text-slate-600">No unit quiz is available for this unit.</p>
+                    )
+                  ) : (
+                    renderLessonContent()
+                  )}
                 </CardContent>
               </Card>
             </div>
 
-            {/* Sidebar - Scrollable (stacks below main content on mobile) */}
+            {/* Sidebar - Scrollable (stacks below main content on mobile); hidden on quiz step */}
+            {!showingUnitQuiz && (
             <div className="flex flex-col space-y-6 overflow-visible lg:overflow-y-auto min-h-0 max-h-full">
               {/* Learning Objectives */}
               {currentLesson.objectives && currentLesson.objectives.length > 0 && (
@@ -2697,6 +2791,7 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                 </CardContent>
               </Card>
             </div>
+            )}
           </div>
         </div>
 
@@ -2710,17 +2805,37 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
               {/* Previous Lesson Button */}
               <Button
                 variant="outline"
-                onClick={onPreviousLesson}
-                disabled={isFirstLesson}
+                onClick={() => {
+                  if (showingUnitQuiz) {
+                    setUnitQuizPageOpen(false);
+                    scrollLessonToTop();
+                    return;
+                  }
+                  onPreviousLesson();
+                  scrollLessonToTop();
+                }}
+                disabled={showingUnitQuiz ? false : isFirstLesson}
                 className="flex items-center gap-2 px-6 py-3 h-12 min-w-[140px] w-full sm:w-auto transition-all duration-200 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-4 h-4" />
-                Previous Lesson
+                {showingUnitQuiz ? 'Back to Lesson' : 'Previous Lesson'}
               </Button>
 
               {/* Center Actions - Completion Status Display */}
               <div className="flex flex-col items-center gap-2 order-3 sm:order-none">
-                {isLoadingCompletionStatus ? (
+                {showingUnitQuiz ? (
+                  showQuizResults && effectiveQuizContent && quizScore >= effectiveQuizContent.passingScore ? (
+                    <div className="flex items-center gap-2 text-green-600 font-medium">
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Quiz passed — continue when ready</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-orange-700 font-medium">
+                      <Target className="w-5 h-5" />
+                      <span>Complete and pass the quiz to continue</span>
+                    </div>
+                  )
+                ) : isLoadingCompletionStatus ? (
                   <div className="flex items-center gap-2 text-gray-500 font-medium">
                     <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
                     <span>Loading lesson status...</span>
@@ -2770,37 +2885,54 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                   </span>
                 </div>
                 <div className="text-blue-600 text-sm">
-                  {(() => {
-                    const unitLessons = currentUnit?.lessons || [];
-                    // Use the lesson's order property to show logical lesson number
-                    // The order property represents the intended lesson sequence (1, 2, 3...)
-                    const lessonOrder = currentLesson?.order || 1;
-                    return `Lesson ${lessonOrder} of ${unitLessons.length}`;
-                  })()}
+                  {showingUnitQuiz
+                    ? 'Unit quiz'
+                    : (() => {
+                        const unitLessons = currentUnit?.lessons || [];
+                        const lessonOrder = currentLesson?.order || 1;
+                        return `Lesson ${lessonOrder} of ${unitLessons.length}`;
+                      })()}
                 </div>
               </div>
 
 
-              {/* Next Lesson/Unit Button - Disabled until timer completes */}
+              {/* Next Lesson / Quiz / Unit Button */}
               <Button
                 onClick={handleSmartNextLesson}
-                disabled={isCompletingLesson || isLoadingCompletionStatus || (!timeRequirementMet && !isCompleted)}
+                disabled={
+                  showingUnitQuiz
+                    ? !(showQuizResults && effectiveQuizContent && quizScore >= effectiveQuizContent.passingScore)
+                    : isCompletingLesson || isLoadingCompletionStatus || (!timeRequirementMet && !isCompleted)
+                }
                 className={`flex items-center gap-2 px-8 py-3 h-12 min-w-[160px] font-semibold transition-all duration-200 hover:shadow-lg ${
-                  !timeRequirementMet && !isCompleted && !isCompletingLesson && !isLoadingCompletionStatus
+                  (showingUnitQuiz
+                    ? !(showQuizResults && effectiveQuizContent && quizScore >= effectiveQuizContent.passingScore)
+                    : !timeRequirementMet && !isCompleted && !isCompletingLesson && !isLoadingCompletionStatus)
                     ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed'
-                    : isLastLesson 
+                    : (showingUnitQuiz && isLastUnit) || (isLastLesson && !lastLessonLeadsToQuiz)
                       ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white' 
-                      : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
+                      : lastLessonLeadsToQuiz
+                        ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white'
+                        : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
                 } disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto`}
                 title={
-                  isLoadingCompletionStatus 
-                    ? 'Loading lesson status...' 
-                    : !timeRequirementMet && !isCompleted
-                      ? `Timer must complete before proceeding (${Math.ceil(timeRemainingSeconds / 60)} min remaining)`
-                      : ''
+                  showingUnitQuiz
+                    ? (showQuizResults && effectiveQuizContent && quizScore >= effectiveQuizContent.passingScore
+                        ? ''
+                        : 'Pass the unit quiz to continue')
+                    : isLoadingCompletionStatus 
+                      ? 'Loading lesson status...' 
+                      : !timeRequirementMet && !isCompleted
+                        ? `Timer must complete before proceeding (${Math.ceil(timeRemainingSeconds / 60)} min remaining)`
+                        : ''
                 }
               >
-                {isCompletingLesson ? (
+                {showingUnitQuiz ? (
+                  <>
+                    {isLastUnit ? 'Finish Course' : 'Next Unit'}
+                    <ChevronRight className="w-4 h-4" />
+                  </>
+                ) : isCompletingLesson ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
                     Completing...
@@ -2817,13 +2949,13 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                   </>
                 ) : (
                   <>
-                    {isLastLesson ? 'Finish Course' : (() => {
-                      // Check if this is the last lesson in the current unit
-                      const unitLessons = currentUnit?.lessons || [];
-                      const currentLessonIndex = unitLessons.findIndex((l: any) => l.id === currentLesson.id);
-                      const isLastInUnit = currentLessonIndex === unitLessons.length - 1;
-                      return isLastInUnit ? 'Next Unit' : 'Next Lesson';
-                    })()}
+                    {lastLessonLeadsToQuiz
+                      ? 'Next: Quiz'
+                      : isLastLesson
+                        ? 'Finish Course'
+                        : isLastLessonOfUnit
+                          ? 'Next Unit'
+                          : 'Next Lesson'}
                     <ChevronRight className="w-4 h-4" />
                   </>
                 )}

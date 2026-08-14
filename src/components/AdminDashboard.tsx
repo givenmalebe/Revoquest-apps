@@ -923,147 +923,148 @@ const OverviewTab = React.memo(({
 
     return (
     <div className="relative min-h-[50vh] rounded-2xl overflow-hidden bg-slate-50/70 dark:bg-slate-950/50">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.08),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(99,102,241,0.12),transparent)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] dark:opacity-30 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-15%,rgba(16,185,129,0.07),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-15%,rgba(16,185,129,0.1),transparent)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:20px_20px] dark:opacity-20 pointer-events-none" />
 
-      <div className="relative p-8 md:p-10 lg:p-12 space-y-12">
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
+      <div className="relative p-6 md:p-8 space-y-8">
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-            System Overview
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400">
+            Admin
+          </p>
+          <h1 className="text-2xl md:text-[1.75rem] font-bold text-slate-900 dark:text-white tracking-tight mt-0.5">
+            Overview
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 font-medium">
-            Key metrics at a glance
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+            Learners, revenue, and course performance at a glance
           </p>
         </div>
-        <span className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-800/90 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-700/80">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/90 dark:bg-slate-800/90 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 ring-1 ring-slate-200/80 dark:ring-slate-700/80">
+            {format(new Date(), 'd MMM yyyy')}
           </span>
-          Live
-        </span>
+          <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-200/70 dark:ring-emerald-800/60">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            Live
+          </span>
+        </div>
       </header>
 
-      {/* KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 md:gap-6">
-        {/* Learner Population */}
-        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-200/80 dark:hover:border-blue-500/30 transition-all duration-300 overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent dark:from-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-blue-600 group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300" />
-          <CardContent className="relative p-6 pl-7">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">
-                  Learner Population
-                </p>
-                <p className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-2 tabular-nums tracking-tight">
-                  {systemMetrics.learnerPopulationCount.toLocaleString()}
-                </p>
-              </div>
-              <div className="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/15 to-blue-600/10 dark:from-blue-500/25 dark:to-blue-600/15 flex items-center justify-center text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/10 dark:ring-blue-400/20">
-                <Users className="h-6 w-6" />
-              </div>
-            </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-2xl" />
+          <CardContent className="p-4 pl-5">
+            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Courses</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums">{courses.length}</p>
+            <p className="text-xs text-slate-500 mt-1">{systemMetrics.publishedCourses} published · {systemMetrics.draftCourses} draft</p>
           </CardContent>
         </Card>
-
-        {/* Average Progress */}
-        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-violet-200/80 dark:hover:border-violet-500/30 transition-all duration-300 overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent dark:from-violet-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-violet-500 to-violet-600 group-hover:from-violet-600 group-hover:to-violet-700 transition-all duration-300" />
-          <CardContent className="relative p-6 pl-7">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">
-                  Average Progress
-                </p>
-                <p className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-2 tabular-nums tracking-tight">
-                  {systemMetrics.averageProgress}%
-                </p>
-                <div className="mt-4">
-                  <Progress value={systemMetrics.averageProgress} className="h-2.5 rounded-full bg-slate-100 dark:bg-slate-700" />
-                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1.5">
-                    <TrendingUp className="h-3.5 w-3.5 text-violet-500" />
-                    System-wide momentum
-                  </p>
-                </div>
-              </div>
-              <div className="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500/15 to-violet-600/10 dark:from-violet-500/25 dark:to-violet-600/15 flex items-center justify-center text-violet-600 dark:text-violet-400 ring-1 ring-violet-500/10 dark:ring-violet-400/20">
-                <BarChart3 className="h-6 w-6" />
-              </div>
-            </div>
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 rounded-l-2xl" />
+          <CardContent className="p-4 pl-5">
+            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active learners</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums">{systemMetrics.learnerPopulationActive.toLocaleString()}</p>
+            <p className="text-xs text-slate-500 mt-1">{systemMetrics.learnerPopulationInactive} inactive</p>
           </CardContent>
         </Card>
-
-        {/* Completion Rate */}
-        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-amber-200/80 dark:hover:border-amber-500/30 transition-all duration-300 overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent dark:from-amber-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-amber-600 group-hover:from-amber-600 group-hover:to-amber-700 transition-all duration-300" />
-          <CardContent className="relative p-6 pl-7">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">
-                  Completion Rate
-                </p>
-                <p className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-2 tabular-nums tracking-tight">
-                  {systemMetrics.completionRate}%
-                </p>
-                <div className="mt-4">
-                  <Progress value={systemMetrics.completionRate} className="h-2.5 rounded-full bg-slate-100 dark:bg-slate-700" />
-                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-2">
-                    {systemMetrics.completedEnrollments.toLocaleString()} of {systemMetrics.totalEnrollments.toLocaleString()} completed
-                  </p>
-                </div>
-              </div>
-              <div className="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/15 to-amber-600/10 dark:from-amber-500/25 dark:to-amber-600/15 flex items-center justify-center text-amber-600 dark:text-amber-400 ring-1 ring-amber-500/10 dark:ring-amber-400/20">
-                <BarChart3 className="h-6 w-6" />
-              </div>
-            </div>
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-violet-500 rounded-l-2xl" />
+          <CardContent className="p-4 pl-5">
+            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Enrollments</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums">{systemMetrics.totalEnrollments.toLocaleString()}</p>
+            <p className="text-xs text-slate-500 mt-1">{systemMetrics.completedEnrollments.toLocaleString()} completed</p>
           </CardContent>
         </Card>
-
-        {/* Certificate processed */}
-        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-indigo-200/80 dark:hover:border-indigo-500/30 transition-all duration-300 overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent dark:from-indigo-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-indigo-600 group-hover:from-indigo-600 group-hover:to-indigo-700 transition-all duration-300" />
-          <CardContent className="relative p-6 pl-7">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">
-                  Certificate processed
-                </p>
-                <p className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-2 tabular-nums tracking-tight">
-                  {totalCertificates.toLocaleString()}
-                </p>
-              </div>
-              <div className="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/15 to-indigo-600/10 dark:from-indigo-500/25 dark:to-indigo-600/15 flex items-center justify-center text-indigo-600 dark:text-indigo-400 ring-1 ring-indigo-500/10 dark:ring-indigo-400/20">
-                <Award className="h-6 w-6" />
-              </div>
-            </div>
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500 rounded-l-2xl" />
+          <CardContent className="p-4 pl-5">
+            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Avg. rating</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums">{systemMetrics.averageRating || '—'}</p>
+            <p className="text-xs text-slate-500 mt-1">Across published catalogue</p>
           </CardContent>
         </Card>
+      </div>
 
-        {/* Total Revenue */}
-        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-teal-200/80 dark:hover:border-teal-500/30 transition-all duration-300 overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-transparent dark:from-teal-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-teal-500 to-teal-600 group-hover:from-teal-600 group-hover:to-teal-700 transition-all duration-300" />
-          <CardContent className="relative p-6 pl-7">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 md:gap-5">
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200/80 dark:hover:border-blue-500/30 transition-all duration-200 overflow-hidden group">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-blue-600 rounded-l-2xl" />
+          <CardContent className="relative p-5 pl-6">
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0 flex-1 overflow-hidden">
-                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">
-                  Total Revenue
-                </p>
-                <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-2 tabular-nums tracking-tight leading-tight break-words">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Learners</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums">{systemMetrics.learnerPopulationCount.toLocaleString()}</p>
+                <p className="text-xs text-slate-500 mt-1.5">Paid and started a course</p>
+              </div>
+              <div className="w-11 h-11 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                <Users className="h-5 w-5" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-violet-200/80 dark:hover:border-violet-500/30 transition-all duration-200 overflow-hidden group">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-violet-500 to-violet-600 rounded-l-2xl" />
+          <CardContent className="relative p-5 pl-6">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Avg. progress</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums">{systemMetrics.averageProgress}%</p>
+                <Progress value={systemMetrics.averageProgress} className="h-1.5 mt-3 rounded-full bg-slate-100 dark:bg-slate-700" />
+              </div>
+              <div className="w-11 h-11 rounded-xl bg-violet-500/10 dark:bg-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400 shrink-0">
+                <TrendingUp className="h-5 w-5" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-amber-200/80 dark:hover:border-amber-500/30 transition-all duration-200 overflow-hidden group">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-amber-600 rounded-l-2xl" />
+          <CardContent className="relative p-5 pl-6">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Completion</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums">{systemMetrics.completionRate}%</p>
+                <Progress value={systemMetrics.completionRate} className="h-1.5 mt-3 rounded-full bg-slate-100 dark:bg-slate-700" />
+              </div>
+              <div className="w-11 h-11 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+                <Target className="h-5 w-5" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-indigo-200/80 dark:hover:border-indigo-500/30 transition-all duration-200 overflow-hidden group">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-indigo-600 rounded-l-2xl" />
+          <CardContent className="relative p-5 pl-6">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Certificates</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums">{totalCertificates.toLocaleString()}</p>
+                <p className="text-xs text-slate-500 mt-1.5">Processed</p>
+              </div>
+              <div className="w-11 h-11 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+                <Award className="h-5 w-5" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="relative border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-emerald-200/80 dark:hover:border-emerald-500/30 transition-all duration-200 overflow-hidden group sm:col-span-2 xl:col-span-1">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-l-2xl" />
+          <CardContent className="relative p-5 pl-6">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 overflow-hidden">
+                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Revenue</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1 tabular-nums leading-tight break-words">
                   R {(checkoutSessionsRevenue ?? systemMetrics.totalRevenue).toLocaleString()}
                 </p>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-2">
-                  From course purchases
-                </p>
+                <p className="text-xs text-slate-500 mt-1.5">Course purchases</p>
               </div>
-              <div className="shrink-0 w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-500/15 to-teal-600/10 dark:from-teal-500/25 dark:to-teal-600/15 flex items-center justify-center text-teal-600 dark:text-teal-400 ring-1 ring-teal-500/10 dark:ring-teal-400/20">
+              <div className="w-11 h-11 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
                 <DollarSign className="h-5 w-5" />
               </div>
             </div>
@@ -1071,13 +1072,15 @@ const OverviewTab = React.memo(({
         </Card>
       </div>
 
-      {/* Revenue line chart */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Revenue</h2>
-          <div className="flex flex-col sm:flex-row gap-2">
+      <Card className="border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm overflow-hidden">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2">
+          <div>
+            <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">Revenue</CardTitle>
+            <CardDescription>Checkout payments over time</CardDescription>
+          </div>
+          <div className="flex flex-wrap gap-2">
             <Select value={revenueStatusFilter} onValueChange={(v: 'all' | 'completed' | 'pending' | 'other') => setRevenueStatusFilter(v)}>
-              <SelectTrigger className="w-[140px] h-9">
+              <SelectTrigger className="w-[130px] h-9 rounded-xl border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800/80">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -1088,7 +1091,7 @@ const OverviewTab = React.memo(({
               </SelectContent>
             </Select>
             <Select value={revenuePeriod} onValueChange={(v: 'days' | 'weeks' | 'months' | 'year') => setRevenuePeriod(v)}>
-              <SelectTrigger className="w-[140px] h-9">
+              <SelectTrigger className="w-[130px] h-9 rounded-xl border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800/80">
                 <SelectValue placeholder="Period" />
               </SelectTrigger>
               <SelectContent>
@@ -1099,54 +1102,56 @@ const OverviewTab = React.memo(({
               </SelectContent>
             </Select>
           </div>
-        </div>
-        <Card className="border-2 border-red-300/80 dark:border-red-500/50 bg-white/90 dark:bg-slate-800/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm shadow-red-200/30 dark:shadow-red-900/20 ring-2 ring-red-200/60 dark:ring-red-500/30">
-          <CardContent className="p-6">
-            <div className="rounded-xl border-2 border-red-300/70 dark:border-red-500/40 bg-red-50/30 dark:bg-red-950/20 p-4 ring-2 ring-red-200/50 dark:ring-red-500/25 shadow-[0_0_12px_rgba(239,68,68,0.15)] dark:shadow-[0_0_16px_rgba(239,68,68,0.2)]">
-              <ChartContainer config={{ revenue: { label: 'Revenue (R)', color: 'hsl(166, 76%, 40%)' } }} className="h-[280px] w-full">
-                <RechartsLineChart data={revenueChartData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" vertical={false} />
-                  <XAxis dataKey="period" tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
-                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11 }} tickFormatter={(v) => `R ${Number(v).toLocaleString()}`} />
-                  <Tooltip content={<ChartTooltipContent formatter={(v) => [`R ${Number(v).toLocaleString()}`, 'Revenue']} />} />
-                  <Line type="monotone" dataKey="revenue" stroke="hsl(166, 76%, 40%)" strokeWidth={2} dot={{ r: 3 }} />
-                </RechartsLineChart>
-              </ChartContainer>
+        </CardHeader>
+        <CardContent className="pt-2">
+          {revenueChartData.length === 0 ? (
+            <div className="h-[260px] flex items-center justify-center rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/40">
+              <p className="text-sm text-slate-500">No revenue in this period.</p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          ) : (
+            <ChartContainer config={{ revenue: { label: 'Revenue (R)', color: 'hsl(160, 84%, 39%)' } }} className="h-[280px] w-full">
+              <RechartsLineChart data={revenueChartData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" vertical={false} />
+                <XAxis dataKey="period" tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11 }} tickFormatter={(v) => `R ${Number(v).toLocaleString()}`} />
+                <Tooltip content={<ChartTooltipContent formatter={(v) => [`R ${Number(v).toLocaleString()}`, 'Revenue']} />} />
+                <Line type="monotone" dataKey="revenue" stroke="hsl(160, 84%, 39%)" strokeWidth={2.5} dot={{ r: 3, strokeWidth: 0 }} activeDot={{ r: 5 }} />
+              </RechartsLineChart>
+            </ChartContainer>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Top performing courses by completion & learners */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Top performing courses (by completion & learners)</h2>
-        <Card className="border-2 border-red-300/80 dark:border-red-500/50 bg-white/90 dark:bg-slate-800/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm shadow-red-200/30 dark:shadow-red-900/20 ring-2 ring-red-200/60 dark:ring-red-500/30">
-          <CardContent className="p-6">
-            {topPerformingCoursesChartData.length === 0 ? (
-              <p className="text-sm text-slate-500 dark:text-slate-400 py-8 text-center rounded-xl border-2 border-dashed border-red-300/60 dark:border-red-500/40">No course progress data yet. Enrollments with progress will appear here.</p>
-            ) : (
-              <div className="rounded-xl border-2 border-red-300/70 dark:border-red-500/40 bg-red-50/30 dark:bg-red-950/20 p-4 ring-2 ring-red-200/50 dark:ring-red-500/25 shadow-[0_0_12px_rgba(239,68,68,0.15)] dark:shadow-[0_0_16px_rgba(239,68,68,0.2)]">
-                <ChartContainer config={{ progress: { label: 'Progress %', color: 'hsl(262, 83%, 58%)' } }} className="h-[340px] w-full min-h-[340px]">
-                  <RechartsBarChart data={topPerformingCoursesChartData} layout="vertical" margin={{ top: 8, right: 24, left: 8, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" horizontal={false} />
-                    <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} tickFormatter={(v) => `${v}%`} />
-                    <YAxis type="category" dataKey="name" width={220} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} interval={0} />
-                    <Tooltip content={<ChartTooltipContent formatter={(v) => [`${Number(v)}%`, 'Progress']} />} />
-                    <Bar dataKey="progress" radius={[0, 4, 4, 0]}>
-                      {topPerformingCoursesChartData.map((entry, index) => (
-                        <Cell key={index} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </RechartsBarChart>
-                </ChartContainer>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      </div>
+      <Card className="border border-slate-200/80 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm overflow-hidden">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">Top performing courses</CardTitle>
+          <CardDescription>Average learner progress by course</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {topPerformingCoursesChartData.length === 0 ? (
+            <div className="h-[220px] flex items-center justify-center rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/40">
+              <p className="text-sm text-slate-500">No course progress yet. It will appear here as learners start.</p>
             </div>
+          ) : (
+            <ChartContainer config={{ progress: { label: 'Progress %', color: 'hsl(221, 83%, 53%)' } }} className="h-[320px] w-full min-h-[280px]">
+              <RechartsBarChart data={topPerformingCoursesChartData} layout="vertical" margin={{ top: 8, right: 24, left: 8, bottom: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" horizontal={false} />
+                <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} tickFormatter={(v) => `${v}%`} />
+                <YAxis type="category" dataKey="name" width={180} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} interval={0} />
+                <Tooltip content={<ChartTooltipContent formatter={(v) => [`${Number(v)}%`, 'Progress']} />} />
+                <Bar dataKey="progress" radius={[0, 6, 6, 0]} barSize={18}>
+                  {topPerformingCoursesChartData.map((entry, index) => (
+                    <Cell key={index} fill={entry.color} />
+                  ))}
+                </Bar>
+              </RechartsBarChart>
+            </ChartContainer>
+          )}
+        </CardContent>
+      </Card>
+
+      </div>
+    </div>
   );
 });
 
@@ -1161,6 +1166,7 @@ const UsersTab = React.memo(({
   studentProgress = [],
   onEditUser,
   onDeleteUser,
+  onDeleteUsersConfirmed,
   onShowConfirmation,
   onAddUser
 }: {
@@ -1174,6 +1180,7 @@ const UsersTab = React.memo(({
   studentProgress?: { studentId?: string; studentEmail?: string; courseId?: string; progress?: number; completionRate?: number }[];
   onEditUser: (user: any) => void;
   onDeleteUser: (userId: string) => void;
+  onDeleteUsersConfirmed?: (userIds: string[]) => Promise<void>;
   onShowConfirmation: (dialog: any) => void;
   onAddUser: () => void;
 }) => {
@@ -1276,12 +1283,18 @@ const UsersTab = React.memo(({
             description: `Are you sure you want to delete ${selectedUsers.length} users? This action cannot be undone.`,
             variant: "destructive",
             onConfirm: async () => {
-              for (const userId of selectedUsers) {
-                await onDeleteUser(userId);
+              const ids = [...selectedUsers];
+              if (onDeleteUsersConfirmed) {
+                await onDeleteUsersConfirmed(ids);
+              } else {
+                for (const userId of ids) {
+                  onDeleteUser(userId);
+                }
               }
+              setSelectedUsers([]);
               toast({
                 title: "Users Deleted",
-                description: `${selectedUsers.length} users have been deleted.`,
+                description: `${ids.length} user${ids.length === 1 ? '' : 's'} deleted from Firebase.`,
               });
             }
           });
@@ -1514,9 +1527,9 @@ const UsersTab = React.memo(({
             </TableHeader>
             <TableBody>
               {filteredUsers.map((user) => {
-                const name = user.firstName + ' ' + user.lastName;
-                const initials = name.split(' ').filter(n => n).map(n => n[0]).join('') || 'U';
-                const userRole = user.role || ('specialization' in user ? 'instructor' : 'learner');
+                const name = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || '';
+                const initials = name.split(' ').filter(n => n).map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
+                const userRole = user.role || '';
                 const isActive = user.isActive !== false;
                 const isSelected = selectedUsers.includes(user.id);
                 
@@ -1670,26 +1683,37 @@ const UsersTab = React.memo(({
                       </span>
                     </TableCell>
                   <TableCell className="py-4 pl-4 pr-6">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEditUser(user)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit User
-                          </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onDeleteUser(user.id)}
-                          className="text-red-600"
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                          title="Delete user"
+                          onClick={() => onDeleteUser(user.id || user.uid)}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete User
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onSelect={() => handleEditUser(user)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit User
+                            </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onSelect={() => onDeleteUser(user.id || user.uid)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete User
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                   </TableCell>
                   </TableRow>
                 );
@@ -1768,7 +1792,7 @@ const CoursesTab = React.memo(({
   }, [courses]);
 
   const filteredCourses = useMemo(() => {
-    return courses.filter(course => {
+    const filtered = courses.filter(course => {
       const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            course.instructor.toLowerCase().includes(searchTerm.toLowerCase());
@@ -1777,6 +1801,7 @@ const CoursesTab = React.memo(({
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
+    return DatabaseService.sortCoursesNewestFirst(filtered);
   }, [courses, searchTerm, categoryFilter, statusFilter]);
 
   return (
@@ -2342,21 +2367,18 @@ const UserRegistrationDialog = React.memo(({
         return;
       }
 
-      // Create user with Firebase Auth first
-      const { createUserWithEmailAndPassword } = await import('firebase/auth');
-      const { auth } = await import('@/firebase/config');
-      
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email.trim(), formData.password);
-      const firebaseUser = userCredential.user;
-
-      const userData = {
-        id: firebaseUser.uid,
+      // Create via Cloud Function so the admin session is NOT replaced by the new user
+      const createUserByAdminFn = httpsCallable<
+        Record<string, unknown>,
+        { success: boolean; user?: Record<string, unknown>; message?: string }
+      >(functions, 'createUserByAdmin');
+      const result = await createUserByAdminFn({
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim(),
+        password: formData.password,
         phone: formData.phone.trim(),
         role: formData.role,
-        isActive: true,
         bio: formData.bio.trim(),
         linkedin: formData.linkedin.trim(),
         experience: formData.experience.trim(),
@@ -2365,43 +2387,18 @@ const UserRegistrationDialog = React.memo(({
         country: formData.country.trim(),
         stateProvince: formData.stateProvince.trim(),
         gender: formData.gender,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        lastActive: new Date().toISOString(),
-        ...(formData.role === 'instructor' && {
-          specialization: formData.specialization ? formData.specialization.split(',').map(s => s.trim()).filter(s => s) : [],
-          qualifications: formData.qualifications ? formData.qualifications.split(',').map(q => q.trim()).filter(q => q) : [],
-          assignedStudents: formData.assignedStudents,
-          learners: formData.assignedStudents.length,
-          courses: [],
-          rating: 0,
-          setaRegistration: '',
-          qctoRegistration: ''
-        }),
-        ...(formData.role === 'learner' && {
-          enrolledCourses: [],
-          completedCourses: [],
-          currentGrade: 'N/A',
-          progress: 0
-        }),
-        ...(formData.role === 'sub-admin' && {
-          assignedInstructors: formData.assignedInstructors,
-          instructors: formData.assignedInstructors.length,
-          courses: [],
-          rating: 0
-        }),
-        ...(formData.role === 'admin' && {
-          // Admin-specific fields can be added here if needed
-        })
-      };
+        specialization: formData.specialization,
+        qualifications: formData.qualifications,
+        assignedStudents: formData.assignedStudents,
+        assignedInstructors: formData.assignedInstructors,
+      });
 
-      // Save user data to Firestore
-      const { doc, setDoc } = await import('firebase/firestore');
-      const { db } = await import('@/firebase/config');
-      
-      await setDoc(doc(db, 'users', firebaseUser.uid), userData);
-      
-      const response = { success: true, data: userData };
+      const created = result.data?.user;
+      if (!result.data?.success || !created) {
+        throw new Error(result.data?.message || 'Failed to create user');
+      }
+
+      const response = { success: true, data: created, error: undefined as string | undefined };
       
       if (response.success) {
         toast({
@@ -2435,12 +2432,12 @@ const UserRegistrationDialog = React.memo(({
       
       let errorMessage = "Failed to create user. Please try again.";
       
-      if (error.code === 'auth/email-already-in-use') {
+      if (error.code === 'auth/email-already-in-use' || error.code === 'functions/already-exists') {
         errorMessage = "This email is already registered. Please use a different email.";
       } else if (error.code === 'auth/weak-password') {
         errorMessage = "Password is too weak. Please choose a stronger password.";
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = "Invalid email address. Please check your email format.";
+      } else if (error.code === 'auth/invalid-email' || error.code === 'functions/invalid-argument') {
+        errorMessage = error.message || "Invalid email address. Please check your email format.";
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -3514,15 +3511,21 @@ const ConfirmationDialog = React.memo(({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   title: string;
   description: string;
   confirmText?: string;
   cancelText?: string;
   variant?: "default" | "destructive";
 }) => {
+  const [isWorking, setIsWorking] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) setIsWorking(false);
+  }, [isOpen]);
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open && !isWorking) onClose(); }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -3536,17 +3539,32 @@ const ConfirmationDialog = React.memo(({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={isWorking}>
             {cancelText}
           </Button>
           <Button 
             variant={variant === "destructive" ? "destructive" : "default"} 
-            onClick={() => {
-              onConfirm();
-              onClose();
+            disabled={isWorking}
+            onClick={async () => {
+              setIsWorking(true);
+              try {
+                await onConfirm();
+                onClose();
+              } catch {
+                // Keep dialog open; caller shows the error toast
+              } finally {
+                setIsWorking(false);
+              }
             }}
           >
-            {confirmText}
+            {isWorking ? (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              confirmText
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -5082,6 +5100,35 @@ export const AdminDashboard = () => {
   const [grantAccessCourseId, setGrantAccessCourseId] = useState("");
   const [grantAccessLoading, setGrantAccessLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'retrying'>('connected');
+
+  // One-time: remove legacy per-lesson quizzes from Firebase (unit quizzes kept)
+  useEffect(() => {
+    const flagKey = "revo_stripped_lesson_quizzes_v1";
+    if (typeof window === "undefined" || localStorage.getItem(flagKey)) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await DatabaseService.stripLessonQuizzesFromAllCourses();
+        if (cancelled) return;
+        localStorage.setItem(flagKey, "1");
+        if (result.updated > 0) {
+          toast({
+            title: "Lesson quizzes removed",
+            description: `Cleaned ${result.updated} course(s). Add a unit quiz when you edit each course.`,
+          });
+          await refreshCourses();
+        }
+      } catch (err) {
+        console.error("Failed to strip lesson quizzes:", err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshCourses, toast]);
+
   const [confirmationDialog, setConfirmationDialog] = useState<{
     isOpen: boolean;
     title: string;
@@ -5415,9 +5462,52 @@ export const AdminDashboard = () => {
     }
   }, [toast]);
 
+  const removeUserFromLocalState = useCallback((userId: string, uid?: string) => {
+    const ids = new Set([userId, uid].filter(Boolean));
+    setAllUsers((prev) => prev.filter((u) => !ids.has(u.id) && !ids.has(u.uid)));
+    setLearners((prev) => prev.filter((l) => !ids.has(l.id) && !ids.has((l as { uid?: string }).uid)));
+    setInstructors((prev) => prev.filter((i) => !ids.has(i.id) && !ids.has((i as { uid?: string }).uid)));
+  }, []);
+
+  const performDeleteUser = useCallback(async (userId: string) => {
+    const user = allUsers.find((u) => u.id === userId || u.uid === userId);
+    const docId = user?.id || userId;
+    const authUid = user?.uid || userId;
+    const userName = user
+      ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User'
+      : 'User';
+
+    if (auth.currentUser?.uid && (auth.currentUser.uid === docId || auth.currentUser.uid === authUid)) {
+      throw new Error('You cannot delete your own account from here.');
+    }
+
+    let deletedRemotely = false;
+    try {
+      const deleteUserByAdminFn = httpsCallable<
+        { userId: string; uid?: string },
+        { success: boolean; message?: string }
+      >(functions, 'deleteUserByAdmin');
+      const result = await deleteUserByAdminFn({ userId: docId, uid: authUid });
+      deletedRemotely = Boolean(result.data?.success);
+      if (!deletedRemotely) {
+        throw new Error(result.data?.message || 'Failed to delete user');
+      }
+    } catch (callableError) {
+      console.warn('Admin callable delete failed, falling back to Firestore delete:', callableError);
+      await DatabaseService.deleteUserAndRelatedData(docId, authUid);
+      deletedRemotely = true;
+    }
+
+    if (!deletedRemotely) {
+      throw new Error('Failed to delete user from Firebase.');
+    }
+
+    removeUserFromLocalState(docId, authUid);
+    return userName;
+  }, [allUsers, removeUserFromLocalState]);
+
   const handleDeleteUser = useCallback((userId: string) => {
-    // Search in allUsers to find any user type (admin, instructor, learner, sub-admin)
-    const user = allUsers.find(u => u.id === userId || u.uid === userId);
+    const user = allUsers.find((u) => u.id === userId || u.uid === userId);
     if (!user) {
       toast({
         title: "Error",
@@ -5433,31 +5523,23 @@ export const AdminDashboard = () => {
     setConfirmationDialog({
       isOpen: true,
       title: "Delete User",
-      description: `Are you sure you want to delete ${userName} (${userRole})? This action cannot be undone and will permanently remove the user from the system.`,
+      description: `Are you sure you want to delete ${userName} (${userRole})? This permanently removes the user from the app, Firebase Authentication, and Firestore.`,
       variant: "destructive",
       onConfirm: async () => {
         try {
-          console.log('🗑️ Deleting user from Firebase Auth and Firestore:', userId, userName);
-          const deleteUserByAdminFn = httpsCallable<{ userId: string }, { success: boolean; message?: string }>(functions, 'deleteUserByAdmin');
-          const result = await deleteUserByAdminFn({ userId });
-          const data = result.data as { success?: boolean; message?: string };
-          if (!data?.success) {
-            throw new Error((result as any).error?.message || 'Failed to delete user');
-          }
-          setAllUsers(prev => prev.filter(u => u.id !== userId && u.uid !== userId));
-          setLearners(prev => prev.filter(l => l.id !== userId));
-          setInstructors(prev => prev.filter(i => i.id !== userId));
+          await performDeleteUser(userId);
           toast({
             title: "User Deleted",
-            description: `${userName} has been deleted from Firebase (Authentication and Firestore).`,
+            description: `${userName} has been deleted from Firebase Authentication and Firestore.`,
           });
         } catch (error) {
           console.error('Error deleting user:', error);
           handleFirebaseError(error, 'delete user');
+          throw error;
         }
       }
     });
-  }, [allUsers, toast]);
+  }, [allUsers, toast, performDeleteUser, handleFirebaseError]);
 
 
   const [adminEditCourse, setAdminEditCourse] = useState<Course | null>(null);
@@ -6078,6 +6160,11 @@ ${Object.entries(reportData.topCategories).map(([category, count]) => `- ${categ
               studentProgress={studentProgress ?? []}
               onEditUser={(user) => setEditingUser(user)}
               onDeleteUser={handleDeleteUser}
+              onDeleteUsersConfirmed={async (userIds) => {
+                for (const id of userIds) {
+                  await performDeleteUser(id);
+                }
+              }}
               onShowConfirmation={setConfirmationDialog}
               onAddUser={() => setIsUserRegistrationOpen(true)}
             />

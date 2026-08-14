@@ -80,6 +80,8 @@ import { EventDetailsDialog } from './EventDetailsDialog';
 import { useToast } from '@/hooks/use-toast';
 import CourseCompletionSummary from './CourseCompletionSummary';
 import { FinalExamView } from './FinalExamView';
+import { createYocoCheckoutForLearner } from '@/services/yocoFunnelService';
+import { isRevolearnDomain, aiTutorPath, funnelPath, setLearnerHomePath } from '@/utils/funnelPath';
 import { getLearnerProgressSummary, shouldShowLearnerGreeting, markLearnerGreetingShown } from '@/services/learnerProgressForAIService';
 import { getAIGreetingMessage } from '@/services/aiGreetingService';
 import { learnerTodoService } from '@/services/learnerTodoService';
@@ -87,8 +89,14 @@ import {
   downloadCertificateBlob,
   generateCertificateFromTemplate,
 } from '@/services/certificateTemplateService';
+import { getQuizAverageForExam, quizAverageLockMessage } from '@/utils/quizAverage';
+import {
+  computeLearnerCourseProgress,
+  hasPassedFinalExam,
+  FINAL_EXAM_PASS_PERCENT,
+} from '@/utils/finalExamProgress';
 
-const FINAL_EXAM_PASS_PERCENT = 80;
+const MAX_FINAL_EXAM_ATTEMPTS = 5;
 
 interface Course {
   id: string;
@@ -181,6 +189,8 @@ export const LearnerDashboard = () => {
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [currentLesson, setCurrentLesson] = useState<any>(null);
   const [currentUnit, setCurrentUnit] = useState<any>(null);
+  /** Separate step after a unit's last lesson — not inside the lesson */
+  const [viewingUnitQuiz, setViewingUnitQuiz] = useState(false);
   const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: any }>({});
   
   // POE Upload State
@@ -244,6 +254,7 @@ export const LearnerDashboard = () => {
   const [marketplaceCourses, setMarketplaceCourses] = useState<CourseType[]>([]);
   const [marketplaceLoading, setMarketplaceLoading] = useState(false);
   const [marketplaceCategoryFilter, setMarketplaceCategoryFilter] = useState('all');
+  const [payingCourseId, setPayingCourseId] = useState<string | null>(null);
 
   // AI greeting popout (center screen, every time learner lands on dashboard)
   const [showAIGreetingPopout, setShowAIGreetingPopout] = useState(false);
@@ -360,6 +371,58 @@ export const LearnerDashboard = () => {
     }
   }, [syncData, refreshCourses, loadMyCoursesFromFirebase, toast]);
 
+  /** Start Yoco checkout immediately and redirect to the payment page. */
+  const handlePayToEnroll = useCallback(async (course: CourseType | Course) => {
+    const courseId = course.id;
+    const price = Number(course.price ?? 0);
+    if (price < 0.01) {
+      toast({
+        title: 'Cannot enroll',
+        description: 'This course has no price set. Please contact support.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setPayingCourseId(courseId);
+    try {
+      const baseUrl = window.location.origin;
+      const onFunnel =
+        isRevolearnDomain ||
+        window.location.pathname.includes('/funnel') ||
+        window.location.pathname === '/dashboard' ||
+        window.location.pathname.startsWith('/dashboard');
+      const successUrl = onFunnel
+        ? `${baseUrl}${funnelPath('/dashboard')}?tab=courses&paid=1`
+        : `${baseUrl}/lms?tab=courses&paid=1`;
+      const cancelUrl = onFunnel
+        ? `${baseUrl}${funnelPath('/dashboard')}?tab=marketplace`
+        : `${baseUrl}/lms?tab=marketplace`;
+
+      const result = await createYocoCheckoutForLearner({
+        courseId,
+        successUrl,
+        cancelUrl,
+      });
+      if (result.success && result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+        return;
+      }
+      toast({
+        title: 'Checkout failed',
+        description: result.error || 'Could not open the payment page. Please try again.',
+        variant: 'destructive',
+      });
+    } catch (e) {
+      toast({
+        title: 'Checkout failed',
+        description: e instanceof Error ? e.message : 'Could not open the payment page. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setPayingCourseId(null);
+    }
+  }, [toast]);
+
   // Load My Courses directly from Firebase on mount so we always show what's in Firestore
   useEffect(() => {
     if (!user?.id || user?.role !== 'learner') return;
@@ -424,10 +487,13 @@ export const LearnerDashboard = () => {
   }, [marketplaceCourses]);
 
   const filteredMarketplaceCourses = useMemo(() => {
-    if (marketplaceCategoryFilter === 'all') return marketplaceCourses;
-    return marketplaceCourses.filter(
-      (c) => (c.category?.trim() || 'General') === marketplaceCategoryFilter
-    );
+    const filtered =
+      marketplaceCategoryFilter === 'all'
+        ? marketplaceCourses
+        : marketplaceCourses.filter(
+            (c) => (c.category?.trim() || 'General') === marketplaceCategoryFilter
+          );
+    return DatabaseService.sortCoursesNewestFirst(filtered);
   }, [marketplaceCourses, marketplaceCategoryFilter]);
 
   // Load summative grades (for other uses)
@@ -1027,47 +1093,39 @@ export const LearnerDashboard = () => {
                 return currentDate > bestDate ? current : best;
               });
               
-              // Recalculate progress based on actual lesson completion
-              const lessonProgress = mostRecentProgress.lessonProgress || [];
-              const completedLessons = lessonProgress.filter(lp => lp.completed).length;
-              
-              // Get course data to determine total lessons
+              // Recalculate from course structure; passing the final exam always = 100%.
               const course = courses.find(c => c.id === courseId);
-              const totalLessons = course?.units?.reduce((total, unit) => 
-                total + (unit.lessons?.length || 0), 0) || 0;
-              
-              // If course data is not available yet, skip this calculation
-              if (!course || totalLessons === 0) {
+              if (!course) {
                 console.log(`⏳ Course data not available yet for ${courseId}, skipping progress calculation`);
                 progressMap[courseId] = mostRecentProgress;
                 continue;
               }
-              
-              // 99% when all lessons complete (exam pending); 100% only when final exam passed
-              const FINAL_EXAM_PASS_PERCENT = 80;
-              const allLessonsDone = totalLessons > 0 && completedLessons >= totalLessons;
-              const passedFinalExam = typeof mostRecentProgress.finalExamScore === 'number' && mostRecentProgress.finalExamScore >= FINAL_EXAM_PASS_PERCENT;
-              const progressPercentage = totalLessons > 0
-                ? allLessonsDone
-                  ? (passedFinalExam ? 100 : 99)
-                  : Math.round((completedLessons / totalLessons) * 100)
-                : 0;
-              
-              // Update the progress data with correct calculation
+
+              const stats = computeLearnerCourseProgress(course, mostRecentProgress);
+              if (stats.totalLessons === 0) {
+                progressMap[courseId] = mostRecentProgress;
+                continue;
+              }
+
               const correctedProgress = {
                 ...mostRecentProgress,
                 courseProgress: {
                   ...mostRecentProgress.courseProgress,
-                  completedLessons,
-                  totalLessons,
-                  progressPercentage,
-                  status: progressPercentage >= 100 ? 'Completed' : progressPercentage > 0 ? 'In Progress' : 'Not Started'
+                  completedLessons: stats.completedLessons,
+                  totalLessons: stats.totalLessons,
+                  completedUnits: stats.completedUnits,
+                  totalUnits: stats.totalUnits,
+                  progressPercentage: stats.progressPercentage,
+                  status: stats.status,
+                  ...(stats.examPassed
+                    ? { completedAt: mostRecentProgress.courseProgress?.completedAt || new Date().toISOString() }
+                    : {}),
                 }
               };
               
               progressMap[courseId] = correctedProgress;
               
-              console.log(`✅ Recalculated progress for course ${courseId}: ${completedLessons}/${totalLessons} lessons (${progressPercentage}%)`);
+              console.log(`✅ Recalculated progress for course ${courseId}: ${stats.completedLessons}/${stats.totalLessons} lessons (${stats.progressPercentage}%) examPassed=${stats.examPassed}`);
             }
           }
 
@@ -1113,78 +1171,27 @@ export const LearnerDashboard = () => {
       if (progress && progress.courseProgress && progress.lessonProgress) {
         const course = courses.find(c => c.id === courseId);
         if (course && course.units) {
-          // Calculate completed units based on actual lesson completion data
-          // Get all lessons in order across all units
-          const allLessons = course.units.flatMap(unit => unit.lessons || []);
+          const stats = computeLearnerCourseProgress(course, progress);
           
-          // Get all completed lesson IDs from progress data
-          const completedLessonIds = new Set(progress.lessonProgress
-            .filter(lp => lp.completed)
-            .map(lp => lp.lessonId));
-          
-          console.log('🔍 All completed lesson IDs:', Array.from(completedLessonIds));
-          
-          // Calculate completed units based on actual lesson completion
-          // Since lesson IDs are duplicated, we need to use a different approach
-          // Based on user feedback that all units should be completed
-          
-          const totalLessons = allLessons.length;
-          const completedLessons = completedLessonIds.size;
-          const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
-          
-          console.log('🔍 Progress calculation:', {
-            totalLessons,
-            completedLessons,
-            progressPercentage,
-            completedLessonIds: Array.from(completedLessonIds)
-          });
-          
-          // Calculate completed units - a unit is completed only when ALL lessons in that unit are completed
-          const completedUnits = course.units.filter(unit => {
-            const unitLessons = unit.lessons || [];
-            if (unitLessons.length === 0) return false;
-            
-            // Check if all lessons in this unit are completed
-            const allLessonsInUnitCompleted = unitLessons.every(lesson => {
-              return completedLessonIds.has(lesson.id);
-            });
-            
-            return allLessonsInUnitCompleted && unitLessons.length > 0;
-          }).length;
-          
-          console.log('🔍 Unit completion calculation:', {
-            progressPercentage,
-            completedUnits,
-            totalUnits: course.units.length,
-            calculation: `Based on ${completedLessons} completed lessons - units completed only when ALL lessons in unit are completed`
-          });
-          
-          const totalUnits = course.units.length;
-          
-          
-          // Only update if the values are different
-          if (progress.courseProgress.completedUnits !== completedUnits || progress.courseProgress.totalUnits !== totalUnits) {
-            console.log(`🔄 Updating unit completion for course ${courseId}:`, {
-              oldCompletedUnits: progress.courseProgress.completedUnits,
-              newCompletedUnits: completedUnits,
-              oldTotalUnits: progress.courseProgress.totalUnits,
-              newTotalUnits: totalUnits
-            });
-            
+          if (
+            progress.courseProgress.completedUnits !== stats.completedUnits ||
+            progress.courseProgress.totalUnits !== stats.totalUnits ||
+            progress.courseProgress.completedLessons !== stats.completedLessons ||
+            progress.courseProgress.progressPercentage !== stats.progressPercentage
+          ) {
             updatedProgress[courseId] = {
               ...progress,
               courseProgress: {
                 ...progress.courseProgress,
-                completedUnits,
-                totalUnits
+                completedUnits: stats.completedUnits,
+                totalUnits: stats.totalUnits,
+                completedLessons: stats.completedLessons,
+                totalLessons: stats.totalLessons,
+                progressPercentage: stats.progressPercentage,
+                status: stats.status,
               }
             };
             hasChanges = true;
-          } else {
-            console.log(`✅ Unit completion already correct for course ${courseId}:`, {
-              completedUnits,
-              totalUnits
-            });
           }
         }
       }
@@ -1849,6 +1856,7 @@ Generated on: ${new Date().toLocaleString()}
     setShowCourseDetail(false);
     setShowCourseOverview(false);
     setShowLessonViewer(false);
+    setViewingUnitQuiz(false);
     setCurrentLessonIndex(0);
 
     // Refresh progress when returning from lesson/course view
@@ -1867,6 +1875,7 @@ Generated on: ${new Date().toLocaleString()}
   /** From full lesson view, go back to the course structure (units/lessons list), not the dashboard. */
   const handleBackToCourse = async () => {
     setShowLessonViewer(false);
+    setViewingUnitQuiz(false);
     setShowCourseDetail(true);
     if (user?.id && selectedCourse?.id) {
       try {
@@ -1938,9 +1947,81 @@ Generated on: ${new Date().toLocaleString()}
     return sortedLessons;
   };
 
+  const unitHasUsableQuiz = (unit: any) => {
+    const quiz = unit?.quizContent;
+    if (!quiz?.questions?.length) return false;
+    const isSample = (q: any) => {
+      const text = (q.question || '').toLowerCase().trim();
+      return text.includes('sample question') || text.startsWith('what is the correct answer');
+    };
+    return !quiz.questions.every(isSample);
+  };
+
+  const tryOpenFinalExam = async () => {
+    if (!selectedCourse || !user?.id) return;
+    let progress = courseProgress[selectedCourse.id];
+    try {
+      const fresh = await persistentProgressService.getStudentProgress(user.id, selectedCourse.id);
+      if (fresh) {
+        progress = fresh;
+        setCourseProgress((prev) => ({ ...prev, [selectedCourse.id]: fresh }));
+      }
+    } catch (err) {
+      console.error('Could not refresh progress before exam:', err);
+    }
+
+    const alreadyPassed = hasPassedFinalExam(progress);
+    const noAttemptsLeft =
+      typeof progress?.finalExamAttempts === 'number' &&
+      progress.finalExamAttempts >= MAX_FINAL_EXAM_ATTEMPTS;
+    if (alreadyPassed || noAttemptsLeft) {
+      await showCourseCompletionSummaryPopup();
+      return;
+    }
+
+    const quizGate = getQuizAverageForExam(selectedCourse, progress?.lessonProgress);
+    if (!quizGate.meetsThreshold) {
+      setShowLessonViewer(false);
+      setShowFinalExam(false);
+      setViewingUnitQuiz(false);
+      setShowCourseDetail(true);
+      toast({
+        title: 'Final exam locked',
+        description: quizAverageLockMessage(quizGate),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setShowLessonViewer(false);
+    setTimeout(() => setShowFinalExam(true), 400);
+  };
+
+  const goToNextUnitOrFinish = async (fromUnit: any) => {
+    if (!selectedCourse) return;
+    const sortedLessons = getSortedLessons(selectedCourse);
+    const currentUnitIndex = selectedCourse.units?.findIndex((u) => String(u.id) === String(fromUnit?.id)) ?? -1;
+    const nextUnit = selectedCourse.units?.[currentUnitIndex + 1];
+
+    if (nextUnit && nextUnit.lessons && nextUnit.lessons.length > 0) {
+      const firstLessonOfNextUnit = sortedLessons.find((l) => String(l.unitId) === String(nextUnit.id));
+      if (firstLessonOfNextUnit) {
+        setViewingUnitQuiz(false);
+        setCurrentLesson({ ...firstLessonOfNextUnit, id: firstLessonOfNextUnit.id });
+        setCurrentUnit(nextUnit);
+        setCurrentLessonIndex(sortedLessons.findIndex((l) => l.id === firstLessonOfNextUnit.id));
+        return;
+      }
+    }
+
+    setViewingUnitQuiz(false);
+    await tryOpenFinalExam();
+  };
+
   const handleViewLesson = async (lesson: any, unit: any) => {
     console.log('Opening lesson viewer for:', lesson);
     console.log('Unit context:', unit);
+    setViewingUnitQuiz(false);
     
     // Load completion status from database before opening lesson viewer
     if (selectedCourse) {
@@ -1953,119 +2034,118 @@ Generated on: ${new Date().toLocaleString()}
         ?.find(u => u.id === unit.id)
         ?.lessons?.find(l => l.id === lesson.id) || lesson;
       
+      const updatedUnit = updatedCourse.units?.find(u => u.id === unit.id) || unit;
+
       console.log('Found lesson for viewer:', {
         requestedLessonId: lesson.id,
         requestedLessonTitle: lesson.title,
         requestedUnitId: unit.id,
         foundLessonId: updatedLesson.id,
         foundLessonTitle: updatedLesson.title,
-        foundUnitId: unit.id
+        foundUnitId: updatedUnit.id,
+        hasUnitQuiz: Boolean(updatedUnit.quizContent?.questions?.length)
       });
       
       setCurrentLesson(updatedLesson);
+      setCurrentUnit(updatedUnit);
     } else {
       setCurrentLesson(lesson);
+      setCurrentUnit(unit);
     }
     
-    setCurrentUnit(unit);
     setShowLessonViewer(true);
     setShowCourseDetail(false);
   };
 
-  const handleNextLesson = async () => {
+  const handleNextLesson = async (options?: { toUnitQuiz?: boolean; afterUnitQuiz?: boolean }) => {
     console.log('🔄 LearnerDashboard handleNextLesson called:', {
       selectedCourse: selectedCourse?.id,
       currentUnit: currentUnit?.id,
       currentLesson: currentLesson?.id,
-      currentLessonTitle: currentLesson?.title,
-      currentLessonIndex: currentLessonIndex
+      viewingUnitQuiz,
+      toUnitQuiz: options?.toUnitQuiz,
+      afterUnitQuiz: options?.afterUnitQuiz,
     });
     
     if (!selectedCourse || !currentUnit) {
       console.error('❌ Missing selectedCourse or currentUnit');
       return;
     }
+
+    const courseUnit =
+      selectedCourse.units?.find((u) => String(u.id) === String(currentUnit.id)) ||
+      selectedCourse.modules?.find((u: any) => String(u.id) === String(currentUnit.id));
+    const freshUnit = {
+      ...currentUnit,
+      ...(courseUnit || {}),
+      lessons: courseUnit?.lessons || currentUnit.lessons || [],
+      quizContent: courseUnit?.quizContent ?? currentUnit.quizContent,
+    };
+
+    // After unit quiz page (LessonViewer owns the quiz UI) → next unit / finish
+    if (options?.afterUnitQuiz || viewingUnitQuiz) {
+      setViewingUnitQuiz(false);
+      await goToNextUnitOrFinish(freshUnit);
+      return;
+    }
+
+    // Legacy: parent-driven quiz open (LessonViewer now opens quiz locally)
+    if (options?.toUnitQuiz) {
+      setCurrentUnit(freshUnit);
+      setViewingUnitQuiz(true);
+      return;
+    }
     
     // Get all lessons sorted by their order property
     const sortedLessons = getSortedLessons(selectedCourse);
     
-    // Find current lesson index in the sorted list
-    const currentIndex = sortedLessons.findIndex(l => l.id === currentLesson?.id);
-    
-    console.log('🔍 Current lesson details:', {
-      currentLessonId: currentLesson?.id,
-      currentLessonTitle: currentLesson?.title,
-      currentLessonOrder: currentLesson?.order,
-      currentLessonIndex: currentIndex,
-      currentUnitId: currentUnit.id
-    });
-    
     // Check if there's a next lesson in the current unit
-    const currentUnitLessons = sortedLessons.filter(l => l.unitId === currentUnit.id);
-    const currentLessonInUnitIndex = currentUnitLessons.findIndex(l => l.id === currentLesson?.id);
-    const nextLessonInUnit = currentUnitLessons[currentLessonInUnitIndex + 1];
-    
-    console.log('🔍 Unit-based navigation analysis:', {
-      currentUnitId: currentUnit.id,
-      currentUnitLessons: currentUnitLessons.length,
-      currentLessonInUnitIndex,
-      nextLessonInUnit: nextLessonInUnit ? {
-        id: nextLessonInUnit.id,
-        title: nextLessonInUnit.title
-      } : null
-    });
+    const currentUnitLessons = sortedLessons.filter(l => String(l.unitId) === String(currentUnit.id));
+    const currentLessonInUnitIndex = currentUnitLessons.findIndex(
+      (l) => String(l.id) === String(currentLesson?.id)
+    );
+    const nextLessonInUnit =
+      currentLessonInUnitIndex >= 0 ? currentUnitLessons[currentLessonInUnitIndex + 1] : undefined;
     
     if (nextLessonInUnit) {
-      // Move to next lesson in current unit
-      console.log('➡️ Moving to next lesson in current unit:', nextLessonInUnit.title);
-      
       const lessonForViewer = {
         ...nextLessonInUnit,
         id: nextLessonInUnit.id
       };
 
+      setViewingUnitQuiz(false);
       setCurrentLesson(lessonForViewer);
-      setCurrentUnit(currentUnit); // Stay in same unit
-      setCurrentLessonIndex(sortedLessons.findIndex(l => l.id === nextLessonInUnit.id));
-    } else {
-      // No more lessons in current unit, check if we can move to next unit
-      const currentUnitIndex = selectedCourse.units?.findIndex(u => u.id === currentUnit.id) || 0;
-      const nextUnit = selectedCourse.units?.[currentUnitIndex + 1];
-      
-      console.log('🔍 Unit progression analysis:', {
-        currentUnitIndex,
-        totalUnits: selectedCourse.units?.length || 0,
-        nextUnit: nextUnit ? {
-          id: nextUnit.id,
-          title: nextUnit.title,
-          lessonsCount: nextUnit.lessons?.length || 0
-        } : null
-      });
-      
-      if (nextUnit && nextUnit.lessons && nextUnit.lessons.length > 0) {
-        // Move to first lesson of next unit
-        const firstLessonOfNextUnit = sortedLessons.find(l => l.unitId === nextUnit.id);
-        
-        if (firstLessonOfNextUnit) {
-          console.log('➡️ Moving to first lesson of next unit:', firstLessonOfNextUnit.title, 'in unit:', nextUnit.title);
-          
-          const lessonForViewer = {
-            ...firstLessonOfNextUnit,
-            id: firstLessonOfNextUnit.id
-          };
-
-          setCurrentLesson(lessonForViewer);
-          setCurrentUnit(nextUnit);
-          setCurrentLessonIndex(sortedLessons.findIndex(l => l.id === firstLessonOfNextUnit.id));
-        } else {
-          console.error('❌ Could not find first lesson of next unit');
-        }
-      } else {
-        // Course completed - show beautiful summary popup
-        console.log('🎉 Course completed! Showing summary...');
-        await showCourseCompletionSummaryPopup();
-      }
+      setCurrentUnit(freshUnit);
+      setCurrentLessonIndex(sortedLessons.findIndex(l => String(l.id) === String(nextLessonInUnit.id)));
+      return;
     }
+
+    // End of unit: open the unit quiz if one exists (backup if LessonViewer did not intercept)
+    if (unitHasUsableQuiz(freshUnit)) {
+      setCurrentUnit(freshUnit);
+      setViewingUnitQuiz(true);
+      return;
+    }
+
+    await goToNextUnitOrFinish(freshUnit);
+  };
+
+  const handleViewUnitQuiz = (unit: any) => {
+    if (!selectedCourse) return;
+    const courseUnit =
+      selectedCourse.units?.find((u) => String(u.id) === String(unit.id)) ||
+      selectedCourse.modules?.find((u: any) => String(u.id) === String(unit.id)) ||
+      unit;
+    const lessons = [...(courseUnit.lessons || [])].sort(
+      (a: any, b: any) => (Number(a.order) || 0) - (Number(b.order) || 0)
+    );
+    const lastLesson = lessons[lessons.length - 1];
+    if (!lastLesson) return;
+    setCurrentLesson(lastLesson);
+    setCurrentUnit({ ...courseUnit, quizContent: courseUnit.quizContent || unit.quizContent });
+    setViewingUnitQuiz(true);
+    setShowLessonViewer(true);
+    setShowCourseDetail(false);
   };
 
   const showCourseCompletionSummaryPopup = async () => {
@@ -2113,6 +2193,12 @@ Generated on: ${new Date().toLocaleString()}
 
   const handlePreviousLesson = () => {
     if (!selectedCourse || !currentUnit) return;
+
+    // From unit quiz → back to last lesson of this unit
+    if (viewingUnitQuiz) {
+      setViewingUnitQuiz(false);
+      return;
+    }
     
     // Get all lessons sorted by their order property
     const sortedLessons = getSortedLessons(selectedCourse);
@@ -2128,8 +2214,26 @@ Generated on: ${new Date().toLocaleString()}
       const prevUnit = selectedCourse.units?.find(unit => 
         unit.lessons?.some(l => l.id === prevLesson.id)
       );
+
+      // Crossing into a previous unit that has a quiz → show that unit's quiz step
+      if (
+        prevUnit &&
+        String(prevUnit.id) !== String(currentUnit.id) &&
+        unitHasUsableQuiz(prevUnit)
+      ) {
+        const prevUnitLessons = sortedLessons.filter((l) => String(l.unitId) === String(prevUnit.id));
+        const lastLessonOfPrevUnit = prevUnitLessons[prevUnitLessons.length - 1];
+        setCurrentLesson(lastLessonOfPrevUnit || prevLesson);
+        setCurrentUnit(prevUnit);
+        setCurrentLessonIndex(
+          sortedLessons.findIndex((l) => l.id === (lastLessonOfPrevUnit || prevLesson).id)
+        );
+        setViewingUnitQuiz(true);
+        return;
+      }
       
       console.log('⬅️ Moving to previous lesson:', prevLesson.title, 'Order:', prevLesson.order);
+      setViewingUnitQuiz(false);
       setCurrentLesson(prevLesson);
       setCurrentUnit(prevUnit);
       setCurrentLessonIndex(currentIndex - 1);
@@ -2172,60 +2276,46 @@ Generated on: ${new Date().toLocaleString()}
         
         // Also update the courseProgress state with the latest progress data
         if (progressData.courseProgress) {
+          const stats = computeLearnerCourseProgress(updatedCourse, progressData);
           console.log('📊 Updating courseProgress state with latest data:', {
-            progressPercentage: progressData.courseProgress.progressPercentage,
-            completedLessons: progressData.courseProgress.completedLessons,
-            totalLessons: progressData.courseProgress.totalLessons,
-            completedUnits: progressData.courseProgress.completedUnits
+            progressPercentage: stats.progressPercentage,
+            completedLessons: stats.completedLessons,
+            totalLessons: stats.totalLessons,
+            completedUnits: stats.completedUnits,
+            examPassed: stats.examPassed,
           });
           
           setCourseProgress(prev => ({
             ...prev,
-            [course.id]: progressData
+            [course.id]: {
+              ...progressData,
+              courseProgress: {
+                ...progressData.courseProgress,
+                completedLessons: stats.completedLessons,
+                totalLessons: stats.totalLessons,
+                completedUnits: stats.completedUnits,
+                totalUnits: stats.totalUnits,
+                progressPercentage: stats.progressPercentage,
+                status: stats.status,
+              },
+            }
           }));
         } else {
-          // If no courseProgress data, calculate it from the updated course
-          const allLessons = updatedCourse.units?.flatMap(unit => unit.lessons || []) || [];
-          const completedLessons = allLessons.filter(lesson => {
-            const lessonProgress = progressData.lessonProgress.find(lp => lp.lessonId === lesson.id);
-            return lessonProgress && lessonProgress.completed;
-          }).length;
-          const totalLessons = allLessons.length;
-          const allLessonsDone = totalLessons > 0 && completedLessons >= totalLessons;
-          const passedFinalExam = typeof progressData.finalExamScore === 'number' && progressData.finalExamScore >= 80;
-          const progressPercentage = totalLessons > 0
-            ? allLessonsDone ? (passedFinalExam ? 100 : 99) : Math.round((completedLessons / totalLessons) * 100)
-            : 0;
-          
-          // Calculate completed units
-          const completedUnits = updatedCourse.units?.filter(unit => {
-            const unitLessons = unit.lessons || [];
-            if (unitLessons.length === 0) return false;
-            
-            const completedLessonsInUnit = unitLessons.filter(lesson => {
-              // Find the lesson progress by lesson ID (not by array index)
-              const lessonProgress = progressData.lessonProgress.find(lp => lp.lessonId === lesson.id);
-              return lessonProgress && lessonProgress.completed;
-            }).length;
-            const totalLessonsInUnit = unitLessons.length;
-            
-            return completedLessonsInUnit === totalLessonsInUnit && totalLessonsInUnit > 0;
-          }).length || 0;
-          
-          const totalUnits = updatedCourse.units?.length || 0;
+          const stats = computeLearnerCourseProgress(updatedCourse, progressData);
           
           setCourseProgress(prev => ({
             ...prev,
             [course.id]: {
               ...prev[course.id],
+              ...progressData,
               courseProgress: {
-                completedLessons,
-                totalLessons,
-                completedUnits,
-                totalUnits,
-                progressPercentage,
+                completedLessons: stats.completedLessons,
+                totalLessons: stats.totalLessons,
+                completedUnits: stats.completedUnits,
+                totalUnits: stats.totalUnits,
+                progressPercentage: stats.progressPercentage,
                 lastAccessedAt: new Date().toISOString(),
-                status: progressPercentage >= 100 ? 'Completed' : progressPercentage > 0 ? 'In Progress' : 'Not Started'
+                status: stats.status,
               }
             }
           }));
@@ -2351,18 +2441,24 @@ Generated on: ${new Date().toLocaleString()}
       ...(currentProgressData?.lessonProgress?.filter(lp => lp.completed).map(lp => lp.lessonId) || []),
       lessonId
     ]);
-    
-    // Count unique completed lessons by matching against course lesson IDs
-    const completedLessons = allLessons.filter(lesson => completedLessonIds.has(lesson.id)).length;
-    
-    const totalLessons = allLessons.length;
-    // 99% when all lessons complete (exam pending); 100% only when final exam passed
-    const FINAL_EXAM_PASS_PERCENT = 80;
-    const allLessonsDone = totalLessons > 0 && completedLessons >= totalLessons;
-    const passedFinalExam = typeof currentProgressData?.finalExamScore === 'number' && currentProgressData.finalExamScore >= FINAL_EXAM_PASS_PERCENT;
-    const progressPercentage = totalLessons > 0
-      ? allLessonsDone ? (passedFinalExam ? 100 : 99) : Math.round((completedLessons / totalLessons) * 100)
-      : 0;
+
+    const mergedProgress = {
+      ...currentProgressData,
+      lessonProgress: [
+        ...(currentProgressData?.lessonProgress || []).filter((lp) => lp.lessonId !== lessonId),
+        {
+          ...(currentProgressData?.lessonProgress || []).find((lp) => lp.lessonId === lessonId),
+          lessonId,
+          completed: true,
+        },
+      ],
+    };
+    const stats = computeLearnerCourseProgress(updatedCourse, mergedProgress);
+    const completedLessons = stats.completedLessons;
+    const totalLessons = stats.totalLessons;
+    const progressPercentage = stats.progressPercentage;
+    const completedUnits = stats.completedUnits;
+    const totalUnits = stats.totalUnits;
     
     console.log('📊 Progress calculation details:', {
       totalLessons,
@@ -2370,21 +2466,9 @@ Generated on: ${new Date().toLocaleString()}
       progressPercentage,
       completedLessonIds,
       courseLessonIds: allLessons.map(l => l.id),
-      matchingCompleted: allLessons.filter(lesson => completedLessonIds.has(lesson.id)).map(l => l.id)
+      matchingCompleted: allLessons.filter(lesson => completedLessonIds.has(lesson.id)).map(l => l.id),
+      examPassed: stats.examPassed,
     });
-    
-    // Calculate completed units - a unit is completed only when ALL lessons in that unit are completed
-    const completedUnits = updatedCourse.units?.filter(unit => {
-      const unitLessons = unit.lessons || [];
-      if (unitLessons.length === 0) return false;
-      
-      // Check if all lessons in this unit are completed
-      const allLessonsInUnitCompleted = unitLessons.every(lesson => completedLessonIds.has(lesson.id));
-      
-      return allLessonsInUnitCompleted && unitLessons.length > 0;
-    }).length || 0;
-    
-    const totalUnits = updatedCourse.units?.length || 0;
     
     console.log('📊 Updating courseProgress after lesson completion:', {
       completedLessons,
@@ -2423,22 +2507,20 @@ Generated on: ${new Date().toLocaleString()}
     }));
     
     // Check if this was the last lesson in the course
-    const currentIndex = allLessons.findIndex(lesson => lesson.id === lessonId);
+    const currentIndex = allLessons.findIndex(lesson => String(lesson.id) === String(lessonId));
     const isLastLesson = currentIndex === allLessons.length - 1;
     
     if (isLastLesson) {
-      const alreadyPassed = typeof currentProgressData?.finalExamScore === 'number' && currentProgressData.finalExamScore >= FINAL_EXAM_PASS_PERCENT;
-      const noAttemptsLeft = typeof currentProgressData?.finalExamAttempts === 'number' && currentProgressData.finalExamAttempts >= 3;
-      if (alreadyPassed || noAttemptsLeft) {
-        console.log('🎉 Course already finished (passed or no attempts left). Showing completion summary only.');
-        setShowLessonViewer(false);
-        setShowFinalExam(false);
-        setTimeout(() => showCourseCompletionSummaryPopup(), 400);
-      } else {
-        console.log('🎉 Last lesson completed! Showing final exam...');
-        setShowLessonViewer(false);
-        setTimeout(() => setShowFinalExam(true), 800);
+      // If the last unit still has a unit quiz, stay in LessonViewer so the quiz page can show
+      const lastUnit =
+        updatedCourse.units?.[updatedCourse.units.length - 1] ||
+        currentUnit;
+      if (unitHasUsableQuiz(lastUnit)) {
+        console.log('📝 Last lesson done but unit quiz pending — keeping lesson viewer open');
+        return;
       }
+
+      await tryOpenFinalExam();
     }
     
     // Progress will be automatically updated by the real-time Firestore listener
@@ -2813,15 +2895,7 @@ Generated on: ${new Date().toLocaleString()}
 
   const handleTakeFinalExam = async () => {
     if (!user?.id || !selectedCourse) return;
-    const progress = await persistentProgressService.getStudentProgress(user.id, selectedCourse.id);
-    const passed =
-      typeof progress?.finalExamScore === 'number' &&
-      progress.finalExamScore >= FINAL_EXAM_PASS_PERCENT;
-    if (passed) {
-      await showCourseCompletionSummaryPopup();
-      return;
-    }
-    setShowFinalExam(true);
+    await tryOpenFinalExam();
   };
 
   const handleFinalExamComplete = async () => {
@@ -2896,6 +2970,7 @@ Generated on: ${new Date().toLocaleString()}
         isLastLesson={isLastLesson}
         currentLessonIndex={currentIndex}
         totalLessons={sortedLessons.length}
+        isUnitQuizView={viewingUnitQuiz}
       />
     );
   }
@@ -2909,6 +2984,7 @@ Generated on: ${new Date().toLocaleString()}
           courseProgress={courseProgress[selectedCourse.id]}
           onClose={handleCloseCourseDetail}
           onViewLesson={handleViewLesson}
+          onViewUnitQuiz={handleViewUnitQuiz}
           onTakeExam={handleTakeFinalExam}
         />
         {renderCourseCompletionSummary()}
@@ -3050,7 +3126,12 @@ Generated on: ${new Date().toLocaleString()}
 
   const handleOpenAITutorFromGreeting = () => {
     setShowAIGreetingPopout(false);
-    navigate('/ai-tutor');
+    setLearnerHomePath(
+      isRevolearnDomain || window.location.pathname.includes('/funnel') || window.location.pathname.includes('/dashboard')
+        ? funnelPath('/dashboard')
+        : '/lms'
+    );
+    navigate(aiTutorPath());
   };
 
   const handleStartTour = () => {
@@ -3120,7 +3201,7 @@ Generated on: ${new Date().toLocaleString()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xl font-semibold text-slate-900 dark:text-white">
-                      Welcome back, {user?.firstName}!
+                      Welcome back, {user?.firstName || user?.email?.split('@')[0] || 'there'}!
                     </p>
                     <div className="mt-2 max-h-60 overflow-y-auto pr-1">
                       <p className="text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-line">
@@ -3215,7 +3296,7 @@ Generated on: ${new Date().toLocaleString()}
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  Welcome back, {user?.firstName}!
+                  Welcome back, {user?.firstName || user?.email?.split('@')[0] || 'there'}!
                 </h1>
                 <p className="text-slate-500 dark:text-slate-400 mt-0.5">
                   Continue your learning journey
@@ -3224,7 +3305,14 @@ Generated on: ${new Date().toLocaleString()}
             </div>
             <Button 
               className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25 hover:shadow-orange-500/30 transition-all"
-              onClick={() => window.location.href = '/ai-tutor'}
+              onClick={() => {
+                setLearnerHomePath(
+                  isRevolearnDomain || window.location.pathname.includes('/funnel') || window.location.pathname.includes('/dashboard')
+                    ? funnelPath('/dashboard')
+                    : '/lms'
+                );
+                navigate(aiTutorPath());
+              }}
             >
               <MessageCircle className="w-4 h-4" />
               Chat with AI Tutor
@@ -3528,9 +3616,17 @@ Generated on: ${new Date().toLocaleString()}
                       ) : (
                         <Button
                           className="w-full rounded-xl font-semibold bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25"
-                          onClick={() => navigate(`/lms/checkout/${course.id}`)}
+                          disabled={payingCourseId === course.id}
+                          onClick={() => handlePayToEnroll(course)}
                         >
-                          Pay to enroll
+                          {payingCourseId === course.id ? (
+                            <>
+                              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                              Opening payment…
+                            </>
+                          ) : (
+                            'Pay to enroll'
+                          )}
                         </Button>
                       )}
                     </CardContent>
@@ -3560,18 +3656,14 @@ Generated on: ${new Date().toLocaleString()}
               const enrollment = enrollments.find(e => e.course.id === course.id);
               // Use progress data from persistentProgressService (lesson-based)
               const progressData = courseProgress[course.id];
-              const progressPercentage = progressData?.courseProgress?.progressPercentage || 0;
-              const completedLessons = progressData?.courseProgress?.completedLessons || 0;
-              const totalLessons = progressData?.courseProgress?.totalLessons || 0;
-              const FINAL_EXAM_PASS_PERCENT = 80;
-              const MAX_FINAL_EXAM_ATTEMPTS = 5;
-              const passedFinalExam =
-                typeof progressData?.finalExamScore === 'number' &&
-                progressData.finalExamScore >= FINAL_EXAM_PASS_PERCENT;
+              const progressStats = computeLearnerCourseProgress(course, progressData);
+              const progressPercentage = progressStats.progressPercentage;
+              const completedLessons = progressStats.completedLessons;
+              const totalLessons = progressStats.totalLessons;
               const attemptsUsed = progressData?.finalExamAttempts ?? 0;
               const noAttemptsLeft = attemptsUsed >= MAX_FINAL_EXAM_ATTEMPTS;
-              const lessonsCompleted = totalLessons > 0 && completedLessons >= totalLessons;
-              const isCourseComplete = progressPercentage >= 100 || (lessonsCompleted && (passedFinalExam || noAttemptsLeft));
+              const passedFinalExam = progressStats.examPassed;
+              const isCourseComplete = passedFinalExam || progressPercentage >= 100 || noAttemptsLeft;
               
               console.log(`🔍 Course ${course.title} progress:`, {
                 courseId: course.id,
